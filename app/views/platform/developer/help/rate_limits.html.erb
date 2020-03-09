@@ -28,7 +28,10 @@
       </tr>
       <tr>
         <td><%=tr('X-API-Rate-Remaining', 'API header')%> </td>
-        <td><%=tr('The number of requests remaining in the current rate window.','API header description')%> </td>
+        <td>
+          <%=tr('The number of requests remaining in the current rate window.','API header description')%>
+          <%=tr('When this value goes to zero requests will be denied until the end of the current window.','API header description')%>
+        </td>
       </tr>
       <tr>
         <td><%=tr('X-API-Rate-Window', 'API header')%></td>
