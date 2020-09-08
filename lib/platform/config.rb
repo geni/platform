@@ -570,15 +570,19 @@ class Platform::Config
   def self.enable_api_log?
     api[:logging_enabled]
   end
-  
+
   def self.api_request_limit
     api[:request_limit]
   end
-  
+
   def self.api_request_window
     api[:request_window]
   end
-  
+
+  def self.api_token_lifetime
+    api[:token_lifetime] || 1.day
+  end
+
   def self.api_cookies_enabled?
     api[:cookies_enabled]
   end

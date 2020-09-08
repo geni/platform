@@ -282,7 +282,7 @@ class Platform::Application < ActiveRecord::Base
     end
   end
 
-  def create_access_token(user, scope = 'basic', interval = Registry.api.token_lifetime)
+  def create_access_token(user, scope = 'basic', interval = Platform::Config.api_token_lifetime)
     token = Platform::Oauth::AccessToken.new
     token.application = self
     token.user = user
@@ -293,7 +293,7 @@ class Platform::Application < ActiveRecord::Base
     token
   end
 
-  def find_or_create_access_token(user, scope = 'basic', interval = Registry.api.token_lifetime)
+  def find_or_create_access_token(user, scope = 'basic', interval = Platform::Config.api_token_lifetime)
     tokens = Platform::Oauth::AccessToken.find(:all, :conditions => ["application_id = ? and user_id = ?", self.id, user.id])
     valid_token = nil
     tokens.each do |token|
