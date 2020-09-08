@@ -31,7 +31,7 @@ class Platform::OauthController < Platform::BaseController
   layout Platform::Config.oauth_layout
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-16#section-4.1
-  # supports response_type = code, token 
+  # supports response_type = code, token
   def authorize
     if request_param(:client_id).blank?
       return redirect_with_response(:error_description => "client_id must be provided", :error => :invalid_request)
@@ -50,7 +50,7 @@ class Platform::OauthController < Platform::BaseController
     if redirect_url_required? and redirect_url.blank?
       return redirect_with_response(:error_description => "redirect_uri must be provided as a parameter or in the application callback_url property", :error => :invalid_request)
     end
-    
+
     unless ["code","token"].include?(response_type)
       return redirect_with_response(:error_description => "only code and token response types are currently supported", :error => :unsupported_response_type)
     end
@@ -58,7 +58,7 @@ class Platform::OauthController < Platform::BaseController
     unless redirect_url_valid?(redirect_url)
       return redirect_with_response(:error_description => "redirect_uri cannot point to a different server than from the one it sent a request", :error => :invalid_request)
     end
-    
+
     send("oauth2_authorize_#{response_type}")
   end
 
@@ -67,11 +67,11 @@ class Platform::OauthController < Platform::BaseController
   end
 
   def auth_success
-    render :layout => false  
+    render :layout => false
   end
 
   def auth_failed
-    render :layout => false  
+    render :layout => false
   end
 
   # http://tools.ietf.org/html/draft-ietf-oauth-v2-16#section-4.2
@@ -84,15 +84,15 @@ class Platform::OauthController < Platform::BaseController
     unless client_application
       return render_response(:error_description => "invalid client application id", :error => :unauthorized_client)
     end
-    
+
     unless ["authorization_code", "password", "refresh_token", "client_credentials"].include?(grant_type)
       return render_response(:error_description => "only authorization_code, password and refresh_token grant types are currently supported", :error => :unsupported_grant_type)
     end
 
     send("oauth2_request_token_#{grant_type}")
-  end 
+  end
   alias :token :request_token
-  
+
   def validate_token
     token = Platform::Oauth::OauthToken.find_by_token(request_param(:access_token))
     if token && token.valid_token?
@@ -108,7 +108,7 @@ class Platform::OauthController < Platform::BaseController
     token.invalidate! if token
     render_response(:result => "OK")
   end
-  
+
   def deauthorize
     unless Platform::Config.current_user_is_guest?
       client_application.deauthorize_user if client_application
@@ -126,12 +126,12 @@ class Platform::OauthController < Platform::BaseController
     else
       # handle default logout strategy
     end
-    
+
     render_response(:result => "OK")
   end
-  
+
   def xd
-  	render :layout => false
+    render :layout => false
   end
 
   # XD only method - for now
@@ -139,17 +139,17 @@ class Platform::OauthController < Platform::BaseController
     if params[:origin].blank?
       return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "origin must be specified")
     end
-    
+
     unless client_application
       return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "client_id must be specified")
     end
-    
+
     uri = URI.parse(params[:origin])
-    
+
     unless uri.host == client_application.site_domain
       return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "Anauthorized access - invalid origin.")
     end
-    
+
     if Platform::Config.current_user_is_guest?
       return redirect_with_response(:status => "unknown")
     end
@@ -162,9 +162,9 @@ class Platform::OauthController < Platform::BaseController
       refresh_token = client_application.create_refresh_token(Geni.current_user, scope)
       return redirect_with_response(:status => "authorized", :access_token => access_token.token, :refresh_token => refresh_token.token, :expires_in => (access_token.valid_to.to_i - Time.now.to_i))
     end
-    
+
     redirect_with_response(:status => "unauthorized")
-  end 
+  end
 
 private
 
@@ -181,7 +181,7 @@ private
   end
 
   def client_application
-    return nil if request_param(:client_id).blank?  
+    return nil if request_param(:client_id).blank?
     @client_application ||= Platform::Application.for(request_param(:client_id))
   end
 
@@ -193,7 +193,7 @@ private
     return false if xd? or desktop?
     true
   end
-  
+
   # web_server, user_agent
   def type
     @type ||= request_param(:type) || "web_server"
@@ -204,23 +204,23 @@ private
   end
 
   def grant_type
-    @grant_type ||= request_param(:grant_type) || "authorization_code" 
+    @grant_type ||= request_param(:grant_type) || "authorization_code"
   end
 
   def response_type
-    @response_type ||= request_param(:response_type) || "code" 
+    @response_type ||= request_param(:response_type) || "code"
   end
-  
+
   def display
     @display ||= begin
       if mobile_device?
         "mobile"
       elsif params[:display]
         params[:display]
-      else  
+      else
         "web"
       end
-    end    
+    end
   end
 
   def jsonp?
@@ -249,13 +249,13 @@ private
     if request_param(:code).blank?
       return render_response(:error_description => "Code must be provided", :error => :invalid_request)
     end
-    
-    request_token = Platform::Oauth::RequestToken.find(:first, :conditions => ["application_id = ? and token = ? and valid_to > ? and invalidated_at is null", 
+
+    request_token = Platform::Oauth::RequestToken.find(:first, :conditions => ["application_id = ? and token = ? and valid_to > ? and invalidated_at is null",
                                                              client_application.id, request_param(:code), Time.now])
     unless request_token
       return render_response(:error_description => "Invalid authorization code", :error => :invalid_request)
     end
-    
+
     unless request_token.valid_token?
       return render_response(:error_description => "Authorization code expired", :error => :invalid_request)
     end
@@ -263,8 +263,8 @@ private
     if request_token.callback_url != redirect_url
       return render_response(:error_description => "Redirection url must match the url used for the code request", :error => :invalid_request)
     end
-    
-    access_token = client_application.find_or_create_access_token(request_token.user, request_token.scope)   
+
+    access_token = client_application.find_or_create_access_token(request_token.user, request_token.scope)
     refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
     request_token.destroy
 
@@ -276,11 +276,11 @@ private
     unless client_application.allow_grant_type_password?
       return render_response(:error_description => "This application is not authorized to use grant_type password", :error => :unauthorized_application)
     end
-    
+
     if request_param(:username).blank?
       return render_response(:error_description => "Username must be provided", :error => :invalid_request)
     end
-    
+
     if request_param(:password).nil?
       return render_response(:error_description => "Password must be provided", :error => :invalid_request)
     end
@@ -289,7 +289,7 @@ private
     unless user
       return render_response(:error_description => "Invalid username and/or password combination", :error => :invalid_request)
     end
-    
+
     access_token = client_application.find_or_create_access_token(user, scope)
     refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
     render_response(:access_token => access_token.token, :refresh_token => refresh_token.token, :expires_in => (access_token.valid_to.to_i - Time.now.to_i))
@@ -300,7 +300,7 @@ private
     unless client_application.allow_grant_type_client_credentials?
       return render_response(:error_description => "This application is not authorized to use grant_type client_credentials", :error => :unauthorized_application)
     end
-    
+
     if request_param(:client_secret).blank?
       return render_response(:error_description => "Application secret must be provided", :error => :invalid_request)
     end
@@ -319,7 +319,7 @@ private
     if request_param(:refresh_token).blank?
       return render_response(:error_description => "Refresh token must be provided", :error => :invalid_request)
     end
-    
+
     refresh_token = Platform::Oauth::RefreshToken.find(:first, :conditions => ["application_id = ? and token = ?", client_application.id, request_param(:refresh_token)])
     unless refresh_token
       return render_response(:error_description => "Invalid refresh token", :error => :invalid_request)
@@ -333,7 +333,7 @@ private
       access_token = client_application.create_access_token(refresh_token.user, refresh_token.scope)
     else
       access_token = client_application.create_client_token(refresh_token.scope)
-    end    
+    end
     refresh_token.invalidate!
 
     refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
@@ -350,13 +350,13 @@ private
         code = client_application.create_request_token(Platform::Config.current_user, redirect_url, scope)
         return redirect_with_response(:code => code.code, :expires_in => (code.valid_to.to_i - Time.now.to_i))
       end
-      
+
       if iframe? and client_application.auto_signin?
         return redirect_to(Platform::Config.default_url)
       end
-      
+
       return redirect_with_response(:status => :unauthorized, :message => "canceled")
-    end   
+    end
 
     render_action("authorize")
   end
@@ -377,14 +377,14 @@ private
       end
 
       return redirect_with_response(:status => :unauthorized, :message => "canceled")
-    end   
+    end
 
     render_action("authorize")
   end
 
   def redirect_url_valid?(url)
     return true if xd?
-    
+
     begin
       URI.parse(url)
     rescue
@@ -397,22 +397,22 @@ private
   # used by the authorization process
   def redirect_with_response(response_params, opts = {})
     response_params = HashWithIndifferentAccess.new(response_params)
-    
+
     # preserve state
     response_params[:state] = request_param(:state) if request_param(:state)
-    
+
     # more scope validation must be done
     response_params[:scope] = request_param(:scope) if request_param(:scope)
-    
+
     # process xd popup
     if xd?
       params.merge!(response_params)
       return render(:action => :xd, :layout => false)
-    end   
+    end
 
     response_query = begin
       prms = []
-      response_params.keys.apply(:to_s).sort.each do |key| 
+      response_params.keys.map(&:to_s).sort.each do |key|
         prms << "#{key}=#{CGI.escape(response_params[key.to_sym].to_s)}"
       end
       prms.join("&")
@@ -422,36 +422,36 @@ private
     if desktop?
       if response_params[:error_description] or response_params[:status] == 'unauthorized'
         return redirect_to(:action => :auth_failed, :anchor => response_query)
-      else  
+      else
         return redirect_to(:action => :auth_success, :anchor => response_query)
       end
     end
 
-    if redirect_url_required? and redirect_url.blank? 
+    if redirect_url_required? and redirect_url.blank?
       @error = response_params[:error_description]
       return render_action("authorize_failure")
     end
-    
+
     redirect_uri = URI.parse(redirect_url)
     redirect_uri.path = (redirect_uri.path.blank? ? "/" : redirect_uri.path) unless mobile? # mobile apps will not have path
     redirect_uri.query = redirect_uri.query.blank? ? response_query : redirect_uri.query + "&#{response_query}"
     redirect_to(redirect_uri.to_s)
   end
-  
+
   # used by the request token process
   def render_response(response_params, opts = {})
     response_params = HashWithIndifferentAccess.new(response_params)
-    
+
     # preserve state
     response_params[:state] = request_param(:state) if request_param(:state)
-    
+
     # more scope validation must be done
     response_params[:scope] = request_param(:scope) if request_param(:scope)
 
     # we need to support json and redirect based method as well
     if jsonp?
       render(:text => "#{params[:callback].strip}(#{response_params.to_json})")
-    else  
+    else
       opts[:status] ||= begin
         if [:unsupported_grant_type, :invalid_request, :invalid_token].include?(response_params[:error])
           400
@@ -464,13 +464,13 @@ private
       render(:json => response_params.to_json, :status => opts[:status])
     end
   end
-  
+
   def render_action(action)
     if display == 'web'
       render(:action => "#{action}_#{display}")
-    else      
+    else
       render(:action => "#{action}_#{display}", :layout => false)
     end
-  end    
+  end
 
 end

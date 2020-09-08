@@ -22,7 +22,7 @@
 #++
 
 class Platform::Developer::ApiExplorerController < Platform::Developer::BaseController
-  
+
   before_filter :prepare_api_version
   skip_filter :validate_guest_user
   skip_filter :validate_developer
@@ -40,22 +40,22 @@ class Platform::Developer::ApiExplorerController < Platform::Developer::BaseCont
     @api_history = []
     @api_history = JSON.parse(request.cookies["api_history"]) unless request.cookies["api_history"].blank?
     @api_history_index = (params["api_history_index"] || -1).to_i
-    
+
     render(:layout => false)
   end
-  
+
   def options
     render(:layout => false)
   end
-  
+
   def oauth_lander
     render :layout => false
   end
-  
+
 private
- 
+
   def prepare_api_version
     @api_version = params[:api_version] || Platform::Config.api_default_version
   end
-    
+
 end

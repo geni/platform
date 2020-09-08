@@ -34,6 +34,6 @@ class ApplicationController < ActionController::Base
 
   def logout!
     session[:platform_user_id] = nil
-  end  
+  end
 
 end

@@ -29,7 +29,7 @@ module ApplicationHelper
   def will_filter_scripts_tag
     render(:partial => "/will_filter/common/scripts")
   end
-  
+
   def will_filter_table_tag(results, opts = {})
     filter = results.wf_filter
     opts[:columns] ||= filter.model_column_keys

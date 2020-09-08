@@ -23,7 +23,7 @@
 
 class Platform::Api::BaseController < ActionController::Base
   before_filter :set_default_format
-  before_filter :ensure_api_enabled 
+  before_filter :ensure_api_enabled
   before_filter :cors_preflight_check
   before_filter :authenticate
   after_filter  :log_api_call
@@ -40,7 +40,7 @@ class Platform::Api::BaseController < ActionController::Base
       @cause.try(:message) || super
     end
   end
-  
+
   class BadRequestError < ApiError ; end
   class ForbiddenError < ApiError ; end
   class MethodNotAllowedError < ApiError ; end
@@ -60,7 +60,7 @@ class Platform::Api::BaseController < ActionController::Base
     ActionController::UnknownAction,
     ActiveRecord::RecordNotFound,
     ForbiddenError,
-    MethodNotAllowedError, 
+    MethodNotAllowedError,
     ServiceUnavailableError,
     UnauthorizedError
   ]
@@ -80,7 +80,7 @@ protected
   def log_exception(e)
     Platform::LoggedException.create_from_exception(self, e, nil)
   end
-  
+
 private
 
   ############################################################################
@@ -102,11 +102,11 @@ private
   def client_app
     @client_app ||= access_token.try(:application)
   end
-  
+
   def set_default_format
     request.format = :json if params[:format].nil?
   end
-  
+
   def all?
     params[:all].to_s.param_true?
   end
@@ -114,12 +114,12 @@ private
   def cookies_enabled?
     Platform::Config.api_cookies_enabled?
   end
-  
+
   ############################################################################
   #### Authentication Methods
   ############################################################################
   def authenticate
-    authenticate_via_oauth 
+    authenticate_via_oauth
     authenticate_via_cookie if cookies_enabled? and (not jsonp?)
 
     if oauth_attempted_and_failed?
@@ -143,18 +143,18 @@ private
     end
     Platform::Config.init(user) if user
   end
-  
+
   def access_token
     unless defined?(@access_token)
       @access_token = nil
       if access_token_header
         parts = access_token_header.split(' ')
         if parts.first == 'Bearer'
-          @access_token = Platform::Application.find_access_token(parts.last) 
-        end  
+          @access_token = Platform::Application.find_access_token(parts.last)
+        end
       elsif access_token_param
         @access_token = Platform::Application.find_access_token(access_token_param)
-      end  
+      end
     end
 
     @access_token
@@ -173,8 +173,8 @@ private
 
   def oauth_attempted_and_failed?
     oauth_attempted? and oauth_failed?
-  end  
-  
+  end
+
   def oauth_failed?
     access_token.nil?
   end
@@ -194,22 +194,22 @@ private
       hash['next_page']     = next_page_url if limit == obj.size
       obj = hash
     end
-    
+
     # what is to_opts for?
     to_opts = params.merge(:max_models => limit, :viewer => Platform::Config.current_user, :api_version => api_version)
     respond_to do |format|
       format.json   do
         json = obj.to_json(to_opts)
         validate_response_structure(json)
-        
+
         if jsonp?
           script = "#{params[:callback].strip}(#{json})"
           render(:text => script)
-        else  
+        else
           render(opts.merge(:json => json))
         end
       end
-  
+
       format.xml do
         if obj.is_a?(Hash) && obj.has_key?('error')
           obj = obj['error']
@@ -218,12 +218,12 @@ private
         render opts.merge(:text => obj.to_xml(to_opts.merge(:root => opts[:xml_root] || xml_root)))
       end
     end
-    
+
     add_response_headers
 
     true
-  end  
-  
+  end
+
   def add_response_headers
     return unless enabled?
     return unless rate_limited?
@@ -231,11 +231,11 @@ private
     response.headers['X-API-Rate-Remaining'] = (request_limit - request_count.to_i).to_s
     response.headers['X-API-Rate-Window'] = request_window.to_s
   end
-  
+
   def max_models
     Platform::Config.api_max_models
   end
-  
+
   def page
     (params[:page] || 1).to_i
   end
@@ -258,11 +258,11 @@ private
   def limited_models?
     not client_app.try(:allow_unlimited_models?)
   end
-  
+
   def model_class
     raise Exception.new("must be implemented in the extanding class")
   end
-  
+
   def page_models
     @page_models ||= model_class.all(:conditions => page_model_conditions, :limit => limit, :offset => offset, :order => 'id ASC')
   end
@@ -270,17 +270,17 @@ private
   def page_model
     @page_model ||= model_class.first(:conditions => page_model_conditions) || raise(ActiveRecord::RecordNotFound)
   end
-  
+
   def page_model_conditions(id_fields=nil)
     id_fields ||= self.class.id_fields
     {:id => ids(id_fields)}
   end
-  
+
   # default id fields
   def self.id_fields
     [:id, :ids]
   end
-  
+
   def ids(id_fields=nil)
     id_fields ||= self.class.id_fields
     ids = []
@@ -292,7 +292,7 @@ private
 
     ids
   end
-  
+
   def default_model_ids
     default_models.ids
   end
@@ -300,7 +300,7 @@ private
   def default_models
     raise Exception.new("must be implemented in the extanding class")
   end
-  
+
   ############################################################################
   #### JSONP Methods
   ############################################################################
@@ -314,7 +314,7 @@ private
   def xml_root
     model_class.to_s.underscore.pluralize
   end
-  
+
   ############################################################################
   #### Date/Time Methods
   ############################################################################
@@ -333,8 +333,8 @@ private
       when /yesterday/i then Date.yesterday.to_s(:db)
       else                   Time.parse(string).to_s(:db)
     end
-  end  
-  
+  end
+
   ############################################################################
   #### Rate Limits
   ############################################################################
@@ -381,7 +381,7 @@ private
   def request_window
     @request_window ||= Platform::Config.api_request_window
   end
-  
+
   ############################################################################
   #### Navigation Params
   ############################################################################
@@ -401,36 +401,36 @@ private
       :format     => 'json' == params[:format] ? nil : params[:format]
     }
   end
-  ############################################################################  
-  
+  ############################################################################
+
   ############################################################################
   #### Ensurance
   ############################################################################
   def ensure_post
     raise MethodNotAllowedError.new('POST required') unless request.post?
   end
-  
+
   def ensure_logged_in
     raise LoginError if Platform::Config.current_user.guest?
   end
-  ############################################################################  
+  ############################################################################
 
   def split_param(name)
     params[name].to_s.split(/\s*,\s*/)
   end
-  
+
   def redirect_to_login
     redirect_to(:controller => Platform::Config.login_url)
   end
 
   def log_api_call
     return unless Platform::Config.enable_api_log?
-    
+
     duration = response.headers['X-Runtime']
     Platform::ApplicationLog.create(
           :application => client_app,
-          :user_id => Platform::Config.current_user.try(:id), 
-          :event => "#{params[:controller]}-#{params[:action]}", 
+          :user_id => Platform::Config.current_user.try(:id),
+          :event => "#{params[:controller]}-#{params[:action]}",
           :data => params,
           :request_method => request.request_method,
           :user_agent => request.user_agent,
@@ -438,7 +438,7 @@ private
           :duration => (duration =~ /[.0-9]/) ? duration.to_f / 1000 : nil
     )
   end
-  
+
   ############################################################################
   #### Exceptions
   ############################################################################
@@ -447,7 +447,7 @@ private
     return true if Rails.env.development?
     not PLATFORM_NON_LOGGED_EXCEPTIONS.include?(ex.class)
   end
-  
+
   def render_exception(ex)
     error = {
       'type'    => 'ApiException'
@@ -469,39 +469,39 @@ private
     end
     params[:only_list] = nil
     render_response({'error' => error}, :status => status)
-  end  
-  
+  end
+
   ############################################################################
   #### Response Validation
   ############################################################################
-  
+
   def api_version
     @api_version ||= params[:api_version] || client_app.try(:api_version) || Platform::Config.api_default_version
   end
-  
+
   def api_reference_for_path(ref, path)
     parts = path.split("/")
     return ref[parts.first] if parts.length == 1
     return nil if ref[parts.first].nil? or ref[parts.first][:actions].nil?
-    ref[parts.first][:actions][parts.last]    
+    ref[parts.first][:actions][parts.last]
   end
-  
+
   def handle_document_structure_error(msg)
     pp msg
     log_exception(ResponseStructureError.new(msg))
   end
-  
+
   def validate_response_structure(json)
     return unless Platform::Config.enable_api_verification?
-    
+
     path = request.url.split(Platform::Config.api_base_url).last.split('?').first.split("-").first
 #    pp request.url, path
-    
+
     path = 'profile' if path.blank? # make this configurable option
 
     hash = JSON.parse(json)
 #    pp hash
-    
+
     ref = Platform::Config.api_reference(api_version)
     return handle_document_structure_error("Unsupported API version: #{api_version}") if ref.nil?
 
@@ -517,8 +517,8 @@ private
         undocumented_fields << key
       end
     end
-    
-    handle_document_structure_error("Unsupported or undocumented fields for API version #{api_version}, path #{path}: #{undocumented_fields.join(', ')}") if undocumented_fields.any?        
+
+    handle_document_structure_error("Unsupported or undocumented fields for API version #{api_version}, path #{path}: #{undocumented_fields.join(', ')}") if undocumented_fields.any?
   end
 
   # If this is a preflight OPTIONS request, then short-circuit the
