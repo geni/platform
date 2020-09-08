@@ -1,23 +1,29 @@
-require File.dirname(__FILE__) + '/../../functional_test_helper'
+require_relative '../../../../test_helper'
 
-class OauthTokenTest < ActiveRecord::TestCase
+module Platform::Oauth
+  class OauthTokenTest < ActiveRecord::TestCase
 
-  before(:all) do
-    @profile = create_claimed_profile
-    @app = ClientApplication.create
-  end
+    # Ticket 19802
+    test 'valid_to' do
+      token = OauthToken.create!(:application => app, :token => 'foo', :expire_in => 1.minute)
+      assert !token.valid_to.nil?
+    end
 
-  test 'user assignment with profile' do
-    token = OauthToken.create!(:client_application => @app, :user => @profile.user)
-    assert_equal @profile.user, token.reload.user
-  end
+    # Ticket 19802
+    test 'to_json' do
+      token = OauthToken.create!(:application => app, :token => 'foo')
+      json = token.to_json
+      assert_match token.token, json
+      assert_match 'expires_in', json
+    end
 
-  # Ticket 19802
-  test 'invalidated? sets invalidated_at' do
-    token = OauthToken.create!(:client_application => @app, :user => @profile.user, :valid_to => Time.now - 5.minutes)
-    assert_equal true, token.invalidated_at.nil?
-    assert_equal true, token.invalidated?
-    assert_equal false, token.invalidated_at.nil?
-  end
+    # Ticket 19802
+    test 'invalidate! sets invalidated_at' do
+      token = OauthToken.create!(:application => app, :token => 'foo', :valid_to => Time.now - 5.minutes)
+      assert  token.invalidated_at.nil?
+      assert  token.invalidate!
+      assert !token.invalidated_at.nil?
+    end
 
-end
+  end # class OauthTokenTest
+end # module Platform::Oauth

@@ -68,6 +68,7 @@ class Platform::Oauth::OauthToken < ActiveRecord::Base
     return if interval.nil?
     self.valid_to = (Time.now + interval)
   end
+  alias expire_in= expire_in
 
   def expire_in!(interval)
     expire_in(interval)
@@ -76,6 +77,13 @@ class Platform::Oauth::OauthToken < ActiveRecord::Base
 
   def generate_key
     self.token = Platform::Helper.generate_key(40)[0,40]
+  end
+
+  def to_json(options={})
+    hash = {
+      :access_token => token,
+      :expires_in   => (valid_to.to_i - Time.now.to_i),
+    }.to_json(options)
   end
 
 end

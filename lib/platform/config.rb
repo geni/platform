@@ -478,7 +478,7 @@ class Platform::Config
   end
 
   def self.site_media_enabled?
-    site_media_info[:enabled]
+    site_media_info[:enabled] rescue false
   end
 
   def self.site_media_class

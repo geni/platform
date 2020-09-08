@@ -22,12 +22,6 @@
 #++
 
 class Platform::Oauth::AccessToken < Platform::Oauth::OauthToken
-  validates_presence_of :user_id 
-  
-  def to_json(options={})
-    hash = {:access_token => token}
-    hash[:expires_in] = valid_to.to_i - Time.now.to_i
-    hash.to_json(options)
-  end
+  validates_presence_of :user_id
 
 end

@@ -21,7 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::OauthTokenFilter <  Wf::Filter
+class Platform::Oauth::AccessTokenFilter < Platform::BaseFilter
 
   def default_filters
     [
