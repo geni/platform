@@ -52,8 +52,8 @@ class Platform::Api::BaseController < ActionController::Base
 
   class LoginError < StandardError ; end
 
-  
-  include SslRequirement
+
+  include SslRequirement if defined?(SslRequirement)
 
   PLATFORM_NON_LOGGED_EXCEPTIONS = [
     ActionController::MethodNotAllowed,

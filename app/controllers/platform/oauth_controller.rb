@@ -22,11 +22,13 @@
 #++
 
 class Platform::OauthController < Platform::BaseController
-  
-  include SslRequirement
-  ssl_required :authorize, :request_token, :invalidate_token, :validate_token, :revoke, :invalidate, :auth_success
 
-  skip_before_filter :validate_guest_user  
+  if defined?(SslRequirement)
+    include SslRequirement
+    ssl_required :authorize, :request_token, :invalidate_token, :validate_token, :revoke, :invalidate, :auth_success
+  end
+
+  skip_before_filter :validate_guest_user
 
   layout Platform::Config.oauth_layout
 
