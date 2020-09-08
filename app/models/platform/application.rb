@@ -506,13 +506,4 @@ protected
     self.secret = Platform::Helper.generate_key(40)[0,40] if secret.nil?
   end
 
-#  after_create :notify_admins
-#  def notify_admins
-#    return unless Registry.api.admin_email?
-#    return unless Platform::Config.current_user
-#    
-#    message = "#{Platform::Config.current_user.name} (#{Platform::Config.current_user.admin_link}) has created an app called #{name} (#{admin_link})."
-#    SystemNotifier.deliver_to_admin(message, :subject => 'Client Application Created', :to => Registry.api.admin_email)
-#  end
-
 end
