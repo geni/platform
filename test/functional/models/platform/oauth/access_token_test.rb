@@ -12,6 +12,10 @@ class AccessTokenTest < ActiveRecord::TestCase
     token = AccessToken.create!(:client_application => @app, :user => @profile.user)
     assert_equal false, token.valid_to.nil?
   end
+    test 'find_by_token finds client tokens' do
+      token = ClientToken.create!(:application => app, :user => user, :token => 'foo')
+      assert_equal token, AccessToken.find_by_token(token.token)
+    end
 
   # Ticket 19802
   test 'to_json' do
