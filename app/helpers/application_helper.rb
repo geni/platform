@@ -22,6 +22,8 @@
 #++
 
 module ApplicationHelper
+  include Tr8n::HelperMethods
+
   def will_filter(results)
     render(:partial => "/will_filter/filter/container", :locals => {:wf_filter => results.wf_filter})
   end

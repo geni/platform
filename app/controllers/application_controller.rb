@@ -22,7 +22,8 @@
 #++
 
 class ApplicationController < ActionController::Base
-  
+  include Tr8n::CommonMethods
+
   def current_user
     @current_user ||= (Platform::PlatformUser.find_by_id(session[:platform_user_id]) unless session[:platform_user_id].blank?) || Platform::PlatformUser.new
   end
