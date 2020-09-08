@@ -173,6 +173,7 @@ class CreateTr8nTables < ActiveRecord::Migration
     create_table :tr8n_translation_sources do |t|
       t.string  :source
       t.integer :translation_domain_id
+      t.integer :key_count,             :default => 0
       t.timestamps
     end
     add_index :tr8n_translation_sources, [:source], :name => "tr8n_sources_source"

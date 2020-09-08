@@ -1,16 +1,15 @@
-# This file is auto-generated from the current state of the database. Instead
-# of editing this file, please use the migrations feature of Active Record to
-# incrementally modify your database, and then regenerate this schema definition.
+# This file is auto-generated from the current state of the database. Instead of editing this file, 
+# please use the migrations feature of Active Record to incrementally modify your database, and
+# then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
+# Note that this schema.rb definition is the authoritative source for your database schema. If you need
+# to create the application database on another system, you should be using db:schema:load, not running
+# all the migrations from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110617011540) do
+ActiveRecord::Schema.define(:version => 20160404122117) do
 
   create_table "platform_admins", :force => true do |t|
     t.integer  "user_id"
@@ -20,6 +19,17 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
   end
 
   add_index "platform_admins", ["user_id"], :name => "index_platform_admins_on_user_id"
+
+  create_table "platform_application_categories", :force => true do |t|
+    t.integer  "category_id",    :null => false
+    t.integer  "application_id", :null => false
+    t.integer  "position"
+    t.boolean  "featured"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "platform_application_categories", ["category_id"], :name => "index_platform_application_categories_on_category_id"
 
   create_table "platform_application_developers", :force => true do |t|
     t.integer  "application_id"
@@ -35,32 +45,30 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
     t.integer  "application_id"
     t.integer  "user_id"
     t.string   "event"
+    t.string   "controller"
+    t.string   "action"
+    t.string   "request_method"
     t.text     "data"
+    t.string   "user_agent"
+    t.integer  "duration"
+    t.string   "host"
+    t.string   "country"
+    t.string   "ip"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "platform_application_logs", ["application_id"], :name => "index_platform_application_logs_on_application_id"
+  add_index "platform_application_logs", ["application_id", "created_at"], :name => "index_platform_application_logs_on_application_id_and_created_at"
 
   create_table "platform_application_metrics", :force => true do |t|
     t.string   "type"
+    t.datetime "interval"
     t.integer  "application_id"
     t.integer  "active_user_count"
-    t.date     "metric_date"
     t.integer  "new_user_count"
-    t.integer  "canvas_view_count"
-    t.integer  "canvas_avg_view_response_time"
-    t.integer  "canvas_error_count"
-    t.integer  "api_call_count"
-    t.integer  "api_avg_response_time"
-    t.integer  "api_error_count"
-    t.integer  "oauth_impression_count"
-    t.integer  "oauth_accept_count"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  add_index "platform_application_metrics", ["application_id"], :name => "index_platform_application_metrics_on_application_id"
 
   create_table "platform_application_permissions", :force => true do |t|
     t.integer  "application_id"
@@ -71,9 +79,22 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
 
   add_index "platform_application_permissions", ["application_id"], :name => "index_platform_application_permissions_on_application_id"
 
+  create_table "platform_application_usage_metrics", :force => true do |t|
+    t.string   "type"
+    t.datetime "interval"
+    t.integer  "application_id"
+    t.string   "event"
+    t.integer  "count"
+    t.integer  "avg_response_time"
+    t.integer  "error_count"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "platform_application_users", :force => true do |t|
     t.integer  "application_id", :null => false
     t.integer  "user_id",        :null => false
+    t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -88,6 +109,7 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
     t.string   "state",                    :default => "new"
     t.string   "locale"
     t.string   "url"
+    t.string   "site_domain"
     t.string   "support_url"
     t.string   "callback_url"
     t.string   "contact_email"
@@ -109,12 +131,17 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
     t.integer  "rank"
     t.boolean  "auto_signin"
     t.string   "deauthorize_callback_url"
+    t.string   "version"
+    t.string   "api_version"
+    t.integer  "parent_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "consent_label"
   end
 
   add_index "platform_applications", ["developer_id"], :name => "index_platform_applications_on_developer_id"
   add_index "platform_applications", ["key"], :name => "index_platform_applications_on_key", :unique => true
+  add_index "platform_applications", ["parent_id"], :name => "index_platform_applications_on_parent_id"
 
   create_table "platform_categories", :force => true do |t|
     t.string   "type"
@@ -129,18 +156,6 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
   end
 
   add_index "platform_categories", ["parent_id"], :name => "index_platform_categories_on_parent_id"
-
-  create_table "platform_category_items", :force => true do |t|
-    t.integer  "category_id", :null => false
-    t.string   "item_type"
-    t.integer  "item_id"
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "platform_category_items", ["category_id"], :name => "index_platform_category_items_on_category_id"
-  add_index "platform_category_items", ["item_type", "item_id"], :name => "index_platform_category_items_on_item_type_and_item_id"
 
   create_table "platform_developers", :force => true do |t|
     t.integer  "user_id",    :limit => 8, :null => false
@@ -177,6 +192,23 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
 
   add_index "platform_forum_topics", ["subject_type", "subject_id"], :name => "index_platform_forum_topics_on_subject_type_and_subject_id"
   add_index "platform_forum_topics", ["user_id"], :name => "index_platform_forum_topics_on_user_id"
+
+  create_table "platform_logged_exceptions", :force => true do |t|
+    t.string   "exception_class"
+    t.string   "controller_name"
+    t.string   "action_name"
+    t.string   "server"
+    t.text     "message"
+    t.text     "backtrace"
+    t.text     "environment"
+    t.text     "request"
+    t.text     "session"
+    t.binary   "cause"
+    t.integer  "user_id"
+    t.integer  "application_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "platform_media", :force => true do |t|
     t.string   "type"
@@ -482,6 +514,7 @@ ActiveRecord::Schema.define(:version => 20110617011540) do
   create_table "tr8n_translation_sources", :force => true do |t|
     t.string   "source"
     t.integer  "translation_domain_id"
+    t.integer  "key_count",             :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

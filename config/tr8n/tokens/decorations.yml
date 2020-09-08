@@ -1,16 +1,33 @@
 #############################################################################
 #
-# Tr8n Default Gender Rules
+# Tr8n Decoration Tokens
 #
 #############################################################################
 
-strong:     "<strong>{$0}</strong>"
-bold:       "<strong>{$0}</strong>"
-b:          "<strong>{$0}</strong>"
-em:         "<em>{$0}</em>"
-italic:     "<i>{$0}</i>"
-i:          "<i>{$0}</i>"
-link:       "<a href='{$1}' style='{$2}'>{$0}</a>" 
-link1:      "<a href='{$1}' style='{$2}'>{$0}</a>"
-link2:      "<a href='{$1}' style='{$2}'>{$0}</a>"
-br:         "<br>{$0}"
+html:
+  b:          "<b>{$0}</b>"
+  bold:       "<strong>{$0}</strong>"
+  b_italic:   "<b><i>{$0}</i></b>"
+  em:         "<em>{$0}</em>"
+  italic:     "<i>{$0}</i>"
+  link:       "<a href='{$1}' style='{$2}'>{$0}</a>"
+  link1:      "<a href='{$1}' style='{$2}'>{$0}</a>"
+  link2:      "<a href='{$1}' style='{$2}'>{$0}</a>"
+  lb_link:    "<a href='{$1}' class='lbOn', id='{$2}'>{$0}</a>"
+  br:         "<br>{$0}"
+  strong:     "<strong>{$0}</strong>"
+  strike:     "<strike>{$0}</strike>"
+
+plain:
+  bold:       "{$0}"
+  b_italic:   "{$0}"
+  em:         "{$0}"
+  italic:     "{$0}"
+  link:       "{$0}:{$1}"
+  link1:      "{$0}:{$1}"
+  link2:      "{$0}:{$1}"
+  lb_link:    "{$0}:{$1}"
+  br:         "\n{$0}"
+  strong:     "{$0}"
+  strike:     "{$0}"
+
