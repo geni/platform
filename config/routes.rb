@@ -30,5 +30,4 @@ ActionController::Routing::Routes.draw do |map|
     end
   end
 
-  map.root :controller => 'platform/home', :action => 'index'
 end
