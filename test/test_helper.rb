@@ -22,6 +22,7 @@ end
 
 require_relative '../config/environment'
 require 'test_help'
+require 'pp'
 
 class ActiveSupport::TestCase
   # Transactional fixtures accelerate your tests by wrapping each test method
@@ -87,5 +88,14 @@ private
     @request.session[:platform_user_id] = nil
   end
 end
+
+class Object
+
+  def tap_pp(*args)
+    pp [*args, self]
+    self
+  end
+
+end # class Object
 
 Tr8n::Config.config[:enable_tr8n] = false

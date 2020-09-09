@@ -25,7 +25,7 @@ class Platform::OauthController < Platform::BaseController
 
   if defined?(SslRequirement)
     include SslRequirement
-    ssl_required :authorize, :request_token, :invalidate_token, :validate_token, :revoke, :invalidate, :auth_success
+    ssl_required :authorize, :request_token, :invalidate_token, :validate_token, :auth_success
   end
 
   skip_before_filter :validate_guest_user
@@ -40,7 +40,7 @@ class Platform::OauthController < Platform::BaseController
     end
 
     unless client_application
-      return redirect_with_response(:error_description => "invalid client application id", :error => :unauthorized_client)
+      return redirect_with_response(:error_description => "invalid client application id", :error => :unauthorized_application)
     end
 
     save_oauth_login_redirect_params
@@ -84,7 +84,7 @@ class Platform::OauthController < Platform::BaseController
     end
 
     unless client_application
-      return render_response(:error_description => "invalid client application id", :error => :unauthorized_client)
+      return render_response(:error_description => "invalid client application id", :error => :unauthorized_application)
     end
 
     unless ["authorization_code", "password", "refresh_token", "client_credentials"].include?(grant_type)
@@ -243,7 +243,7 @@ private
 
   # needs to be configured through Platform::Config
   def authenticate_user(username, password)
-    User.authenticate(username, password)
+    Platform::Config.user_class.authenticate(username, password)
   end
 
   # request token with grant_type = authorization_code
