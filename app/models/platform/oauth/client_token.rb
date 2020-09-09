@@ -21,7 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::ClientToken < Platform::Oauth::AccessToken
+class Platform::Oauth::ClientToken < Platform::Oauth::OauthToken
 
   def code
     token
