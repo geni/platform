@@ -1,4 +1,25 @@
-ENV["RAILS_ENV"] = "test"
+# This has to happen before other files are loaded
+begin
+  require 'simplecov'
+  SimpleCov.start do
+    command_name 'Tests'
+
+    load_profile 'bundler_filter'
+    load_profile 'test_frameworks'
+
+    # these files will be overwritten by
+    # the including application
+    add_filter %r{^/config|platform_user.rb|application_(controller|helper).rb}
+
+    add_group   'Controllers',  'app/controllers'
+    add_group   'Helpers',      'app/helpers'
+    add_group   'Libs',         'lib'
+    add_group   'Models',       'app/models'
+  end
+rescue LoadError
+  # don't load SimpleCov
+end
+
 require_relative '../config/environment'
 require 'test_help'
 

@@ -1,6 +1,8 @@
 .bundle
 bundle
+coverage
 db/*.sqlite3
 log/*.log
-tmp/
 *.swp
+tmp/
+vendor

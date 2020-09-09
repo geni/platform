@@ -23,6 +23,9 @@ gem 'will_paginate', "~> 2.3"
 
 group :test do
   gem 'rake', '0.9.2.2'
+  gem 'simplecov'
+  gem 'simplecov-html'
   gem 'sqlite3'
   gem 'test-unit'
+  gem 'webrick'
 end
