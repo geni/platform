@@ -32,7 +32,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     @apps = Platform::Application.find(:all, :conditions => ["developer_id=? and parent_id is null", Platform::Config.current_developer.id], :order => "updated_at desc")
     unless @app
       @app = @apps.first if @apps.any?
-    end  
+    end
 
     @menu_app = @app
     @menu_app = @app.parent if @app && @app.parent
@@ -42,7 +42,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
 
   def new
     @page_title = tr('Register New Application', 'Client application controller title')
-    
+
     application
     prepare_form
   end
@@ -51,7 +51,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     if application.save
       application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
       application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
-      
+
       trfn('{app_name} registered', 'Client application controller notice', :app_name => application.name)
       redirect_to(:action => :index, :id => application.id)
     else
@@ -69,14 +69,14 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
 
   def create_version
     @page_title = tr('Version {app_name}', 'Client application controller title', :app_name => application.name)
-    @current_app = Platform::Application.find(params[:id]) 
+    @current_app = Platform::Application.find(params[:id])
     @app = Platform::Application.new(@current_app.attributes)
     @languages = Tr8n::Language.locale_options
   end
 
   def version
     old_app = Platform::Application.find(params[:current_version_id])
-    
+
     app = Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
     if params[:new_icon].blank?
       app.update_attributes(:icon_id => old_app.icon_id)
@@ -93,7 +93,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     old_app.children.each do |child_app|
       child_app.update_attributes(:parent_id => app.id)
     end
-    
+
     old_app.update_attributes(:parent_id => app.id, :version => (old_app.version || 1.0))
 
     redirect_to(:action => :index, :id => app.id)
@@ -103,17 +103,17 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     if application.update_attributes(params[:application])
       application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
       application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
-      
+
       application.application_permissions.each do |ap|
         ap.destroy
       end
-      
+
       if (params[:permissions])
         params[:permissions].split(",").each do |keyword|
           application.add_permission(keyword)
-        end  
+        end
       end
-      
+
       trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => application.name)
       redirect_to(:action => :index, :id => application.id)
     else
@@ -132,13 +132,13 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   def reset_secret
     application.reset_secret!
     trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => application.name)
-    redirect_to :action => :index, :id => application.id 
+    redirect_to :action => :index, :id => application.id
   end
 
   def submit
     application.state ||= "new"
     application.submit!
-    redirect_to :action => :index, :id => application.id 
+    redirect_to :action => :index, :id => application.id
   end
 
   def lb_permissions
@@ -146,12 +146,12 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     @permissions = application.permissions
     render :layout => false
   end
-  
+
 private
 
   def validate_application_developer
     return unless application.id
-    
+
     unless application.developed_by?(Platform::Config.current_developer)
       trfe("You are not authorized to access this application")
       redirect_to(:action => :index)
@@ -166,12 +166,12 @@ private
         Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
       else
         Platform::Application.new(:contact_email => Platform::Config.user_email(Platform::Config.current_user), :version => "1.0")
-      end 
+      end
     end
   end
-  
+
   def prepare_form
     @languages = Tr8n::Language.locale_options
   end
-  
+
 end

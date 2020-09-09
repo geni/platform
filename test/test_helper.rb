@@ -76,11 +76,17 @@ private
     @user ||= Platform::PlatformUser.create!(:name => 'user name')
   end
 
-  def developer(user)
-    Platform::Developer.find_or_create(user)
+  def developer(user=nil)
+    return Platform::Developer.find_or_create(user) unless user.nil?
+
+    @developer ||= begin
+      user = Platform::PlatformUser.create!(:name => 'Developer')
+      Platform::Developer.find_or_create(user)
+    end
   end
 
   def login_as(user)
+    user = user.user if user.is_a?(Platform::Developer)
     @request.session[:platform_user_id] = user.id
   end
 
