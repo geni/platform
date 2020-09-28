@@ -9,15 +9,15 @@ ActionController::Routing::Routes.draw do |map|
               :conditions => {:method => :put}
 
   [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-    map.connect "/platform/#{ctrl}(/:action)", :controller => "platform/#{ctrl}"
+    map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
   end
 
   [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-    map.connect "/platform/developer/#{ctrl}(/:action)", :controller => "platform/developer/#{ctrl}"
+    map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
   end
 
   [:apps, :categories, :developers].each do |ctrl|
-    map.connect "/platform/admin/#{ctrl}(/:action)", :controller => "platform/admin/#{ctrl}"
+    map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
   end
 
   map.namespace :platform do |subdomain|
