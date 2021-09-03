@@ -329,7 +329,23 @@ private
       if params[:authorize] == '1'
         Platform::ApplicationUser.touch(client_application)
         access_token = client_application.create_access_token(:user=>Platform::Config.current_user, :scope=>scope)
-        return redirect_with_response(:access_token => access_token.token, :expires_in => (access_token.valid_to.to_i - Time.now.to_i))
+
+        response_params = {:access_token => access_token.token, :expires_in => (access_token.valid_to.to_i - Time.now.to_i)}
+
+        if xd?
+          # The "token" response type implements OAuth2's implicit grant, which should not return refresh_tokens
+          # because the implicit grant usually depends on browser redirects to return the credentials to the client
+          # application.  This creates vulnerabilities in redirect URL validation, leakage via the subsequent
+          # HTTP_REFERER header, and leakage in the browser history.  Our XD (cross-domain) implementation avoids
+          # all of those problems by using postMessage to transfer the tokens back to the Geni JSDK or whatever
+          # client code requested the popup or hidden display.  There is still the issue of how to securely store
+          # the refresh token but it could be used as part of a session cookie without much risk.  So for XD requests
+          # we will return a refresh_token that can be used to avoid repeated calls to the authorize endpoint.
+
+          response_params[:refresh_token] = client_application.create_refresh_token(:user=>access_token.user, :scope=>scope)
+        end
+
+        return redirect_with_response(response_params)
       end
 
       if iframe? and client_application.auto_signin?
