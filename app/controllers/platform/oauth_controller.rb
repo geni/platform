@@ -342,7 +342,7 @@ private
           # the refresh token but it could be used as part of a session cookie without much risk.  So for XD requests
           # we will return a refresh_token that can be used to avoid repeated calls to the authorize endpoint.
 
-          response_params[:refresh_token] = client_application.create_refresh_token(:user=>access_token.user, :scope=>scope)
+          response_params[:refresh_token] = client_application.create_refresh_token(:user=>access_token.user, :scope=>scope).token
         end
 
         return redirect_with_response(response_params)
