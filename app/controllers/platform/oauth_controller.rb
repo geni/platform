@@ -152,10 +152,7 @@ class Platform::OauthController < Platform::BaseController
 
     # implement authorized user
     if client_application.authorized_user?
-      # add access token to the redirect
-      access_token = client_application.create_access_token(:user=>Platform.current_user, :scope=>scope)
-      refresh_token = client_application.create_refresh_token(:user=>Platform.current_user, :scope=>scope)
-      return redirect_with_response(:status => "authorized", :access_token => access_token.token, :refresh_token => refresh_token.token, :expires_in => (access_token.valid_to.to_i - Time.now.to_i))
+      return redirect_with_response(:status => "authorized")
     end
     
     redirect_with_response(:status => "unauthorized")
