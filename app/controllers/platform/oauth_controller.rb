@@ -58,7 +58,8 @@ class Platform::OauthController < Platform::BaseController
     end
 
     unless redirect_url_valid?(redirect_url)
-      return redirect_with_response(:error_description => "redirect_uri cannot point to a different server than from the one it sent a request", :error => :invalid_request)
+      @error = "redirect_uri cannot point to a different server than the one configured in the application"
+      return render_action("authorize_failure")
     end
 
     send("oauth2_authorize_#{response_type}")
