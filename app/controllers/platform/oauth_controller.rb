@@ -59,7 +59,7 @@ class Platform::OauthController < Platform::BaseController
 
     unless redirect_url_valid?(redirect_url)
       @error = "redirect_uri cannot point to a different server than the one configured in the application"
-      return render_action("authorize_failure")
+      return render_action("authorize_failure", :status => 403)
     end
 
     send("oauth2_authorize_#{response_type}")
@@ -479,11 +479,11 @@ private
     end
   end
 
-  def render_action(action)
+  def render_action(action, opts={})
     if display == 'web'
-      render(:action => "#{action}_#{display}")
+      render(opts.merge(:action => "#{action}_#{display}"))
     else
-      render(:action => "#{action}_#{display}", :layout => false)
+      render(opts.merge(:action => "#{action}_#{display}", :layout => false))
     end
   end
 
