@@ -58,10 +58,10 @@
   <div class="inner">
     <div class="hd">
       <span style="float:right;">
-         <%=link_to(tr('Launch Application', 'Client application action label'), @app.app_url, :class=>'button super blue medium') %>
+         <%=link_to(tr('Launch Application', 'Client application action label'), @app.app_url.escape_html, :class=>'button super blue medium') %>
       </span>
       
-      <h1><%= @app.name %></h1>
+      <h1><%= @app.name.escape_html %></h1>
     </div>
   </div>
 </div>

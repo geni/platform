@@ -20,7 +20,7 @@
 	<div class="mhm mvl">
     
 		<div class="module mbl">
-			<span class="mbn h4"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name)%></span>
+			<span class="mbn h4"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name.escape_html)%></span>
 			<span class="quiet">
 				<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 			</span>
@@ -28,7 +28,7 @@
 		
 		<div class="module mbm">
 			<div class="bd">
-				<h4><%= trl("{app} is requesting permission to do the following:", "", :app => @client_application.name) %></h4>
+				<h4><%= trl("{app} is requesting permission to do the following:", "", :app => @client_application.name.escape_html) %></h4>
 				<div class="media profile_thumb">
 						<%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :class => "img")%>
 						<div class="bd">
@@ -62,7 +62,7 @@
         <input id='tos-accepted' type='checkbox'/>
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
-             :application  => @client_application.name,
+             :application  => @client_application.name.escape_html,
              :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url, :target => "_blank") },
              :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url,   :target => "_blank") }) -%>
 		</div>

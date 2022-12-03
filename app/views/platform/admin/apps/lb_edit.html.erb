@@ -45,7 +45,7 @@
 					    	<span style="float:right; font-size:10px;">
 					    		<%=link_to_function("Change icon", "$('icon_preview').hide();$('icon_field').show();")%>
 					    	</span>
-					      <%=image_tag(@app.icon_url, :style => "width:16px;height:16px;")%>
+					      <%=image_tag(@app.icon_url.escape_html, :style => "width:16px;height:16px;")%>
 							</div>	
 				    </td> 
 					</tr>	
@@ -60,7 +60,7 @@
 					      <span style="float:right; font-size:10px;">
 					        <%=link_to_function("Change logo", "$('logo_preview').hide();$('logo_field').show();")%>
 					      </span>
-					      <%=image_tag(@app.logo_url, :style => "width:75px;height:75px;")%>
+					      <%=image_tag(@app.logo_url.escape_html, :style => "width:75px;height:75px;")%>
 							</div>
 				    </td> 
 					</tr>	

@@ -232,9 +232,9 @@ class Platform::Application < ActiveRecord::Base
     links = links.join(' and ')
 
     if tos_required?
-      "I accept the {application} #{links}."
+      "I accept the {application.escape_html} #{links}."
     else
-      "By proceeding, you agree to the {application} #{links}."
+      "By proceeding, you agree to the {application.escape_html} #{links}."
     end
   end
 

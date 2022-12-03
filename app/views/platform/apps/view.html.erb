@@ -12,36 +12,36 @@
 		      		<%=tr("Description:")%>
 		      	</th>
 						<td>
-							<%=@app.description%>
+							<%=@app.description.escape_html%>
 						</td>
 		      </tr>
-					<% if @app.developer.about %>
+					<% if @app.developer.about.escape_html %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Developer Info:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.about%>
+		        	<%=@app.developer.about.escape_html%>
 		        </td>
 		      </tr>
 					<% end %>
-					<% if @app.developer.name %>
+					<% if @app.developer.name.escape_html %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Developer Name:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.name%>
+		        	<%=@app.developer.name.escape_html%>
 		        </td>
 		      </tr>
 					<% end %>
-					<% if @app.developer.url %>
+					<% if @app.developer.url.escape_html %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Website:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.url%>
+		        	<%=@app.developer.url.escape_html%>
 		        </td>
 		      </tr>
 					<% end %>

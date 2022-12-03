@@ -12,23 +12,23 @@
     </tr>
     <tr>
         <th>Developer</th>
-        <td><%=link_to(@app.developer.name, "") %></td>
+        <td><%=link_to(@app.developer.name.escape_html, "") %></td>
     </tr>
     <tr>
         <th>Icon</th>
-        <td><%=image_tag(@app.icon_url) %></td>
+        <td><%=image_tag(@app.icon_url.escape_html) %></td>
     </tr>
     <tr>
         <th>Logo</th>
-        <td><%=image_tag(@app.logo_url) %></td>
+        <td><%=image_tag(@app.logo_url.escape_html) %></td>
     </tr>
     <tr>
         <th>Name</th>
-        <td><%=h(@app.name) %></td>
+        <td><%=h(@app.name.escape_html) %></td>
     </tr>
     <tr>
         <th>Description</th>
-        <td><%=h(@app.description) %></td>
+        <td><%=h(@app.description.escape_html) %></td>
     </tr>
     <tr>
         <th>Locale</th>
@@ -36,23 +36,23 @@
     </tr>
     <tr>
         <th>Contact Email</th>
-        <td><%=h(@app.contact_email) %></td>
+        <td><%=h(@app.contact_email.escape_html) %></td>
     </tr>
     <tr>
         <th>URL</th>
-        <td><%=link_to(@app.url, @app.url) if @app.url %></td>
+        <td><%=link_to(@app.url.escape_html, @app.url) if @app.url %></td>
     </tr>
     <tr>
         <th>Support URL</th>
-        <td><%=link_to(@app.support_url, @app.support_url) if @app.support_url %></td>
+        <td><%=link_to(@app.support_url.escape_html, @app.support_url) if @app.support_url %></td>
     </tr>
     <tr>
         <th>Callback URL</th>
-        <td><%=@app.callback_url %></td>
+        <td><%=@app.callback_url.escape_html %></td>
     </tr>
     <tr>
         <th>Deauthorize Callback URL</th>
-        <td><%=@app.deauthorize_callback_url %></td>
+        <td><%=@app.deauthorize_callback_url.escape_html %></td>
     </tr>
     <tr>
         <th>Permissions</th>
@@ -93,27 +93,27 @@
     </tr>
     <tr>
         <th>Privacy Policy URL</th>
-        <td><%=@app.privacy_policy_url %></td>
+        <td><%=@app.privacy_policy_url.escape_html %></td>
     </tr>
     <tr>
         <th>Terms of Service URL</th>
-        <td><%=@app.terms_of_service_url %></td>
+        <td><%=@app.terms_of_service_url.escape_html %></td>
     </tr>
     <tr>
         <th>Consent Label</th>
         <% if @app.consent_label.to_s.blank? %>
-         <td class='quiet'><%= @app.default_terms_statement_tr_label %></td>
+         <td class='quiet'><%= @app.default_terms_statement_tr_label.escape_html %></td>
         <% else %>
-          <td><%= @app.consent_label %></td>
+          <td><%= @app.consent_label.escape_html %></td>
         <% end %>
     </tr>
     <tr>
         <th>Canvas Page Name</th>
-        <td><%=@app.canvas_name %></td>
+        <td><%=@app.canvas_name.escape_html %></td>
     </tr>
     <tr>
         <th>Canvas URL</th>
-        <td><%=@app.canvas_url %></td>
+        <td><%=@app.canvas_url.escape_html %></td>
     </tr>
     <tr>
         <th>Canvas IFrame Auto-Resize</th>
@@ -129,15 +129,15 @@
     </tr>
     <tr>
         <th>iOS Bundle Id</th>
-        <td><%=@app.ios_bundle_id %></td>
+        <td><%=@app.ios_bundle_id.escape_html %></td>
     </tr>
     <tr>
         <th>iTunes App Store Id</th>
-        <td><%=@app.itunes_app_store_id %></td>
+        <td><%=@app.itunes_app_store_id.escape_html %></td>
     </tr>
     <tr>
         <th>Android Key Hash</th>
-        <td><%=@app.android_key_hash %></td>
+        <td><%=@app.android_key_hash.escape_html %></td>
     </tr>
     <tr>
         <th>Created At</th>

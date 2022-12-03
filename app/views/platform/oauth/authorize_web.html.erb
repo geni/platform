@@ -21,7 +21,7 @@
 		<div class="inner">
     
 			<div class="module mbl">
-				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name)%></div>
+				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name.escape_html)%></div>
 				<div class="quiet">
 					<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 				</div>
@@ -32,10 +32,10 @@
 					<div class="platform-authorize__app-info-panel">
 						<div class="platform-authorize__app-info-panel-inner">
 							<div class="mbm">
-								<%= image_tag(@client_application.logo_url) %>
+								<%= image_tag(@client_application.logo_url.escape_html) %>
 							</div>
 							<div class="mbs">
-							<%= link_to(h(@client_application.name), {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
+							<%= link_to(h(@client_application.name.escape_html), {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
 							</div>
 							<div>
 							 <%= platform_app_rank_tag(@client_application, 95) %>
@@ -74,9 +74,9 @@
         <input id='tos-accepted' type='checkbox'/>
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
-             :application  => @client_application.name,
-             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url, :target => "_blank") },
-             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url,   :target => "_blank") }) -%>
+             :application  => @client_application.name.escape_html,
+             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
+             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
 			</div>
 
 		</div>

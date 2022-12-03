@@ -11,7 +11,7 @@
 	
 	    <div style="color:grey;font-size:16px;font-weight:bold">
         <%=link_to(tr("Developer Forum"), :action => :index)%>
-				 &raquo; <%=link_to(@topic.topic, :topic_id => @topic.id)%>
+				 &raquo; <%=link_to(@topic.topic.escape_html, :topic_id => @topic.id)%>
 	    </div>
 			
 	    <div style="color:grey;font-size:12px;font-style:italic;padding-top:3px;padding-bottom:3px;">

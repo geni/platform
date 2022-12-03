@@ -3,11 +3,11 @@
 
 <%= will_filter(@apps) %>
 <%= will_filter_table_tag(@apps, :columns => [
-  [:icon, lambda{|app| link_to(image_tag(app.icon_url), :action => :view, :app_id => app.id)}, "width:18px;"],  
+  [:icon, lambda{|app| link_to(image_tag(app.icon_url.escape_html), :action => :view, :app_id => app.id)}, "width:18px;"],
   [:id, lambda{|app| link_to(app.id, :action => :view, :app_id => app.id)}],
-  [:developer_id, lambda{|app| link_to(app.developer.name, "") if app.developer}],
-  :name,
-  [:url, lambda{|app| link_to(app.url, app.url)}],
+  [:developer_id, lambda{|app| link_to(app.developer.name.escape_html, "") if app.developer}],
+  [:name, lambda{|app| app.name.escape_html}],
+  [:url, lambda{|app| link_to(app.url.escape_html, app.url)}],
   [:permissions, lambda{|app| app.permissions.blank? ? "" : app.permissions.split(',').join('<br>') }],
   [:categories, lambda{|app| 
       html = []

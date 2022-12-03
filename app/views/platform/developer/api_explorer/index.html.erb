@@ -141,7 +141,7 @@ Platform.Utils.addEvent(window, 'load', function() {
 	<% end %>
 	
 	<% if params['api_version'] %>
-	Platform.element("api_version").value = "<%=params['api_version']%>";
+	Platform.element("api_version").value = "<%=params['api_version'].escape_html%>";
 	<% end %>
 });
 

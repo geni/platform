@@ -37,7 +37,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
     @menu_app = @app
     @menu_app = @app.parent if @app && @app.parent
 
-    @page_title = tr('Application Details for {app_name}', 'Client application controller title', :app_name => @app.name) if @app
+    @page_title = tr('Application Details for {app_name}', 'Client application controller title', :app_name => @app.name.escape_html) if @app
   end
 
   def new
@@ -52,7 +52,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
       application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
       application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-      trfn('{app_name} registered', 'Client application controller notice', :app_name => application.name)
+      trfn('{app_name} registered', 'Client application controller notice', :app_name => application.name.escape_html)
       redirect_to(:action => :index, :id => application.id)
     else
       flash[:error] = application.errors.full_messages.join(', ')
@@ -62,13 +62,13 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   end
 
   def edit
-    @page_title = tr('Edit {app_name}', 'Client application controller title', :app_name => application.name)
+    @page_title = tr('Edit {app_name}', 'Client application controller title', :app_name => application.name.escape_html)
     application.touch
     @languages = Tr8n::Language.locale_options
   end
 
   def create_version
-    @page_title = tr('Version {app_name}', 'Client application controller title', :app_name => application.name)
+    @page_title = tr('Version {app_name}', 'Client application controller title', :app_name => application.name.escape_html)
     @current_app = Platform::Application.find(params[:id])
     @app = Platform::Application.new(@current_app.attributes)
     @languages = Tr8n::Language.locale_options
@@ -114,7 +114,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
         end
       end
 
-      trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => application.name)
+      trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => application.name.escape_html)
       redirect_to(:action => :index, :id => application.id)
     else
       flash[:error] = application.errors.full_messages.join(', ')
@@ -125,13 +125,13 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
 
   def delete
     application.destroy
-    trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => application.name)
+    trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => application.name.escape_html)
     redirect_to :action => :index
   end
 
   def reset_secret
     application.reset_secret!
-    trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => application.name)
+    trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => application.name.escape_html)
     redirect_to :action => :index, :id => application.id
   end
 

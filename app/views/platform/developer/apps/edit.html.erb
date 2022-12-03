@@ -1,7 +1,7 @@
 <%= render :partial => "/platform/developer/common/header" %>
 
 <div class="section_title">
-  <%= tr('Editing "{app_name}"', 'API', :app_name => @app.name) %> 
+  <%= tr('Editing "{app_name}"', 'API', :app_name => @app.name.escape_html) %>
 </div>
 
 <div class="app_fields">

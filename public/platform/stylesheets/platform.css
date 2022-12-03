@@ -14,6 +14,7 @@
 .platform textarea                                  {border:1px solid #ccc; padding:3px;}    
 .platform select                                    {border:1px solid #ccc; padding:3px;}
 .platform .pagination                               {text-align:left; padding:0px; margin:0px;}
+.platform b                                         { display:inline-block; font-size: 1em; }
 
 /****************************************/
 /*** Classes for the translatable elements
