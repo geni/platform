@@ -102,7 +102,7 @@ class Platform::AppsController < Platform::BaseController
     @app = Platform::Application.find_by_canvas_name(method)
     return render(:action => :canvas_app) unless @app
     
-    @page_title = @app.name
+    @page_title = @app.name.escape_html
     
     if @app.auto_signin?
       app_user = Platform::ApplicationUser.for(@app)
