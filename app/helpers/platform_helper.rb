@@ -119,9 +119,9 @@ module PlatformHelper
     link = Platform::Config.user_link(user) if options[:linked]
 
     if link
-      link_to(Platform::Config.user_name(user), link)
+      link_to(Platform::Config.user_name(user).escape_html, link)
     else
-      Platform::Config.user_name(user)
+      Platform::Config.user_name(user).escape_html
     end
   end
 
