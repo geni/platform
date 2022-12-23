@@ -198,7 +198,7 @@
 
                    <div><%=link_to(tr("Create New Version"), "/platform/developer/apps/create_version?id=#{@app.id}", {:confirm => "Are you sure you want to create a new version of your application?"})%></div>
                 <% end %>
-                <div><%=link_to(tr("Delete Application"), "/platform/developer/apps/delete?id=#{@app.id}", {:confirm => "Are you sure you want to delete this application?"})%></div>
+                <div><%=link_to(tr("Delete Application"), "/platform/developer/apps/delete?id=#{@app.id}&#{request_forgery_protection_token}=#{cgi_escape(form_authenticity_token)}", {:confirm => "Are you sure you want to delete this application?", :method => :post})%></div>
               </div>
 
               <div class="app_key_value">

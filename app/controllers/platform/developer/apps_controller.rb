@@ -23,7 +23,10 @@
 
 class Platform::Developer::AppsController < Platform::Developer::BaseController
 
-  before_filter :validate_application_developer, :except => [:index, :new, :create, :version]
+  protect_from_forgery :only => [:create, :delete, :update, :version]
+  requires_post        :only => [:create, :delete, :update, :version]
+
+  before_filter :validate_application_developer, :except => [:index, :new, :create, :version, :delete]
 
   def index
     @app = Platform::Application.find_by_id(params[:id]) if params[:id]
