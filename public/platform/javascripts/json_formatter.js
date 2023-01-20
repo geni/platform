@@ -1,5 +1,5 @@
 /*************************************************************************
-# Copyright (c) 2013 Michael Berkovich
+# Copyright (c) 2023 MyHeritage
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -28,24 +28,17 @@ var JSONFormatter = function(json, element, opts) {
   this.object_keys = [];
 
   this.container = document.createElement('div');
-  if (this.opts['hide_border']) {
-    this.container.style.padding = '0px';
-    this.container.style.border = '0px';
-  } else {
-    this.container.style.border = '1px solid #ccc';
-    this.container.style.borderRadius = '10px';
-    this.container.style.padding = '10px';
-  }
-
+  this.container.style.border = '1px solid #ccc';
+  this.container.style.overflow = 'auto';
   this.container.style.fontFamily = 'Verdana';
   this.container.style.fontSize = '10px';
+  this.container.style.borderRadius = '10px';
+  this.container.style.padding = '10px';
   this.container.style.margin = '5px';
   this.displayFormatted();
 
-  if (!this.opts['hide_toolbar']) {
-    this.buttons = this.createButtons();
-    this.parentElement.appendChild(this.buttons);
-  }
+  this.buttons = this.createButtons();
+  this.parentElement.appendChild(this.buttons);
   this.parentElement.appendChild(this.container);
 }
 
@@ -105,13 +98,19 @@ JSONFormatter.prototype = {
     return buttons;
   },
 
-  rawData: function() {
-    return JSON.stringify(this.json);
+  escapeHTML: function(str) {
+    if (typeof str != 'string') return str;
+
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
   },
 
   displayRaw: function() {
     this.removeAllChildren(this.container);
-    this.container.innerHTML = this.rawData();
+    this.container.innerHTML = this.escapeHTML(JSON.stringify(this.json));
   },
 
   displayFormatted: function() {
@@ -220,7 +219,7 @@ JSONFormatter.prototype = {
       line.appendChild(this.createSpacer(level));
 
       if (this.isObject(obj[key])) {
-        line.appendChild(this.createName(key));
+        line.appendChild(this.createName(this.escapeHTML(key)));
 
         if (this.isArray(obj[key])) {
           line.appendChild(this.formatArray(obj[key], level + 1));
@@ -437,13 +436,13 @@ JSONFormatter.prototype = {
       v.style.textDecoration = 'none';
       v.target = '_new';
       v.href = value;
-      v.innerHTML = value;
+      v.innerHTML = this.escapeHTML(value);
       val.appendChild(v);
       val.appendChild(this.createParen('"'));
     } else if (this.isString(value)) {
       val.appendChild(this.createParen('"'));
       var v = document.createElement('span');
-      v.innerHTML = value;
+      v.innerHTML = this.escapeHTML(value);
       v.style.color = '#007020';
       val.appendChild(v);
       val.appendChild(this.createParen('"'));
@@ -451,7 +450,7 @@ JSONFormatter.prototype = {
       val.innerHTML = value;
       val.style.color = 'blue';
     } else {
-      val.innerHTML = value;
+      val.innerHTML = this.escapeHTML(value);
       val.style.color = 'red';
     }
   

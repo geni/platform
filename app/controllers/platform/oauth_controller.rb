@@ -215,7 +215,7 @@ private
       if mobile_device?
         "mobile"
       elsif params[:display]
-        params[:display]
+        CGI.escapeHTML(params[:display])
       else
         "web"
       end
