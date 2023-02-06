@@ -214,7 +214,7 @@
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Secret:', 'Client application field label')%></div>
                 <div class="app_value"><%=@app.secret.escape_html%>
-                 <span>(<%=link_to("reset", "/platform/developer/apps/reset_secret?id=#{@app.id}", {:confirm => "Are you sure you want to reset application secret?"})%>)</span>
+                 <span>(<%=link_to("reset", "/platform/developer/apps/reset_secret?id=#{@app.id}", {:confirm => "Are you sure you want to reset application secret?", :method => :post})%>)</span>
                 </div>
               </div>
 
