@@ -6,7 +6,7 @@
   </div>
 
    <%=link_to(tr("Discussions"), :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions')%>
-   &raquo; <%=link_to(@topic.topic,  :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions', :topic_id => @topic.id)%>
+   &raquo; <%=link_to(@topic.topic.escape_html,  :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions', :topic_id => @topic.id)%>
 	 
   <div style="color:grey;font-size:12px;font-style:italic;padding-top:3px;padding-bottom:3px; font-weight:normal;">
      <%= tr("Started by {user} on {date}", "", {:user => [@topic.user, platform_user_tag(@topic.user, :linked => true)], :date => @topic.created_at.trl}) %>
