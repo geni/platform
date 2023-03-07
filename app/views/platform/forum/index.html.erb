@@ -44,7 +44,7 @@
 	            </table>
 	          </td>
 	          <td class="topic_value" style="padding:5px;">
-	            <%=link_to(topic.topic, :action => :topic, :topic_id => topic.id)%><br>
+	            <%=link_to(topic.topic.escape_html), :action => :topic, :topic_id => topic.id)%><br>
 	          </td>    
 	          <td class="topic_value" style="padding:5px;">
 	            <%=topic.post_count %>

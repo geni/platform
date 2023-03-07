@@ -38,7 +38,7 @@
             </table>
           </td>
           <td class="topic_value" style="padding:5px;">
-            <%=link_to(topic.topic, :controller => '/platform/apps', :action => :view, :sec => 'Discussions', :topic_id => topic.id, :id => @app.id)%><br>
+            <%=link_to(topic.topic.escape_html, :controller => '/platform/apps', :action => :view, :sec => 'Discussions', :topic_id => topic.id, :id => @app.id)%><br>
           </td>    
           <td class="topic_value" style="padding:5px;">
             <%=topic.post_count %>
