@@ -18,7 +18,7 @@
 				</div>
 				
 				<div style="margin-top:10px;margin-bottom:10px;">
-			    <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(@client_application.name, {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
+			    <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(@client_application.name.escape_html, {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
 	      </div>
 				
 	      <div style="padding:10px;">
@@ -45,10 +45,10 @@
 							<td style="width:30%">
 		             <div style="height:130px; padding:5px; margin:3px; text-align:center;">
 		                <div style="">
-		                   <%= image_tag(@client_application.logo_url, :style => "width:75px;height:75px;") %>
+		                   <%= image_tag(@client_application.logo_url.escape_html, :style => "width:75px;height:75px;") %>
 		                </div> 
 		                <div style="font-size:12px; padding-top:10px;">
-		                  <%= link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
+		                  <%= link_to(@client_application.name.escape_html, {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
 		                </div>
 		                <div style="font-size:11px; padding-top:10px;">
 		                 <%= platform_app_rank_tag(@client_application) %>
@@ -64,9 +64,9 @@
             <input id='tos-accepted' type='checkbox'/>
           <%- end -%>
           <%= tr(@client_application.terms_statement_tr_label, "",
-                 :application  => @client_application.name,
-                 :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url, :target => "_blank") },
-                 :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url,   :target => "_blank") }) -%>
+                 :application  => @client_application.name.escape_html,
+                 :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
+                 :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
 			</div>
 			
 			<div style="background:#eee; text-align:left; padding:10px; vertical-align:middle; ">

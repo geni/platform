@@ -40,7 +40,7 @@
 				<%=p.keyword%>
 			</td>	
 			<td style="width:300px;">
-				<%=p.description%>
+				<%= p.description.escape_html %>
 			</td>	
 		</tr>	
 	<% end %>

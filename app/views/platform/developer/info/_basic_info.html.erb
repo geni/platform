@@ -23,7 +23,7 @@
 						  <% if mode == :edit %>
                 <%=f.text_field(:name)%>
 							<% else %>
-							   <%= platform_current_developer.name%>
+							   <%= platform_current_developer.name.escape_html%>
 							<% end %>	 	
             </td>
           </tr>
@@ -43,7 +43,7 @@
               <% if mode == :edit %>
                 <%=f.text_field(:url)%>
               <% else %>
-                 <%= platform_current_developer.url%>
+                 <%= platform_current_developer.url %>
               <% end %>   
             </td>
           </tr>
@@ -53,7 +53,7 @@
               <% if mode == :edit %>
                 <%=f.text_field(:phone)%>
               <% else %>
-                 <%= platform_current_developer.phone%>
+                 <%= platform_current_developer.phone %>
               <% end %>   
             </td>
           </tr>
@@ -63,7 +63,7 @@
               <% if mode == :edit %>
                 <%=f.text_area(:about)%>
               <% else %>
-                 <%= platform_current_developer.about%>
+                 <%= platform_current_developer.about.escape_html %>
               <% end %>   
             </td>
           </tr>

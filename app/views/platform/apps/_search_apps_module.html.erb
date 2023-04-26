@@ -19,11 +19,11 @@
 					  </div> 
 						
 						<div style="margin-bottom:10px;">  
-              <%= link_to(app.name, {:action => :view, :id => app.id}) %>
+              <%= link_to(app.name.escape_html, {:action => :view, :id => app.id}) %>
 						</div>
             
             <div style="margin-bottom:5px;">  
-              <%= app.description %>
+              <%= app.description.escape_html %>
             </div>
           </td>         
         </tr>

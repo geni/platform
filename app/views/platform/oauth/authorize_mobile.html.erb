@@ -63,8 +63,8 @@
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
              :application  => @client_application.name.escape_html,
-             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url, :target => "_blank") },
-             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url,   :target => "_blank") }) -%>
+             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
+             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
 		</div>
             
 	</div>

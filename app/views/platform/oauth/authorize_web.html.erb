@@ -35,7 +35,7 @@
 								<%= image_tag(@client_application.logo_url.escape_html) %>
 							</div>
 							<div class="mbs">
-							<%= link_to(h(@client_application.name.escape_html), {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
+							<%= link_to(@client_application.name.escape_html, {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
 							</div>
 							<div>
 							 <%= platform_app_rank_tag(@client_application, 95) %>
