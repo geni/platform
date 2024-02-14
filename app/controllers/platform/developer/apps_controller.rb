@@ -51,16 +51,18 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   end
 
   def create
-    if application.save
-      application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
-      application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
+    if request.post? and verified_request?
+      if application.save
+        application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
+        application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-      trfn('{app_name} registered', 'Client application controller notice', :app_name => application.name.escape_html)
-      redirect_to(:action => :index, :id => application.id)
-    else
-      flash[:error] = application.errors.full_messages.join(', ')
-      prepare_form
-      render :action => :new
+        trfn('{app_name} registered', 'Client application controller notice', :app_name => application.name.escape_html)
+        redirect_to(:action => :index, :id => application.id)
+      else
+        flash[:error] = application.errors.full_messages.join(', ')
+        prepare_form
+        render :action => :new
+      end
     end
   end
 
@@ -80,67 +82,83 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   def version
     old_app = Platform::Application.find(params[:current_version_id])
 
-    app = Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
-    if params[:new_icon].blank?
-      app.update_attributes(:icon_id => old_app.icon_id)
-    else
-      app.store_icon(params[:new_icon])
+    if request.post? and verified_request?
+      app = Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
+      if params[:new_icon].blank?
+        app.update_attributes(:icon_id => old_app.icon_id)
+      else
+        app.store_icon(params[:new_icon])
+      end
+
+      if params[:new_logo].blank?
+        app.update_attributes(:logo_id => old_app.logo_id)
+      else
+        app.store_logo(params[:new_logo])
+      end
+
+      old_app.children.each do |child_app|
+        child_app.update_attributes(:parent_id => app.id)
+      end
+
+      old_app.update_attributes(:parent_id => app.id, :version => (old_app.version || 1.0))
     end
 
-    if params[:new_logo].blank?
-      app.update_attributes(:logo_id => old_app.logo_id)
-    else
-      app.store_logo(params[:new_logo])
-    end
-
-    old_app.children.each do |child_app|
-      child_app.update_attributes(:parent_id => app.id)
-    end
-
-    old_app.update_attributes(:parent_id => app.id, :version => (old_app.version || 1.0))
-
-    redirect_to(:action => :index, :id => app.id)
+    redirect_to(:action => :index, :id => app&.id)
   end
 
   def update
-    if application.update_attributes(params[:application])
-      application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
-      application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
+    if request.post? and verified_request?
+      if application.update_attributes(params[:application])
+        application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
+        application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-      application.application_permissions.each do |ap|
-        ap.destroy
-      end
-
-      if (params[:permissions])
-        params[:permissions].split(",").each do |keyword|
-          application.add_permission(keyword)
+        application.application_permissions.each do |ap|
+          ap.destroy
         end
-      end
 
-      trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => application.name.escape_html)
-      redirect_to(:action => :index, :id => application.id)
+        if (params[:permissions])
+          params[:permissions].split(",").each do |keyword|
+            application.add_permission(keyword)
+          end
+        end
+
+        trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => application.name.escape_html)
+        redirect_to(:action => :index, :id => application.id)
+      else
+        flash[:error] = application.errors.full_messages.join(', ')
+        prepare_form
+        render :action => :edit
+      end
     else
-      flash[:error] = application.errors.full_messages.join(', ')
       prepare_form
       render :action => :edit
     end
   end
 
   def delete
-    application.destroy
-    trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => application.name.escape_html)
+    if request.post? and verified_request?
+      application.destroy
+      trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => application.name.escape_html)
+    end
+
     redirect_to :action => :index
   end
 
   def reset_secret
-    application.reset_secret!
-    trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => application.name.escape_html)
+    if request.post? and verified_request?
+      application.reset_secret!
+      trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => application.name.escape_html)
+    end
+
     redirect_to :action => :index, :id => application.id
   end
 
   def submit
-    application.state ||= "new"
-    application.submit!
+    if request.post? and verified_request?
+      application.state ||= "new"
+      application.submit!
+    end
+
     redirect_to :action => :index, :id => application.id
   end
 

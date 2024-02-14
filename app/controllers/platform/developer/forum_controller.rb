@@ -22,10 +22,10 @@
 #++
 
 class Platform::Developer::ForumController < Platform::Developer::BaseController
-  
+
   skip_filter :validate_guest_user
   skip_filter :validate_developer
-  
+
   protect_from_forgery :only => [:topic, :delete_topic, :delete_message]
   requires_post        :only => [:delete_topic, :delete_message]
 
@@ -34,23 +34,23 @@ class Platform::Developer::ForumController < Platform::Developer::BaseController
   end
 
   def topic
-    if request.post?
+    if request.post? and verified_request?
       return validate_guest_user if platform_current_user_is_guest?
-      
+
       if params[:topic_id]
         topic = Platform::ForumTopic.find_by_id(params[:topic_id])
       else
         topic = Platform::ForumTopic.create(:user => platform_current_user, :topic => params[:topic])
       end
-      
+
       Platform::ForumMessage.create(:topic => topic, :message => params[:message], :user => platform_current_user)
       return redirect_to(:action => :topic, :topic_id => topic.id, :last_page => true)
     end
-    
+
     unless params[:mode] == "create"
       @topic = Platform::ForumTopic.find_by_id(params[:topic_id])
       if params[:last_page]
-        params[:page] = (@topic.post_count / per_page.to_i) 
+        params[:page] = (@topic.post_count / per_page.to_i)
         params[:page] += 1 unless (@topic.post_count % per_page.to_i == 0)
         params[:page] = 1 if params[:page] == 0
       end
@@ -61,16 +61,19 @@ class Platform::Developer::ForumController < Platform::Developer::BaseController
 
   def delete_topic
     return validate_guest_user if platform_current_user_is_guest?
-    
+
     topic = Platform::ForumTopic.find_by_id(params[:topic_id])
-    
-    if topic.user != platform_current_user
-      trfe("You cannot delete topics you didn't create.")
-      return redirect_to(:action => :index)
+
+    if request.post? and verified_request?
+      if topic.user != platform_current_user
+        trfe("You cannot delete topics you didn't create.")
+        return redirect_to(:action => :index)
+      end
+
+      topic.destroy if topic
+      trfn("The topic {topic} has been removed", 'Developer Forum', :topic => "\"#{topic.topic.escape_html}\"")
     end
-    
-    topic.destroy if topic
-    trfn("The topic {topic} has been removed", 'Developer Forum', :topic => "\"#{topic.topic.escape_html}\"")
+
     redirect_to(:action => :index)
   end
 
@@ -78,20 +81,23 @@ class Platform::Developer::ForumController < Platform::Developer::BaseController
     return validate_guest_user if platform_current_user_is_guest?
 
     message = Platform::ForumMessage.find_by_id(params[:message_id])
-    
-    unless message
-      trfe("This message does not exist")
-      return redirect_to(:action => :index)
-    end  
 
-    if message.user != platform_current_user
-      trfe("You cannot delete messages you didn't post.")
-      redirect_to(:action => :topic, :topic_id => message.language_forum_topic.id)
+    if request.post? and verified_request?
+      unless message
+        trfe("This message does not exist")
+        return redirect_to(:action => :index)
+      end
+
+      if message.user != platform_current_user
+        trfe("You cannot delete messages you didn't post.")
+        redirect_to(:action => :topic, :topic_id => message.language_forum_topic.id)
+      end
+
+      message.destroy
+      trfn("The message has been removed")
     end
-    
-    message.destroy
-    trfn("The message has been removed")
+
     redirect_to(:action => :topic, :topic_id => message.topic.id)
-  end  
-  
+  end
+
 end

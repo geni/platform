@@ -30,7 +30,7 @@ class Platform::Admin::AppsController < Platform::Admin::BaseController
   def view
     @app = Platform::Application.find(params[:app_id])
   end
-  
+
   def tokens
     @tokens = Platform::Oauth::OauthToken.filter(:params => params, :filter => Platform::Oauth::OauthTokenFilter)
   end
@@ -50,8 +50,8 @@ class Platform::Admin::AppsController < Platform::Admin::BaseController
   def lb_permission
     @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
     @permission ||= Platform::Permission.new
-    
-    if request.post?
+
+    if request.post? and verified_request?
       if @permission.id.nil?
         @permission = Platform::Permission.create(params[:permission])
       else
@@ -60,15 +60,18 @@ class Platform::Admin::AppsController < Platform::Admin::BaseController
 
       @permission.store_icon(params[:new_icon]) unless params[:new_icon].blank?
 
-      return redirect_to_source(:action => :permissions)    
+      return redirect_to_source(:action => :permissions)
     end
-    
+
     render :layout => false
   end
 
   def delete_permission
-    @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
-    @permission.destroy if @permission
+    if request.post? and verified_request?
+      @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
+      @permission.destroy if @permission
+    end
+
     redirect_to_source(:action => :permissions)
   end
 
@@ -77,70 +80,91 @@ class Platform::Admin::AppsController < Platform::Admin::BaseController
   end
 
   def block
-    app = Platform::Application.find(params[:app_id])  
-    app.block!
-    
-    app.children.each do |child|
-      child.block!
+    app = Platform::Application.find(params[:app_id])
+
+    if request.post? and verified_request?
+      app.block!
+
+      app.children.each do |child|
+        child.block!
+      end
     end
-    
+
     redirect_to(:action => :view, :app_id => app.id)
   end
 
   def unblock
-    app = Platform::Application.find(params[:app_id])  
-    app.unblock!
+    app = Platform::Application.find(params[:app_id])
+
+    if request.post? and verified_request?
+      app.unblock!
+    end
+
     redirect_to(:action => :view, :app_id => app.id)
   end
 
   def approve
     app = Platform::Application.find(params[:app_id])
-    
-    app.children.each do |child|
-      child.deprecate!
+
+    if request.post? and verified_request?
+      app.children.each do |child|
+        child.deprecate!
+      end
+
+      app.approve!
     end
-    
-    app.approve!
-    
+
     redirect_to(:action => :view, :app_id => app.id)
   end
 
   def reject
-    app = Platform::Application.find(params[:app_id])  
-    app.reject!
+    app = Platform::Application.find(params[:app_id])
+
+    if request.post? and verified_request?
+      app.reject!
+    end
+
     redirect_to(:action => :view, :app_id => app.id)
   end
 
   def set_permission
-    app = Platform::Application.find(params[:app_id])  
-    app.set_permission(params[:perm], true)
-    app.save
+    app = Platform::Application.find(params[:app_id])
+
+    if request.post? and verified_request?
+      app.set_permission(params[:perm], true)
+      app.save
+    end
+
     redirect_to(:action => :view, :app_id => app.id)
   end
 
   def remove_permission
-    app = Platform::Application.find(params[:app_id])  
-    app.set_permission(params[:perm], false)
-    app.save
+    app = Platform::Application.find(params[:app_id])
+
+    if request.post? and verified_request?
+      app.set_permission(params[:perm], false)
+      app.save
+    end
+
     redirect_to(:action => :view, :app_id => app.id)
   end
-  
+
   def lb_edit
     @app = Platform::Application.find_by_id(params[:app_id])
     render :layout => false
   end
-  
+
   def update
-    if request.post?
+    if request.post? and verified_request?
       app = Platform::Application.find_by_id(params[:app_id]) if params[:app_id]
       if app
-        app.update_attributes(params[:app]) 
+        app.update_attributes(params[:app])
         app.store_icon(params[:new_icon]) unless params[:new_icon].blank?
         app.store_logo(params[:new_logo]) unless params[:new_logo].blank?
       end
     end
-    
-    redirect_to_source(:action => :index)    
+
+    redirect_to_source(:action => :index)
   end
-  
+
 end

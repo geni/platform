@@ -23,7 +23,7 @@
 
 class Platform::Developer::DashboardController < Platform::Developer::BaseController
   before_filter :prepare_apps, :only => [:settings, :update_section]
-  
+
   def index
     selected_app_ids = session[:platform_dashboard_apps] || []
     if selected_app_ids.empty?
@@ -33,20 +33,20 @@ class Platform::Developer::DashboardController < Platform::Developer::BaseContro
       @apps = Platform::Application.find(:all, :conditions => ["id in (?) and developer_id = ?", selected_app_ids, platform_current_developer.id], :order => "created_at desc")
     end
   end
-  
+
   def settings
-    
+
   end
-  
+
   def update_section
-    unless request.post?
+    unless request.post? and verified_request?
       return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
     end
-    
+
     @selected_app_ids = params.keys - ['action', 'controller', 'section']
     session[:platform_dashboard_apps] = @selected_app_ids
 
-#   persist in the database    
+#   persist in the database
 #    platform_current_developer.update_attributes(params[:developer])
 #    platform_current_developer.reload
 
@@ -59,5 +59,5 @@ private
     @selected_app_ids = session[:platform_dashboard_apps] || []
     @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc")
   end
-  
+
 end

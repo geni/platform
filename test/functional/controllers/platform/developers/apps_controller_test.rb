@@ -33,7 +33,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     login_as developer
 
     assert_difference 'Platform::Application.count' do
-      post :create, :application => {:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com'}
+      post :create, :application => {:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com'}, :authenticity_token => form_authenticity_token
     end
 
     app = Platform::Application.first(:order => 'id desc')
@@ -50,7 +50,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     login_as developer
 
     assert_no_difference 'Platform::Application.count' do
-      post :create, :application => {:name => 'TestApp', :url => '\0'}
+      post :create, :application => {:name => 'TestApp', :url => '\0'}, :authenticity_token => form_authenticity_token
       assert_response :success
     end
 
@@ -80,7 +80,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     login_as developer
     app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
 
-    put :update, :id => app.id, :application => {:name => 'Updated'}
+    put :update, :id => app.id, :application => {:name => 'Updated'}, :authenticity_token => form_authenticity_token
     assert_redirected_to :controller => 'platform/developer/apps', :action => :index, :id => app.id
 
     app.reload
@@ -97,7 +97,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
 
     assert_difference 'Platform::Application.count', -1 do
-      delete :delete, :id => app.id
+      delete :delete, :id => app.id, :authenticity_token => form_authenticity_token
     assert_redirected_to :controller => 'platform/developer/apps', :action => :index
     end
   end

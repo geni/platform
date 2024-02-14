@@ -93,6 +93,10 @@ private
   def logout
     @request.session[:platform_user_id] = nil
   end
+
+  def form_authenticity_token
+    session[:_csrf_token] ||= ActiveSupport::SecureRandom.base64(32)
+  end
 end
 
 class Object

@@ -479,12 +479,14 @@ class Platform::Application < ActiveRecord::Base
   end
 
   def self.featured_for_category(category, page = 1, per_page = 20)
+    return [] if category.nil?
     paginate(:conditions => ["platform_applications.state='approved' and platform_application_categories.category_id = ? and platform_application_categories.featured = ?", category.id, true],
              :joins => "inner join platform_application_categories on platform_application_categories.application_id = platform_applications.id",
              :order => "platform_application_categories.position asc", :page => page, :per_page => per_page)
   end
 
   def self.regular_for_category(category, page = 1, per_page = 20)
+    return [] if category.nil?
     paginate(:conditions => ["platform_applications.state='approved' and platform_application_categories.category_id = ? and (platform_application_categories.featured is null or platform_application_categories.featured = ?)", category.id, false],
              :joins => "inner join platform_application_categories on platform_application_categories.application_id = platform_applications.id",
              :order => "platform_application_categories.position asc", :page => page, :per_page => per_page)

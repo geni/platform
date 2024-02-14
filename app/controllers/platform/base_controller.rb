@@ -32,21 +32,21 @@ class Platform::BaseController < ApplicationController
   if Platform::Config.before_filters.any?
     before_filter *Platform::Config.before_filters
   end
-  
+
   if Platform::Config.skip_before_filters.any?
     skip_before_filter *Platform::Config.skip_before_filters
   end
-  
-  if Platform::Config.after_filters.any?    
+
+  if Platform::Config.after_filters.any?
     after_filter *Platform::Config.after_filters
   end
 
   layout Platform::Config.site_layout
 
   helper :platform
-  
+
   if Platform::Config.helpers.any?
-    helper *Platform::Config.helpers 
+    helper *Platform::Config.helpers
   end
 
   def platform_current_user
@@ -58,7 +58,7 @@ class Platform::BaseController < ApplicationController
     Platform::Config.current_developer
   end
   helper_method :platform_current_developer
-  
+
   def platform_current_user_is_admin?
     Platform::Config.current_user_is_admin?
   end
@@ -73,14 +73,14 @@ class Platform::BaseController < ApplicationController
     Platform::Config.current_user_is_developer?
   end
   helper_method :platform_current_user_is_developer?
-  
+
   def mobile_device?
     return false if request.user_agent.blank?
     ua = request.user_agent.downcase
     ['iphone', 'android'].any? {|agent| ua.index(agent)}
   end
   helper_method :mobile_device?
-  
+
 private
 
   def init_platform
@@ -91,11 +91,11 @@ private
     rescue Exception => ex
       raise Platform::Exception.new("Platform cannot be initialized because #{Platform::Config.current_user_method} failed with: #{ex.message}")
     end
-    
+
     # initialize request thread variables
     Platform::Config.init(site_current_user)
   end
-  
+
   def redirect_to_source(default_url = nil)
     return redirect_to(params[:source_url]) unless params[:source_url].blank?
     return redirect_to(request.env['HTTP_REFERER']) unless request.env['HTTP_REFERER'].blank?
@@ -108,11 +108,13 @@ private
   end
 
   def page
-    params[:page] || 1
+    return 1 unless params[:page].present?
+    params[:page].to_i
   end
-  
+
   def per_page
-    params[:per_page] || 30
+    return 30 unless params[:per_page].present?
+    params[:per_page].to_i
   end
 
   # handle disabled state for Platform
@@ -130,5 +132,5 @@ private
       return redirect_to_site_default_url
     end
   end
-  
+
 end

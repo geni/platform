@@ -26,23 +26,23 @@ class Platform::Admin::DevelopersController < Platform::Admin::BaseController
   def index
     @developers = Platform::Developer.filter(:params => params, :filter => Platform::DeveloperFilter)
   end
-  
+
   def view
     @dev = Platform::Developer.find_by_id(params[:dev_id])
   end
-  
+
   def lb_edit
     @dev = Platform::Developer.find_by_id(params[:dev_id])
     render :layout => false
   end
 
   def update
-    if request.post?
+    if request.post? and verified_request?
       dev = Platform::Developer.find_by_id(params[:dev_id]) if params[:dev_id]
       dev.update_attributes(params[:dev]) if dev
     end
-    
-    redirect_to_source(:action => :index)    
+
+    redirect_to_source(:action => :index)
   end
-  
+
 end
