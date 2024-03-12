@@ -11,6 +11,6 @@
 </div>
 
 <div style="text-align:center; padding:15px;">
-  <%= link_to(trl('Agree', 'Client application action label'), {:action => :proceed}, :class=>'button super blue xlarge') %>
+  <%= link_to(trl('Agree', 'Client application action label'), {:action => :proceed}, {:class=>'button super blue xlarge', :method => 'POST'}) %>
   <%=tr("or")%> <%=link_to(tr("Cancel"), Platform::Config.default_url)%>
 </div>
