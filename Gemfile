@@ -17,15 +17,23 @@ git 'https://github.com/makandra/rails.git', :branch => '2-3-lts' do
   gem 'railslts-version', :require => false
 end
 
-gem 'tr8n', :git => 'https://github.com/geni/tr8n.git', :ref => '48d44bed'
-gem "will_filter", :git => 'https://github.com/geni/will_filter.git', :ref => 'abd5ef8'
+gem 'tr8n', :git => 'https://github.com/geni/tr8n.git', :ref => '388b997'
+gem "will_filter", :git => 'https://github.com/geni/will_filter.git', :ref => 'a5201ca'
 gem 'will_paginate', "~> 2.3"
 
 group :test do
-  gem 'rake', '0.9.2.2'
+  gem 'method_source',    :require => false
+  gem 'rake', '10.5.0'
   gem 'simplecov'
   gem 'simplecov-html'
   gem 'sqlite3'
-  gem 'test-unit'
+  gem 'test-unit', '1.2.3'
   gem 'webrick'
+end
+
+group :vscode do
+  gem "debase",           :require => false
+  gem "debug",            :require => false
+  gem "rdoc", '6.2.1.1',  :require => false
+  gem "ruby-debug-ide",   :require => false
 end

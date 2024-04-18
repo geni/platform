@@ -3,6 +3,7 @@
 
 require 'test/unit'
 require 'pp'
+require 'method_source'
 
 base_dir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 
