@@ -135,7 +135,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   end
 
   def delete
-    if request.post? and verified_request?
+    if (request.delete? or request.post?) and verified_request?
       application.destroy
       trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
     end
