@@ -98,7 +98,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
 
     assert_difference 'Platform::Application.count', -1 do
       delete :delete, :id => app.id, :authenticity_token => form_authenticity_token
-    assert_redirected_to :controller => 'platform/developer/apps', :action => :index
+      assert_redirected_to :controller => 'platform/developer/apps', :action => :index
     end
   end
 
