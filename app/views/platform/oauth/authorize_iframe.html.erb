@@ -11,16 +11,16 @@
 	<center>
 	  <div style="width:700px; border:1px dotted #ccc; margin-bottom:30px;">
 	    <div style="background:url('/platform/images/oauth/perm_tile.gif'); height:15px;">&nbsp;</div>
-	    
+
 			<div style="margin:20px; text-align:left;">
 				<div style="border-bottom:1px solid #ccc; font-size:20px; font-weight:bold;">
 					<%=tr("Authorization Request")%>
 				</div>
-				
+
 				<div style="margin-top:10px;margin-bottom:10px;">
-			    <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(@client_application.name.escape_html, {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
+			    <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
 	      </div>
-				
+
 	      <div style="padding:10px;">
 					<table style="width:100%">
 						<tr>
@@ -28,7 +28,7 @@
 								<table>
 									<tr>
 										<td style="vertical-align:top">
-								       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :style => "padding-right:15px;")%>			
+								       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :style => "padding-right:15px;")%>
 										</td>
 										<td>
 				              <div style="font-weight:bold;"><%=tr("Access to my profile information")%></div>
@@ -41,14 +41,14 @@
 							</td>
 							<td style="vertical-align:middle">
 								<%=image_tag("/platform/images/oauth/right_grey.png")%>
-							</td>	
+							</td>
 							<td style="width:30%">
 		             <div style="height:130px; padding:5px; margin:3px; text-align:center;">
 		                <div style="">
-		                   <%= image_tag(@client_application.logo_url.escape_html, :style => "width:75px;height:75px;") %>
-		                </div> 
+		                   <%= image_tag(h(@client_application.logo_url), :style => "width:75px;height:75px;") %>
+		                </div>
 		                <div style="font-size:12px; padding-top:10px;">
-		                  <%= link_to(@client_application.name.escape_html, {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
+		                  <%= link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
 		                </div>
 		                <div style="font-size:11px; padding-top:10px;">
 		                 <%= platform_app_rank_tag(@client_application) %>
@@ -58,17 +58,17 @@
 						</tr>
 					</table>
 	      </div>
-				  
+
 	      <div class="checkbox-wrapper" style="margin-top:10px; color: #888;">
           <%- if @client_application.tos_required? -%>
             <input id='tos-accepted' type='checkbox'/>
           <%- end -%>
           <%= tr(@client_application.terms_statement_tr_label, "",
-                 :application  => @client_application.name.escape_html,
-                 :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
-                 :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
+                 :application  => h(@client_application.name),
+                 :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
+                 :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
 			</div>
-			
+
 			<div style="background:#eee; text-align:left; padding:10px; vertical-align:middle; ">
 			  <table style="width:100%">
 			  	<tr>
@@ -85,20 +85,20 @@
 						</td>
 			  	</tr>
 			  </table>
-			</div>	
+			</div>
 	  </div>
 	</center>
-	
+
 	<%= render :partial => "authorize_form" %>
 <script>
   function $(element_id) {
     if (typeof element_id == 'string') return document.getElementById(element_id);
     return element_id;
   }
-  
+
   function $S(element_id) {
-    $(element_id).submit();   
-  } 
+    $(element_id).submit();
+  }
 
   function doAccept() {
     if( $('tos-accepted') && !$('tos-accepted').checked ) {
@@ -110,7 +110,7 @@
   }
 
 
-</script>  
+</script>
 
 </body>
 </html>

@@ -12,23 +12,23 @@
     </tr>
     <tr>
         <th>Developer</th>
-        <td><%=link_to(@app.developer.name.escape_html, "") %></td>
+        <td><%=link_to(h(@app.developer.name), "") %></td>
     </tr>
     <tr>
         <th>Icon</th>
-        <td><%=image_tag(@app.icon_url.escape_html) %></td>
+        <td><%=image_tag(h(@app.icon_url)) %></td>
     </tr>
     <tr>
         <th>Logo</th>
-        <td><%=image_tag(@app.logo_url.escape_html) %></td>
+        <td><%=image_tag(h(@app.logo_url)) %></td>
     </tr>
     <tr>
         <th>Name</th>
-        <td><%=h(@app.name.escape_html) %></td>
+        <td><%=h(@app.name)) %></td>
     </tr>
     <tr>
         <th>Description</th>
-        <td><%=h(@app.description.escape_html) %></td>
+        <td><%=h(@app.description) %></td>
     </tr>
     <tr>
         <th>Locale</th>
@@ -36,23 +36,23 @@
     </tr>
     <tr>
         <th>Contact Email</th>
-        <td><%=h(@app.contact_email.escape_html) %></td>
+        <td><%=h(@app.contact_email) %></td>
     </tr>
     <tr>
         <th>URL</th>
-        <td><%=link_to(@app.url.escape_html, @app.url) if @app.url %></td>
+        <td><%=link_to(h(@app.url), @app.url) if @app.url %></td>
     </tr>
     <tr>
         <th>Support URL</th>
-        <td><%=link_to(@app.support_url.escape_html, @app.support_url) if @app.support_url %></td>
+        <td><%=link_to(h(@app.support_url), @app.support_url) if @app.support_url %></td>
     </tr>
     <tr>
         <th>Callback URL</th>
-        <td><%=@app.callback_url.escape_html %></td>
+        <td><%= h(@app.callback_url) %></td>
     </tr>
     <tr>
         <th>Deauthorize Callback URL</th>
-        <td><%=@app.deauthorize_callback_url.escape_html %></td>
+        <td><%= h(@app.deauthorize_callback_url) %></td>
     </tr>
     <tr>
         <th>Permissions</th>
@@ -84,36 +84,36 @@
 
               if @app.blocked?
                  html << link_to("Unblock", {:action => :unblock, :app_id => @app.id}, :confirm => "Are you sure you want to unblock this application?")
-              else   
+              else
                  html << link_to("Block", {:action => :block, :app_id => @app.id}, :confirm => "Are you sure you want to block this application?")
               end
-%>				
+%>
            - <%= html.join(" | ") %>
 				</td>
     </tr>
     <tr>
         <th>Privacy Policy URL</th>
-        <td><%=@app.privacy_policy_url.escape_html %></td>
+        <td><%= h(@app.privacy_policy_url) %></td>
     </tr>
     <tr>
         <th>Terms of Service URL</th>
-        <td><%=@app.terms_of_service_url.escape_html %></td>
+        <td><%= h(@app.terms_of_service_url) %></td>
     </tr>
     <tr>
         <th>Consent Label</th>
         <% if @app.consent_label.to_s.blank? %>
-         <td class='quiet'><%= @app.default_terms_statement_tr_label.escape_html %></td>
+         <td class='quiet'><%= h(@app.default_terms_statement_tr_label) %></td>
         <% else %>
-          <td><%= @app.consent_label.escape_html %></td>
+          <td><%= h(@app.consent_label) %></td>
         <% end %>
     </tr>
     <tr>
         <th>Canvas Page Name</th>
-        <td><%=@app.canvas_name.escape_html %></td>
+        <td><%= h(@app.canvas_name) %></td>
     </tr>
     <tr>
         <th>Canvas URL</th>
-        <td><%=@app.canvas_url.escape_html %></td>
+        <td><%= h(@app.canvas_url) %></td>
     </tr>
     <tr>
         <th>Canvas IFrame Auto-Resize</th>
@@ -129,15 +129,15 @@
     </tr>
     <tr>
         <th>iOS Bundle Id</th>
-        <td><%=@app.ios_bundle_id.escape_html %></td>
+        <td><%= h(@app.ios_bundle_id) %></td>
     </tr>
     <tr>
         <th>iTunes App Store Id</th>
-        <td><%=@app.itunes_app_store_id.escape_html %></td>
+        <td><%= h(@app.itunes_app_store_id) %></td>
     </tr>
     <tr>
         <th>Android Key Hash</th>
-        <td><%=@app.android_key_hash.escape_html %></td>
+        <td><%= h(@app.android_key_hash) %></td>
     </tr>
     <tr>
         <th>Created At</th>
@@ -150,15 +150,15 @@
     <tr>
         <th>Categories</th>
         <td>
-					<div id="app_categories_<%=@app.id%>">  
+					<div id="app_categories_<%=@app.id%>">
             <%=render(:partial => "categories", :locals => {:app => @app})%>
-					</div> 
+					</div>
 				</td>
     </tr>
     <tr>
         <th></th>
         <td>
-        	 <% html = [] 
+        	 <% html = []
            	  html << link_to_function("Edit Details", "tr8nLightbox.show('/platform/admin/apps/lb_edit?app_id=#{@app.id}', {height:600})")
 
               html << link_to_function("Manage Categories", "assignCategories(#{@app.id})")
@@ -168,10 +168,10 @@
               Platform::Application.permissions.each do |perm|
 	              if @app.has_permission?(perm)
 	                 html << link_to("Remove <strong>'#{perm}'</strong> permission", {:action => :remove_permission, :perm => perm, :app_id => @app.id}, :confirm => "Are you sure you want to remove #{perm} permission?")
-	              else   
+	              else
 	                 html << link_to("Add <strong>'#{perm}'</strong> permission", {:action => :set_permission, :perm => perm,  :app_id => @app.id}, :confirm => "Are you sure you want to add #{perm} permission?")
 	              end
-              end  
+              end
            %>
 					 <%= html.join(" | ") %>
         </td>

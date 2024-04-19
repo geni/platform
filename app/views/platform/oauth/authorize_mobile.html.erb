@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=0;" name="viewport">
-  
+
   <%= stylesheet_link_tag '/platform/stylesheets/components.css' %>
   <%= stylesheet_link_tag '/platform/stylesheets/layout.css' %>
 </head>
@@ -18,17 +18,17 @@
   <div class="page_bd bd">
 
 	<div class="mhm mvl">
-    
+
 		<div class="module mbl">
-			<span class="mbn h4"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name.escape_html)%></span>
+			<span class="mbn h4"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => h(@client_application.name))%></span>
 			<span class="quiet">
 				<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 			</span>
 		</div>
-		
+
 		<div class="module mbm">
 			<div class="bd">
-				<h4><%= trl("{app} is requesting permission to do the following:", "", :app => @client_application.name.escape_html) %></h4>
+				<h4><%= trl("{app} is requesting permission to do the following:", "", :app => h(@client_application.name)) %></h4>
 				<div class="media profile_thumb">
 						<%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :class => "img")%>
 						<div class="bd">
@@ -36,12 +36,12 @@
 								<%=tr("")%>
 								<%=tr("Your name, profile picture, gender, family, photos and any other information available through your user account.")%>
 							</p>
-			
+
 						</div>
 					</div>
 			</div>
 		</div>
-		
+
   <%- if @client_application.tos_required? -%>
     <div class='platform-authorize__tos-row' style='display:none;'>
       <%= tr('You must approve the Terms of Service and Privacy Policy', 'Client application error text') %>
@@ -56,17 +56,17 @@
 				<%=trl("Cancel", 'Client application action label')%>
 		 </button>
 		</div>
-		
+
 		<div class="module small quiet prose mvl checkbox-wrapper">
       <%- if @client_application.tos_required? -%>
         <input id='tos-accepted' type='checkbox'/>
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
-             :application  => @client_application.name.escape_html,
-             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
-             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
+             :application  => h(@client_application.name),
+             :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
+             :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
 		</div>
-            
+
 	</div>
 
 </div>
@@ -77,7 +77,7 @@
 	    if (typeof element_id == 'string') return document.getElementById(element_id);
 	    return element_id;
 	  }
-	
+
   function doAccept() {
     if( $('tos-accepted') && !$('tos-accepted').checked ) {
       $$('.platform-authorize__tos-row').first().show();
@@ -87,6 +87,6 @@
     }
   }
 
-	</script>  
+	</script>
 </body>
 </html>

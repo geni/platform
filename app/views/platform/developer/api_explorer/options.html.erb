@@ -1,13 +1,13 @@
 <% doc_server = "http://api-preview.geni.com" %>
 
 <div style="border-bottom: 1px solid #ccc; margin:10px; font-weight:bold;">
-  <div style="float:right">Version <%=@api_version.escape_html%></div>
-  <%=tr("#{Platform::Config.site_title.escape_html} API List")%>
+  <div style="float:right">Version <%= h(@api_version) %></div>
+  <%=tr("#{h(Platform::Config.site_title)} API List")%>
 </div>
 
 <%
-  ref = Platform::Config.api_reference(@api_version.escape_html)
-  columns = Platform::Config.api_explorer_groups(@api_version.escape_html)
+  ref = Platform::Config.api_reference(h(@api_version)))
+  columns = Platform::Config.api_explorer_groups(h(@api_version))
   col_size = 100 / columns.size
 %>
 
@@ -19,26 +19,25 @@
           <% object = ref[object_key] %>
 					<% next unless object %>
 		      <div class="api_list">
-		        <%=platform_toggler_tag("#{object_key.escape_html}_api")%>
-		        <%=link_to_function(object_key.titleize.escape_html, "updateApi('#{object_key.escape_html}', '#{object[:method] || 'GET'}', {})")%>
-		        <%=platform_documentation_tag(:path => object[:path], :version => @api_version.escape_html)%>
+		        <%=platform_toggler_tag("#{h(object_key)}_api")%>
+		        <%=link_to_function(h(object_key.titleize), "updateApi('#{h(object_key)}', '#{object[:method] || 'GET'}', {})")%>
+		        <%=platform_documentation_tag(:path => object[:path], :version => h(@api_version))%>
 		      </div>
-		      <div id="<%=object_key.escape_html%>_api" class="api_method_list">
-		      	<% if object[:actions] %> 
+		      <div id="<%= h(object_key)%>_api" class="api_method_list">
+		      	<% if object[:actions] %>
 		          <ul>
 		          	<% object[:actions].keys.sort.each do |action_key| %>
 								<% object_action = object[:actions][action_key] %>
 		            <li>
-		                <%=link_to_function(action_key.escape_html, "updateApi('#{object_action[:path]}', '#{object_action[:method] || 'GET'}', {})")%>
-                    <%=platform_documentation_tag(:path => object_action[:path], :version => @api_version.escape_html)%>
+		                <%=link_to_function(h(action_key), "updateApi('#{object_action[:path]}', '#{object_action[:method] || 'GET'}', {})")%>
+                    <%=platform_documentation_tag(:path => object_action[:path], :version => h(@api_version))%>
 		            </li>
 								<% end %>
 	            </ul>
 						<% end %>
-	        </div>      
-	      <% end %>		
-	    </td>   
+	        </div>
+	      <% end %>
+	    </td>
 		<% end %>
   </tr>
 </table>
-    

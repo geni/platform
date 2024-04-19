@@ -9,7 +9,7 @@
 </style>
 <div id="basic_info_container">
   <%=render(:partial => "header", :locals => {:section => "basic_info", :label => "Developer Details", :description => "Developer details section title", :mode => mode})%>
-  
+
   <% form_for(:developer, platform_current_developer, :url => {:action => :index}, :html => {:id => 'basic_info_form', :method => :post}) do |f| %>
     <div class="section_box colored">
       <div style="float:right; padding-right:5px;">
@@ -23,8 +23,8 @@
 						  <% if mode == :edit %>
                 <%=f.text_field(:name)%>
 							<% else %>
-							   <%= platform_current_developer.name.escape_html%>
-							<% end %>	 	
+							   <%= h(platform_current_developer.name) %>
+							<% end %>
             </td>
           </tr>
           <tr>
@@ -34,7 +34,7 @@
                 <%=f.text_field(:email)%>
               <% else %>
                  <%= platform_current_developer.email%>
-              <% end %>   
+              <% end %>
             </td>
           </tr>
           <tr>
@@ -44,7 +44,7 @@
                 <%=f.text_field(:url)%>
               <% else %>
                  <%= platform_current_developer.url %>
-              <% end %>   
+              <% end %>
             </td>
           </tr>
           <tr>
@@ -54,7 +54,7 @@
                 <%=f.text_field(:phone)%>
               <% else %>
                  <%= platform_current_developer.phone %>
-              <% end %>   
+              <% end %>
             </td>
           </tr>
           <tr>
@@ -63,8 +63,8 @@
               <% if mode == :edit %>
                 <%=f.text_area(:about)%>
               <% else %>
-                 <%= platform_current_developer.about.escape_html %>
-              <% end %>   
+                 <%= h(platform_current_developer.about) %>
+              <% end %>
             </td>
           </tr>
         </table>

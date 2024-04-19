@@ -29,7 +29,7 @@
               </th>
 			    </tr>
 			  </thead>
-				<tbody>  
+				<tbody>
 				  <%
 				    @children.each_with_index do |child, index|
 				        child_name = child.name.gsub("'", "\\'")
@@ -46,17 +46,17 @@
 				    </td>
 				  </tr>
 				  <%  end %>
-        </tbody>				
+        </tbody>
 		  </table>
 		<%  end %>
-	</div>	
+	</div>
 <%  end %>
 
 <% if @featured_apps %>
   <div style="border-bottom:1px dotted #ccc; font-size: 12px;padding:5px; background:#eee; margin-top:10px;">
    <%=platform_toggler_tag("featured_items_container")%> Featured Applications (<%=@featured_apps.size%>)
   </div>
-  
+
   <div id="featured_items_container">
     <% if @featured_apps.size == 0 %>
       <div style="padding:10px;">None found</div>
@@ -79,7 +79,7 @@
               </th>
           </tr>
         </thead>
-        <tbody>  
+        <tbody>
 
       <%
         @featured_apps.each_with_index do |item, index|
@@ -87,14 +87,14 @@
       %>
           <tr class='data_row <%=(index % 2 == 0) ? "wf_row_even" : "wf_row_odd"%>'>
             <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
-            <td style="padding:3px;"><%=link_to(item.application.name.escape_html, :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(h(item.application.name), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
             <td style="padding:3px;"><%=item.position%></td>
             <td style="padding:3px;text-align:right">
                <%=link_to_function("Edit", "editApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>
                 | <%=link_to_function("Delete", "deleteApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>
              &nbsp;
             </td>
-            
+
           </tr>
       <%  end %>
       </table>
@@ -106,7 +106,7 @@
 	<div style="border-bottom:1px dotted #ccc; font-size: 12px;padding:5px; background:#eee; margin-top:10px;">
 	 <%=platform_toggler_tag("items_container")%> Applications (<%=@apps.size%>)
 	</div>
-	
+
 	<div id="items_container">
 		<% if @apps.size == 0 %>
 		  <div style="padding:10px;">None found</div>
@@ -129,7 +129,7 @@
               </th>
           </tr>
         </thead>
-        <tbody>  
+        <tbody>
 
 		  <%
 		    @apps.each_with_index do |item, index|
@@ -137,14 +137,14 @@
 		  %>
           <tr class='data_row <%=(index % 2 == 0) ? "wf_row_even" : "wf_row_odd"%>'>
             <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
-            <td style="padding:3px;"><%=link_to(item.application.name.escape_html, :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(h(item.application.name), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
             <td style="padding:3px;"><%=item.position%></td>
             <td style="padding:3px;text-align:right">
                <%=link_to_function("Edit", "editApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>
                 | <%=link_to_function("Delete", "deleteApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>
              &nbsp;
             </td>
-						
+
   			  </tr>
 		  <%  end %>
 		  </table>

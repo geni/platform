@@ -85,19 +85,19 @@
           <% @apps.each do |app| %>
             <% if app == @menu_app %>
                 <div class="<%= (@app != @menu_app) ? 'app_item' : 'app_selected' %>">
-                  <%=image_tag(app.icon_url.escape_html, :style => "vertical-align:middle;")%> &nbsp;
-                  <%=link_to(app.name.escape_html, {:id=>app.id}) %>
+                  <%=image_tag(h(app.icon_url), :style => "vertical-align:middle;")%> &nbsp;
+                  <%=link_to(h(app.name), {:id=>app.id}) %>
                 </div>
                 <% app.children.each do |app| %>
                   <div class="<%=  (@app == app) ? 'app_selected' : 'app_item' %>" style="padding-left:40px;">
-                    <%=image_tag(app.icon_url.escape_html, :style => "vertical-align:middle;")%> &nbsp;
-                    <%=link_to(tr("Version {version}", "", :version => (app.version.escape_html || "1.0")), {:id=>app.id})%>
+                    <%=image_tag(h(app.icon_url), :style => "vertical-align:middle;")%> &nbsp;
+                    <%=link_to(tr("Version {version}", "", :version => h(app.version || "1.0")), {:id=>app.id})%>
                   </div>
                 <% end %>
             <% else %>
                 <div class="app_item">
-                  <%=image_tag(app.icon_url.escape_html, :style => "vertical-align:middle;")%> &nbsp;
-                  <%=link_to(app.name.escape_html, {:id=>app.id}) %>
+                  <%=image_tag(h(app.icon_url), :style => "vertical-align:middle;")%> &nbsp;
+                  <%=link_to(h(app.name), {:id=>app.id}) %>
                 </div>
             <% end %>
           <% end %>
@@ -108,17 +108,17 @@
             <table>
               <tr>
                 <td style="align-vertical:top; width:90px;" rowspan="2">
-                   <%=image_tag(@app.logo_url.escape_html)%>
+                   <%=image_tag(h(@app.logo_url))%>
                 </td>
                 <td style="align-vertical:top;">
                   <div style="float:right;">
                     <%= platform_app_rank_tag(@app) %>
                   </div>
 
-                  <div style="font-size:18px;padding-bottom:3px;"><%=@app.name.escape_html%></div>
+                  <div style="font-size:18px;padding-bottom:3px;"><%= h(@app.name) %></div>
                   <div style="color:#444;">
                     <% if @app.version %>
-                     <%= tr("Version")  %> <%=@app.version.escape_html %>
+                     <%= tr("Version")  %> <%= h(@app.version) %>
                     <% end %>
                   </div>
                 </td>
@@ -208,19 +208,19 @@
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Key:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.key.escape_html%></div>
+                <div class="app_value"><%= h(@app.key) %></div>
               </div>
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Secret:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.secret.escape_html%>
+                <div class="app_value"><%= h(@app.secret) %>
                  <span>(<%=link_to("reset", "/platform/developer/apps/reset_secret?id=#{@app.id}", {:confirm => "Are you sure you want to reset application secret?", :method => :post})%>)</span>
                 </div>
               </div>
 
               <div class="app_key_value">
-                <div class="app_key"><%=tr("{site_title} API Version:", 'Client application field label', :site_title => Platform::Config.site_title.escape_html)%></div>
-                <div class="app_value"><%=@app.api_version.escape_html%></div>
+                <div class="app_key"><%=tr("{site_title} API Version:", 'Client application field label', :site_title => h(Platform::Config.site_title))%></div>
+                <div class="app_value"><%= h(@app.api_version) %></div>
               </div>
             </div>
 
@@ -235,7 +235,7 @@
             <div id="basic_info">
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Description:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.description.escape_html%></div>
+                <div class="app_value"><%= h(@app.description) %></div>
               </div>
 
               <div class="app_key_value">
@@ -245,12 +245,12 @@
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Contact Email:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.contact_email.escape_html %></div>
+                <div class="app_value"><%= h(@app.contact_email) %></div>
               </div>
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Support URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=link_to(@app.support_url.escape_html, @app.support_url) if @app.support_url %></div>
+                <div class="app_value"><%=link_to(h(@app.support_url), @app.support_url) if @app.support_url %></div>
               </div>
 
               <div class="app_key_value">
@@ -270,11 +270,11 @@
             <div id="website_settings">
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Site URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=link_to(@app.url.escape_html, @app.url) if @app.url %></div>
+                <div class="app_value"><%=link_to(h(@app.url), @app.url) if @app.url %></div>
               </div>
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Site Domain:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.site_domain.escape_html %></div>
+                <div class="app_value"><%=h(@app.site_domain) %></div>
               </div>
             </div>
 
@@ -284,18 +284,18 @@
                   <%=link_to(tr("edit"), :action => :edit, :id => @app.id)%>
                 </span>
                 <%= platform_toggler_tag("integration_section") %>
-                <%=tr('App On {site_title}', 'Client application section', :site_title => Platform::Config.site_title.escape_html)%>
+                <%=tr('App On {site_title}', 'Client application section', :site_title => h(Platform::Config.site_title))%>
               </div>
 
               <div id="integration_section">
                 <div class="app_key_value">
                   <div class="app_key"><%=tr('Canvas Page:', 'Client application field label')%></div>
-                  <div class="app_value"><%=link_to(@app.app_url.escape_html, @app.app_url) %></div>
+                  <div class="app_value"><%=link_to(h(@app.app_url), @app.app_url) %></div>
                 </div>
 
                 <div class="app_key_value">
                   <div class="app_key"><%=tr('Canvas URL:', 'Client application field label')%></div>
-                  <div class="app_value"><%=link_to(@app.canvas_url.escape_html, @app.canvas_url) unless @app.canvas_url.blank? %></div>
+                  <div class="app_value"><%=link_to(h(@app.canvas_url), @app.canvas_url) unless @app.canvas_url.blank? %></div>
                 </div>
 
                 <div class="app_key_value">
@@ -323,17 +323,17 @@
 
                 <div class="app_key_value">
                   <div class="app_key"><%=tr('iOS Bundle ID:', 'Client application field label')%></div>
-                  <div class="app_value"><%=@app.ios_bundle_id.escape_html%></div>
+                  <div class="app_value"><%= h(@app.ios_bundle_id) %></div>
                 </div>
 
                 <div class="app_key_value">
                   <div class="app_key"><%=tr('iTunes App Store ID:', 'Client application field label')%></div>
-                  <div class="app_value"><%=@app.itunes_app_store_id.escape_html%></div>
+                  <div class="app_value"><%= h(@app.itunes_app_store_id) %></div>
                 </div>
 
                 <div class="app_key_value">
                   <div class="app_key"><%=tr('Android Hash Key:', 'Client application field label')%></div>
-                  <div class="app_value"><%=@app.android_key_hash.escape_html%></div>
+                  <div class="app_value"><%= h(@app.android_key_hash) %></div>
                 </div>
               </div>
 
@@ -356,22 +356,22 @@
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Callback URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.callback_url.escape_html%></div>
+                <div class="app_value"><%= h(@app.callback_url) %></div>
               </div>
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Deauthorize URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.deauthorize_callback_url.escape_html%></div>
+                <div class="app_value"><%= h(@app.deauthorize_callback_url) %></div>
               </div>
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Privacy Policy URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=link_to(@app.privacy_policy_url.escape_html, @app.privacy_policy_url) if @app.privacy_policy_url %></div>
+                <div class="app_value"><%=link_to(h(@app.privacy_policy_url), @app.privacy_policy_url) if @app.privacy_policy_url %></div>
               </div>
 
               <div class="app_key_value">
                 <div class="app_key"><%=tr('Terms of Service URL:', 'Client application field label')%></div>
-                <div class="app_value"><%=link_to(@app.terms_of_service_url.escape_html, @app.terms_of_service_url) if @app.terms_of_service_url %></div>
+                <div class="app_value"><%=link_to(h(@app.terms_of_service_url), @app.terms_of_service_url) if @app.terms_of_service_url %></div>
               </div>
             </div>
 

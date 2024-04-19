@@ -12,36 +12,36 @@
 		      		<%=tr("Description:")%>
 		      	</th>
 						<td>
-							<%=@app.description.escape_html%>
+							<%= h(@app.description) %>
 						</td>
 		      </tr>
-					<% if @app.developer.about.escape_html %>
+					<% if @app.developer.about %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Developer Info:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.about.escape_html%>
+		        	<%= h(@app.developer.about) %>
 		        </td>
 		      </tr>
 					<% end %>
-					<% if @app.developer.name.escape_html %>
+					<% if @app.developer.name %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Developer Name:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.name.escape_html%>
+		        	<%= h(@app.developer.name) %>
 		        </td>
 		      </tr>
 					<% end %>
-					<% if @app.developer.url.escape_html %>
+					<% if @app.developer.url %>
 		      <tr>
 		        <th style="text-align:left;">
 		          <%=tr("Website:")%>
 		        </th>
 		        <td>
-		        	<%=@app.developer.url.escape_html%>
+		        	<%= h(@app.developer.url) %>
 		        </td>
 		      </tr>
 					<% end %>
@@ -49,23 +49,22 @@
 		  </div>
 	  <%= render :partial => "/platform/ratings/list" %>
 	<% end %>
-	
+
 	<% if params[:sec] == 'Reviews' %>
 	  <%= render :partial => "/platform/ratings/list" %>
-	<% end %>	
-	
+	<% end %>
+
 	<% if params[:sec] == 'Discussions' %>
 	  <% if @topic %>
 	    <%= render :partial => "/platform/forum/topic" %>
-		<% else %>  
+		<% else %>
 		  <% if params[:mode] == 'create' %>
 	      <%= render :partial => "/platform/forum/new_topic", :locals => {:include_cancel_button => true} %>
-			<% else %> 
+			<% else %>
 	      <%= render :partial => "/platform/forum/topics" %>
-			<% end %>	
-		<% end %>	
-	<% end %> 
+			<% end %>
+		<% end %>
+	<% end %>
 </div>
 
 <%= render :partial => "/platform/apps/app_footer" %>
-						

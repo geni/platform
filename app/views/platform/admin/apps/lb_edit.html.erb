@@ -41,14 +41,14 @@
 				      <div id="icon_field" style="display:none">
 				        <%= file_field_tag "new_icon", :size=>"45", :accept => 'image/png,image/gif,image/jpeg', :id => 'new_icon' %>
 				      </div>
-				      <div id="icon_preview"> 
+				      <div id="icon_preview">
 					    	<span style="float:right; font-size:10px;">
 					    		<%=link_to_function("Change icon", "$('icon_preview').hide();$('icon_field').show();")%>
 					    	</span>
-					      <%=image_tag(@app.icon_url.escape_html, :style => "width:16px;height:16px;")%>
-							</div>	
-				    </td> 
-					</tr>	
+					      <%=image_tag(h(@app.icon_url), :style => "width:16px;height:16px;")%>
+							</div>
+				    </td>
+					</tr>
 				    <th>
 				      Logo:
 				    </th>
@@ -56,14 +56,14 @@
 				    	<div id="logo_field" style="display:none">
 				    		<%= file_field_tag "new_logo", :size=>"45", :accept => 'image/png,image/gif,image/jpeg', :id => 'new_logo' %>
 				    	</div>
-							<div id="logo_preview">	
+							<div id="logo_preview">
 					      <span style="float:right; font-size:10px;">
 					        <%=link_to_function("Change logo", "$('logo_preview').hide();$('logo_field').show();")%>
 					      </span>
-					      <%=image_tag(@app.logo_url.escape_html, :style => "width:75px;height:75px;")%>
+					      <%=image_tag(h(@app.logo_url), :style => "width:75px;height:75px;")%>
 							</div>
-				    </td> 
-					</tr>	
+				    </td>
+					</tr>
           <tr>
               <th>
                   Privacy Policy URL:

@@ -2,7 +2,7 @@
   <div style="padding-bottom:20px;">
     <div class="apps_header">
       <span style="float:right; font-size:12px; font-weight:normal;">
-        <%=render(:partial => "paginator", :locals => {:apps => apps, :element_id => "searched_apps"})%> 
+        <%=render(:partial => "paginator", :locals => {:apps => apps, :element_id => "searched_apps"})%>
       </span>
       <%=tr(Platform::Config.searched_apps_title)%>
     </div>
@@ -12,24 +12,23 @@
         <tr style="border-bottom:1px solid #ccc;">
           <td style="width:100px;padding-bottom:5px;padding-top:5px;">
           	<%= link_to(image_tag(app.logo_url), {:action => :view, :id => app.id}) %>
-          </td>        	
+          </td>
           <td style="padding-bottom:5px;padding-top:5px;">
 					  <div style="float:right">
-					     <%= platform_app_rank_tag(app) %>	
-					  </div> 
-						
-						<div style="margin-bottom:10px;">  
-              <%= link_to(app.name.escape_html, {:action => :view, :id => app.id}) %>
+					     <%= platform_app_rank_tag(app) %>
+					  </div>
+
+						<div style="margin-bottom:10px;">
+              <%= link_to(h(app.name), {:action => :view, :id => app.id}) %>
 						</div>
-            
-            <div style="margin-bottom:5px;">  
-              <%= app.description.escape_html %>
+
+            <div style="margin-bottom:5px;">
+              <%= h(app.description) %>
             </div>
-          </td>         
+          </td>
         </tr>
         <% end %>
       </table>
-    </div>  
-  </div>      
-<% end %> 
-					
+    </div>
+  </div>
+<% end %>

@@ -9,8 +9,8 @@
   <%= stylesheet_link_tag '/platform/stylesheets/layout.css' %>
 </head>
 <body>
- 
- 
+
+
  	<div class="page_hd hd">
  	  <div style="float:right;padding-top:15px;font-weight:bold;padding-right:10px;">
 		  <%=link_to(tr("Not {user}?", "", :user => [Platform::Config.current_user, :name]), :controller => "/login", :action => :out, :display => params[:display], :client_id => @client_application.id)%>
@@ -22,14 +22,14 @@
 
 	<div class="mhm mvl outset" style="margin:50px auto;width:625px">
 		<div class="inner">
-    
+
 			<div class="module mbl">
-				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name.escape_html)%></div>
+				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => h(@client_application.name))%></div>
 				<div class="quiet">
 					<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 				</div>
 			</div>
-			
+
 			<div class="module pal mbl">
 				<div class="line">
 					<div class="unit size_3of5">
@@ -59,30 +59,30 @@
 					<div class="unit size_2of5 last_unit">
 						<div class="mll pll" style="border-left:solid 1px #ddd">
 							<div class="mbm">
-								<%= link_to(image_tag(@client_application.logo_url.escape_html), {:controller=> "/platform/apps", :action => :view, :id => @client_application.id}, :target => "_blank") %><br>
+								<%= link_to(image_tag(h(@client_application.logo_url)), {:controller=> "/platform/apps", :action => :view, :id => @client_application.id}, :target => "_blank") %><br>
 							</div>
 							<div class="mbs">
 								<%= link_to(h(@client_application.name), {:controller=> "/platform/apps", :action => :view, :id => @client_application.id}, :target => "_blank") %><br>
 							</div>
 							<div>
 							 	<%= platform_app_rank_tag(@client_application, 95) %>
-							</div>				
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-				
+
 			<div class="module small quiet prose checkbox-wrapper">
         <%- if @client_application.tos_required? -%>
           <input id='tos-accepted' type='checkbox'/>
         <%- end -%>
         <%= tr(@client_application.terms_statement_tr_label, "",
-               :application  => @client_application.name.escape_html,
-               :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
-               :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
+               :application  => h(@client_application.name),
+               :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
+               :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
 			</div>
 
-							
+
 		</div>
 	</div>
 
@@ -96,7 +96,7 @@
     if (typeof element_id == 'string') return document.getElementById(element_id);
     return element_id;
   }
-	
+
   function doAccept() {
     if( $('tos-accepted') && !$('tos-accepted').checked ) {
       $$('.platform-authorize__tos-row').first().show();
@@ -106,7 +106,7 @@
     }
   }
 
-</script>  
+</script>
 
   </div>
 

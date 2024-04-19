@@ -9,14 +9,14 @@
   <div class="page_bd bd">
 
 	<div class="mhm mvl">
-    
+
 		<div class="module mbl">
-			<h3 class="mbs"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => @client_application.name.escape_html)%></h3>
+			<h3 class="mbs"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => h(@client_application.name))%></h3>
 			<p class="quiet">
 				<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 			</p>
 		</div>
-		
+
 		<div class="module pal mbl">
 			<div class="line">
 				<div class="unit size_3of5">
@@ -46,10 +46,10 @@
 				<div class="unit size_2of5 last_unit">
 					<div class="mll pll" style="border-left:solid 1px #ddd">
 						<div class="mbm">
-							<%= image_tag(@client_application.logo_url.escape_html) %>
+							<%= image_tag(h(@client_application.logo_url)) %>
 						</div>
 						<div class="mbs">
-	          <%= link_to(@client_application.name.escape_html, {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
+	          <%= link_to(h(@client_application.name), {:action => :view, :id => @client_application.id}, :target => "_blank") %><br>
 	          </div>
 	          <div>
 						 <%= platform_app_rank_tag(@client_application, 95) %>
@@ -58,17 +58,17 @@
 				</div>
 			</div>
 		</div>
-			
+
 		<div class="module small quiet prose checkbox-wrapper">
       <%- if @client_application.tos_required? -%>
         <input id='tos-accepted' type='checkbox'/>
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
-             :application  => @client_application.name.escape_html,
-             :link_tos     => lambda{|text| link_to(text, @client_application.terms_of_service_url.escape_html, :target => "_blank") },
-             :link_privacy => lambda{|text| link_to(text, @client_application.privacy_policy_url.escape_html,   :target => "_blank") }) -%>
+             :application  => h(@client_application.name),
+             :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
+             :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
 		</div>
-            
+
 	</div>
 
 </div>
@@ -81,7 +81,7 @@
     if (typeof element_id == 'string') return document.getElementById(element_id);
     return element_id;
   }
-	
+
   function doAccept() {
     if( $('tos-accepted') && !$('tos-accepted').checked ) {
       $$('.platform-authorize__tos-row').first().show();
@@ -91,7 +91,7 @@
     }
   }
 
-</script>  
+</script>
 
   </div>
 </body>

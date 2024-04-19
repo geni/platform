@@ -1,21 +1,21 @@
 <div class="apps_header">
-   <%=tr("Discussion Topics") %> 
+   <%=tr("Discussion Topics") %>
 </div>
 
 <div class="apps_section">
   <% if @topics.any? %>
-	
+
     <table style="width:100%;">
        <tr style="border-bottom: 1px solid #ccc;">
          <td class="topic_header" style="width:25%; padding:5px;"><%=tr("Author", "Forum column header")%></td>
          <td class="topic_header" style="width:40%; padding:5px;"><%=tr("Topic", "Forum column header")%></td>
          <td class="topic_header" style="width:10%; padding:5px;"><%=tr("Posts", "Forum column header")%></td>
          <td class="topic_header" style="width:25%; padding:5px;"><%=tr("Last Post", "Forum column header")%></td>
-       </tr> 
+       </tr>
       <% @topics.each do |topic| %>
         <%
           style = (topic == @topics.last ? "" : "border-bottom:1px dotted #ccc;" )
-        %>  
+        %>
         <tr style="<%=style%>">
           <td class="topic_value">
             <table>
@@ -38,22 +38,22 @@
             </table>
           </td>
           <td class="topic_value" style="padding:5px;">
-            <%=link_to(topic.topic.escape_html, :controller => '/platform/apps', :action => :view, :sec => 'Discussions', :topic_id => topic.id, :id => @app.id)%><br>
-          </td>    
+            <%=link_to(h(topic.topic), :controller => '/platform/apps', :action => :view, :sec => 'Discussions', :topic_id => topic.id, :id => @app.id)%><br>
+          </td>
           <td class="topic_value" style="padding:5px;">
             <%=topic.post_count %>
           </td>
           <td class="topic_value" style="padding:5px;">
             <% if topic.last_post %>
-               <div style="font-size:10px;"><%=topic.last_post.created_at.trl(:date_time) %> 
+               <div style="font-size:10px;"><%=topic.last_post.created_at.trl(:date_time) %>
                 <% if topic.user %>
                   <br><%=tr("by {user}", "Name of the publisher", :user => [topic.user, platform_user_tag(topic.user, :linked => true)])%>
                 <% end %>
-               </div> 
-               <% 
+               </div>
+               <%
                   message = topic.last_post.message[0..60]
-                  message << "..." if topic.last_post.message.length > 60 
-               %> 
+                  message << "..." if topic.last_post.message.length > 60
+               %>
                <div style="font-style:italic; font-size:10px">"<%=link_to(h(message), :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions', :topic_id =>topic.id, :last_page => true)%>"</div>
             <% end %>
             &nbsp;
@@ -71,9 +71,9 @@
       </table>
     </div>
   <% else %>
-	  <div style="padding:10px; text-align:center; color: #888;">  
+	  <div style="padding:10px; text-align:center; color: #888;">
 	     <%= tr("This application does not have any discussions. Be the first one to start a new discussion.") %>
-	  </div>                       
+	  </div>
   <% end %>
 </div>
 
