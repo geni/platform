@@ -106,7 +106,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
   end
 
   def update
-    if request.post? and verified_request?
+    if (request.put? or request.post?) and verified_request?
       if application.update_attributes(params[:application])
         application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
         application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
