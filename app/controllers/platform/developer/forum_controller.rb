@@ -70,7 +70,7 @@ class Platform::Developer::ForumController < Platform::Developer::BaseController
       end
 
       topic.destroy if topic
-      trfn("The topic {topic} has been removed", 'Developer Forum', :topic => "\"#{topic.topic.escape_html}\"")
+      trfn("The topic {topic} has been removed", 'Developer Forum', :topic => "\"#{Platform.escape_html(topic.topic)}\"")
     end
 
     redirect_to(:action => :index)

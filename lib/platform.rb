@@ -23,6 +23,10 @@
 
 module Platform
 
+  def self.escape_html(string)
+    ERB::Util.html_escape(string)
+  end
+
 end
 
 ActionController::Base.append_view_path File.dirname(__FILE__) + '/../app/views/platform'

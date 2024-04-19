@@ -54,7 +54,7 @@ class Platform::ForumController < Platform::BaseController
       end
 
       topic.destroy
-      trfn("The topic {topic} has been removed", nil, :topic => "\"#{topic.topic.escape_html}\"")
+      trfn("The topic {topic} has been removed", nil, :topic => "\"#{Platform.escape_html(topic.topic)}\"")
     end
 
     redirect_to_source

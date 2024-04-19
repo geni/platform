@@ -30,14 +30,14 @@ class Platform::Rating < ActiveRecord::Base
   def self.for(app, user=Platform::Config.current_user)
     find(:first, :conditions => ["object_type = ? and object_id = ? and user_id = ?", app.class.name, app.id, user.id])
   end
-  
+
   def self.find_or_create(app, user=Platform::Config.current_user)
     self.for(app, user) || create(:object => app, :user => user)
   end
-  
+
   def toHTML
     return "" unless comment
-    ERB::Util.html_escape(comment).gsub("\n", "<br>")
+    Platform.escape_html(comment).gsub("\n", "<br>")
   end
-  
+
 end

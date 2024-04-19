@@ -27,15 +27,15 @@ class Platform::AppsController < Platform::BaseController
     unless Platform::Config.enable_app_directory?
       return redirect_to(:controller=>"/platform/developer/apps", :action=>"index")
     end
-  
+
     @categories = Platform::Category.root.children
     @category = Platform::Category.find(params[:cat_id]) if params[:cat_id]
     @category = @categories.first unless @category
-  
+
     @featured_apps = []
     @apps = []
     @search_apps = []
-    
+
     if params[:search].blank?
       @featured_apps = Platform::Application.featured_for_category(@category, page, Platform::Config.featured_apps_per_page)
       @apps = Platform::Application.regular_for_category(@category, page, Platform::Config.suggested_apps_per_page)
@@ -45,68 +45,68 @@ class Platform::AppsController < Platform::BaseController
       @search_apps = Platform::Application.paginate(:conditions => conditions, :page => page, :per_page => Platform::Config.searched_apps_per_page, :order => "name asc")
     end
   end
-  
+
   def apps_page
     params[:section]
   end
-  
+
   def view
     @app = Platform::Application.find(params[:id])
     @sections = ["Info", "Reviews", "Discussions"]
     @section = params[:sec] || "Info"
-    @ratings = Platform::Rating.paginate(:conditions => ["object_type = ? and object_id = ?", @app.class.name, @app.id], 
+    @ratings = Platform::Rating.paginate(:conditions => ["object_type = ? and object_id = ?", @app.class.name, @app.id],
                                           :page => page, :per_page => per_page, :order => "updated_at desc")
-                                          
+
     params[:sec] ||= 'Info'
     if params[:sec] == 'Discussions'
       if params[:topic_id]
         @topic = Platform::ForumTopic.find_by_id(params[:topic_id])
         if params[:last_page]
-          params[:page] = (@topic.post_count / per_page.to_i) 
-          params[:page] += 1 unless (@topic.post_count % per_page.to_i == 0) 
+          params[:page] = (@topic.post_count / per_page.to_i)
+          params[:page] += 1 unless (@topic.post_count % per_page.to_i == 0)
           params[:page] = 1 if params[:page] == 0
         end
         @messages = Platform::ForumMessage.paginate(:all, :conditions => ["forum_topic_id = ?", @topic.id], :page => page, :per_page => per_page, :order => "created_at asc")
-      else  
+      else
         @topics = Platform::ForumTopic.paginate(:all, :conditions => ["subject_type = ? and subject_id = ?", @app.class.name, @app.id], :page => page, :per_page => per_page, :order => "created_at desc")
       end
     end
   end
-  
+
   def paginate_module
-    if params[:module] == 'featured_apps'  
+    if params[:module] == 'featured_apps'
       category = Platform::Category.find(params[:cat_id])
       apps = Platform::Application.featured_for_category(category, page, Platform::Config.featured_apps_per_page)
       render(:partial => 'featured_apps_module', :locals => {:apps => apps, :per_row => Platform::Config.featured_apps_per_row})
-    elsif params[:module] == 'suggested_apps'   
+    elsif params[:module] == 'suggested_apps'
       category = Platform::Category.find(params[:cat_id])
       apps = Platform::Application.regular_for_category(category, page, Platform::Config.suggested_apps_per_page)
       render(:partial => 'apps_module', :locals => {:apps => apps, :per_row => Platform::Config.suggested_apps_per_row})
     else
       conditions = ["name like ? or description like ?", "%#{params[:search]}%", "%#{params[:search]}%"]
       apps = Platform::Application.paginate(:conditions => conditions, :page => page, :per_page => Platform::Config.searched_apps_per_page, :order => "name asc")
-      render(:partial => 'search_apps_module', :locals => {:apps => apps})      
+      render(:partial => 'search_apps_module', :locals => {:apps => apps})
     end
   end
-  
+
   def featured_applications_module_content
     @apps = Platform::Application.all
     render :layout => false
   end
- 
+
   def xd
     render :layout => false
   end
-  
+
   def method_missing(method, *args)
     @app = Platform::Application.find_by_canvas_name(method)
     return render(:action => :canvas_app) unless @app
-    
-    @page_title = @app.name.escape_html
-    
+
+    @page_title = Platform.escape_html(@app.name)
+
     if @app.auto_signin?
       app_user = Platform::ApplicationUser.for(@app)
-      
+
       unless app_user
         @canvas_url = "//#{Platform::Config.site_base_url}/platform/oauth/authorize?response_type=token&client_id=#{@app.key}&display=iframe&redirect_url=#{CGI.escape(@app.canvas_url)}"
         return render(:action => :canvas_app)
@@ -117,24 +117,24 @@ class Platform::AppsController < Platform::BaseController
 
     @canvas_url = @app.canvas_url
     canvas_uri = URI.parse(@app.canvas_url)
-    [:controller, :action].each do |key| 
+    [:controller, :action].each do |key|
       params.delete(key)
     end
 
     # add all desired params here
     params[:access_token] = @access_token.token if @access_token
     params[:t] = Time.now.to_s
-    
+
     query_params = []
     params.each do |key, val|
       query_params << "#{key}=#{CGI.escape(val)}"
     end
-    
+
     @canvas_url << "/" if canvas_uri.path.blank?
     @canvas_url << (canvas_uri.query.blank? ? "?" : "&")
     @canvas_url << query_params.join('&')
-    
-    render :action => :canvas_app 
+
+    render :action => :canvas_app
   end
-  
+
 end
