@@ -27,7 +27,6 @@ class Platform::Developer::ForumController < Platform::Developer::BaseController
   skip_filter :validate_developer
 
   protect_from_forgery :only => [:topic, :delete_topic, :delete_message]
-  requires_post        :only => [:delete_topic, :delete_message]
 
   def index
     @topics = Platform::ForumTopic.paginate(:all, :conditions => ["subject_id is null"], :page => page, :per_page => per_page, :order => "created_at desc")
