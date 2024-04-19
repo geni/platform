@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug test at cursor",
+      "type": "rdbg",
+      "request": "launch",
+      "useBundler": true,
+      "cwd": "${workspaceRoot}",
+      "script": "bin/test",
+      "args": ["${file}:${lineNumber}"],
+      "askParameters": false
+    },{
+      "name": "Start rails server",
+      "type": "rdbg",
+      "request": "launch",
+      "useBundler": true,
+      "cwd": "${workspaceRoot}",
+      "script": "script/server",
+      "args": ["server", "-b", "0.0.0.0"],
+      "askParameters": false
+    },
+  ]
+}
