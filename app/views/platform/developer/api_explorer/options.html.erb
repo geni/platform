@@ -6,7 +6,7 @@
 </div>
 
 <%
-  ref = Platform::Config.api_reference(h(@api_version)))
+  ref = Platform::Config.api_reference(h(@api_version))
   columns = Platform::Config.api_explorer_groups(h(@api_version))
   col_size = 100 / columns.size
 %>
