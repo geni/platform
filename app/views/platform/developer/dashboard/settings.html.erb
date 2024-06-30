@@ -4,7 +4,7 @@
 
 <%= render :partial => "/platform/developer/common/footer" %>
 
-<script>
+<%= javascript_tag %{
   function switchSectionMode(section, mode) {
     Platform.Utils.update(section + '_container', '/platform/developer/dashboard/update_section', {
       parameters: {section:section, mode:mode}
@@ -19,5 +19,5 @@
       method: 'post'
     });
   }
-</script>
+} %>
 

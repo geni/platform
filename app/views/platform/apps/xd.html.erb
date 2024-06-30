@@ -1,11 +1,11 @@
 <html> 
   <body onload="processCallback()"> 
-    <script> 
+    <%= javascript_tag %{
 	      function processCallback() {
           <% if params[:method] == 'resizeFrame' %>
 	          parent.parent.resizeFrame("<%=params[:height]%>");
           <% end %>
 	      }
-    </script>
+    } %>
   </body> 
 </html>

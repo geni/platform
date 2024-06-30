@@ -30,7 +30,7 @@
 				 
 		</STYLE>
 		
-		<SCRIPT>
+		<%= javascript_tag %{
 		var selectedCategoryId = '<%=@category.id%>';
 		var selectedCategoryName = '<%=@category.name%>';
 		
@@ -48,17 +48,17 @@
 		
 		<%= generate_categories_javascript(@root) %>
 		
-		</SCRIPT>
+		} %>
 
 	</head>
 	<body topmargin=0>
 		<A style="font-size:7pt;text-decoration:none;color:silver;visibility:hidden;" href="http://www.treemenu.net/" target=_blank>Javascript Tree Menu</A>
 		
-		<SCRIPT>initializeDocument()</SCRIPT>
+		<%= javascript_tag %{ 
+		  initializeDocument();
 		
-		<script>
 			top.openSubCategory(selectedCategoryId, selectedCategoryName);
-		</script>		
+		} %>
 	</body>
 </html>
 

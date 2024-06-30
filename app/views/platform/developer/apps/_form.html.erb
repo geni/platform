@@ -386,7 +386,7 @@
 	</div>
 </div>
 
-<script>
+<%= javascript_tag %{
 function setPermissions() {
 	var i = 0;
 	var el = Platform.element("perm_" + i);
@@ -424,4 +424,4 @@ function togglePermissionsOptions(trigger) {
 
   }
 }
-</script>
+} %>

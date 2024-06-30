@@ -137,12 +137,12 @@
 </div>	
 
 
-<script>
+<%= javascript_tag %{
 	function goPage(module, page) {
 		if (page == "") return;
 		Platform.Utils.update(module, "/platform/apps/paginate_module", {
 			 parameters: {module:module, page:page, search:"<%=params[:search]%>", cat_id:"<%=@category ? @category.id : ''%>"}
 		});
 	}
-</script>
+} %>
 <%= render :partial => "/platform/common/footer" %>

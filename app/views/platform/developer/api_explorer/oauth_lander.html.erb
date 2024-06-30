@@ -1,4 +1,4 @@
-<script>
+<%= javascript_tag %{
   window.opener.updateAccessToken("<%=h(params[:access_token])%>");
   window.close();
-</script>
+} %>

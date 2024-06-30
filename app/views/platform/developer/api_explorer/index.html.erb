@@ -131,7 +131,7 @@
   </div>
 </div>
 
-<script>
+<%= javascript_tag %{
 
 Platform.Utils.addEvent(window, 'load', function() {
 	initApiExplorer('<%=Platform::Config.api_explorer_app_id%>', '<%=Platform::Config.site_base_url%>', '/api', '<%=@api_history%>');

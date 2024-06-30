@@ -72,7 +72,7 @@
 </div>
 <%= render :partial => "authorize_form" %>
 
-	<script>
+	<%= javascript_tag %{
 	  function $(element_id) {
 	    if (typeof element_id == 'string') return document.getElementById(element_id);
 	    return element_id;
@@ -85,7 +85,6 @@
     } else {
       $('auth_form').submit();
     }
-  }
 
 	</script>
 </body>

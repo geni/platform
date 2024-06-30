@@ -1,4 +1,4 @@
-<script>
+<%= javascript_tag %{
 function assignCategories(app_id) {
   platformLightbox.show('/platform/admin/categories/category_assigner?app_id=' + app_id, {"width":"800", "height":"500"});
 }
@@ -14,4 +14,4 @@ function makeFeatured(app_id, app_category_id, checked) {
       parameters: {app_id:app_id, app_category_id: app_category_id, checked: checked}
   });
 }
-</script>
+} %>

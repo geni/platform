@@ -41,7 +41,7 @@
 					  <div id="daily_active_users_chart_<%=app.id%>">
 					  </div>
 					  
-					  <script type="text/javascript">
+					  <%= javascript_tag %{
 					    var data = new google.visualization.DataTable();
 					    data.addColumn('string', 'Date');
 					    data.addColumn('number', 'Active Users');
@@ -58,7 +58,7 @@
 					
 					    var chart = new google.visualization.LineChart(document.getElementById("daily_active_users_chart_<%=app.id%>"));
 					    chart.draw(data, {width: 450, height: 200});
-					  </script>
+					  } %>
 					
 					
 					  <div style="margin:10px; color:#ccc; text-align:center; width:100%;">
@@ -76,7 +76,7 @@
             <div id="daily_new_users_chart_<%=app.id%>">
             </div>
             
-            <script type="text/javascript">
+            <%= javascript_tag %{
               var data = new google.visualization.DataTable();
               data.addColumn('string', 'Date');
               data.addColumn('number', 'New Users');
@@ -91,7 +91,7 @@
               %>
               var chart = new google.visualization.LineChart(document.getElementById("daily_new_users_chart_<%=app.id%>"));
               chart.draw(data, {width: 450, height: 200});
-            </script>
+            } %>
           
           
             <div style="margin:10px; color:#ccc; text-align:center; width:100%;">

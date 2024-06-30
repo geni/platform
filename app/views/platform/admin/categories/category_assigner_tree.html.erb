@@ -17,7 +17,7 @@
                 color: black;
             }
         </style>
-        <script>
+        <%= javascript_tag %{
 					function $(elmId) {
 						return document.getElementById(elmId);
 					}
@@ -62,7 +62,7 @@
 	      	BUILDALL = 1
 	            	
 	       	<%= generate_categories_javascript(@root, true) %>
-        </script>
+				} %>
     </head>
     <body topmargin=0>
 	    <A style="font-size:7pt;text-decoration:none;color:silver;visibility:hidden;" href="http://www.treemenu.net/" target=_blank>Javascript Tree Menu</A>
@@ -71,10 +71,10 @@
 			</div>	
 			<div id="assignerTree" style=""> 
 		        <FORM name="ft" method="">
-		            <SCRIPT>
+		            <%= javascript_tag %{
 		                initializeDocument();
 		                checkAssignedCategories();
-		            </SCRIPT>
+		            } %>
 		        </FORM>
 			</div>
     </body>
