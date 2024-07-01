@@ -33,7 +33,7 @@
 				if (doAccept() == false) {
 					event.preventDefault();
 				}
-		  }
+		  });
 		}
 
     var element = document.getElementById('auth-do-cancel');
@@ -42,7 +42,7 @@
 				event.preventDefault();
 				if ($('authorize')) $('authorize').value = 0;
 				$('auth_form').submit();
-		  }
+		  });
 		}
 	});
 } %>
