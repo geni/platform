@@ -1,3 +1,5 @@
+<%= javascript_include_tag("/platform/javascripts/api_explorer.js") %>
+
 <div style="border-bottom: 1px solid #ccc; margin:10px; font-weight:bold;">
   <div style="float:right">
   	<%=link_to_function(tr("clear history"), "clearApiHistory()")%>
@@ -9,7 +11,7 @@
 
 <div style="padding:10px;">
 	<%=tr("None found")%>
-</div>	
+</div>
 
 <% else %>
 <div style="margin:10px;font-size:10px;overflow:auto;max-height:300px;">
@@ -18,9 +20,9 @@
 			<th><%=tr("Path")%></th>
 			<th><%=tr("Method")%></th>
 			<th><%=tr("Params")%></th>
-		</tr>	
+		</tr>
 	<% @api_history.reverse.each_with_index do |hc, index| %>
-	  <tr class="api_row <%="selected_row" if (@api_history.size - 1 - @api_history_index) == index %>" onClick='callHistoricApi(<%=@api_history.size - 1 - index%>)'>  
+	  <tr class="api-row <%="selected_row" if (@api_history.size - 1 - @api_history_index) == index %>" data-history-idx='<%=@api_history.size - 1 - index-%>)'>
 		   <td>http://<%=Platform::Config.api_base_url%><%=hc["path"]%></td>
 			 <td><%=hc["method"]%></td>
 	     <td><%=hc["params"].to_json%></td>

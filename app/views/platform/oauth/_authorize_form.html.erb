@@ -9,3 +9,40 @@
   <%= hidden_field_tag "display", @display%>
   <%= hidden_field_tag 'authorize', 1 %>
 <% end %>
+
+<%= javascript_tag %{
+  function $(element_id) {
+    if (typeof element_id == 'string') return document.getElementById(element_id);
+    return element_id;
+  }
+
+  function doAccept() {
+    if( $('tos-accepted') && !$('tos-accepted').checked ) {
+      $$('.platform-authorize__tos-row').first().show();
+      return false;
+    } else {
+      return $('auth_form').submit();
+    }
+  }
+
+	document.addEventListener("DOMContentLoaded", function() {
+    var element = document.getElementById('auth-do-accept');
+    if (element) {
+			element.addEventListener('click', function(event) {
+				if ($('authorize')) $('authorize').value = 1;
+				if (doAccept() == false) {
+					event.preventDefault();
+				}
+		  }
+		}
+
+    var element = document.getElementById('auth-do-cancel');
+    if (element) {
+			element.addEventListener('click', function(event) {
+				event.preventDefault();
+				if ($('authorize')) $('authorize').value = 0;
+				$('auth_form').submit();
+		  }
+		}
+	}
+} %>

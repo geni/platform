@@ -59,9 +59,9 @@ JSONFormatter.prototype = {
     link.style.paddingBottom = '5px';
     link.style.color = '#0e84b5';
     link.style.cursor = 'pointer';
-    link.onclick = function () {
+    link.addEventListener('click', function () {
       this.displayFormatted();
-    }.bind(this);
+    }.bind(this));
     buttons.appendChild(link);
 
     link = document.createElement('div');
@@ -69,9 +69,9 @@ JSONFormatter.prototype = {
     link.style.paddingBottom = '5px';
     link.style.cursor = 'pointer';
     link.style.color = '#0e84b5';
-    link.onclick = function () {
+    link.addEventListener('click', function () {
       this.displayRaw();
-    }.bind(this);
+    }.bind(this));
     buttons.appendChild(link);
 
     link = document.createElement('div');
@@ -80,9 +80,9 @@ JSONFormatter.prototype = {
     link.style.textAlign = 'center';
     link.style.color = '#0e84b5';
     link.style.cursor = 'pointer';
-    link.onclick = function () {
+    link.addEventListener('click', function () {
       this.collapseAll();
-    }.bind(this);
+    }.bind(this));
     buttons.appendChild(link);
 
     link = document.createElement('div');
@@ -91,9 +91,9 @@ JSONFormatter.prototype = {
     link.style.textAlign = 'center';
     link.style.color = '#0e84b5';
     link.style.cursor = 'pointer';
-    link.onclick = function () {
+    link.addEventListener('click', function () {
       this.expandAll();
-    }.bind(this);
+    }.bind(this));
     buttons.appendChild(link);
     return buttons;
   },
@@ -115,7 +115,7 @@ JSONFormatter.prototype = {
 
   displayFormatted: function() {
     this.removeAllChildren(this.container);
-    this.lineCounter = 1; 
+    this.lineCounter = 1;
 
     var line = document.createElement('div');
     line.style.borderBottom = '1px solid #eee';
@@ -132,7 +132,7 @@ JSONFormatter.prototype = {
   removeAllChildren:function(element_id) {
     while (this.element(element_id).hasChildNodes()) {
         this.element(element_id).removeChild(this.element(element_id).lastChild);
-    }    
+    }
   },
 
   createImage: function(name) {
@@ -158,10 +158,10 @@ JSONFormatter.prototype = {
   hide: function(obj_key) {
     this.element("object_" + obj_key).style.display = 'none';
     this.element("no_object_" + obj_key).style.display = 'inline';
-  },  
+  },
 
   toggle: function(obj_key) {
-    if (this.element("object_" + obj_key).style.display == 'none') 
+    if (this.element("object_" + obj_key).style.display == 'none')
       this.show(obj_key);
     else
       this.hide(obj_key);
@@ -189,7 +189,7 @@ JSONFormatter.prototype = {
       return container;
     }
 
-    var obj_key = this.guid();  
+    var obj_key = this.guid();
     this.object_keys.push({"key": obj_key, "level": level});
 
     var line = this.createLine();
@@ -209,10 +209,10 @@ JSONFormatter.prototype = {
     expanded.appendChild(this.createCollapser(obj_key));
     expanded.appendChild(this.createParen("{"));
     expanded.appendChild(this.createBreak());
-    container.appendChild(expanded);    
+    container.appendChild(expanded);
 
     var keys = Object.keys(obj).sort();
-    
+
     for (var i=0; i<keys.length; i++) {
       key = keys[i];
       var line = this.createLine();
@@ -248,7 +248,7 @@ JSONFormatter.prototype = {
   formatArray: function(arr, level) {
     var container = document.createElement('span');
 
-    var obj_key = this.guid();  
+    var obj_key = this.guid();
     this.object_keys.push({"key": obj_key, "level": level});
 
     var collapsed = document.createElement('span');
@@ -263,7 +263,7 @@ JSONFormatter.prototype = {
 
     var expanded = document.createElement('span');
     expanded.id = 'object_' + obj_key;
-    container.appendChild(expanded);    
+    container.appendChild(expanded);
     expanded.appendChild(this.createCollapser(obj_key));
     expanded.appendChild(this.createParen("["));
     expanded.appendChild(this.createBreak());
@@ -286,7 +286,7 @@ JSONFormatter.prototype = {
       }
       // expanded.appendChild(this.createBreak());
       expanded.appendChild(line);
-    }  
+    }
 
     var line = this.createLine();
     line.appendChild(this.createSpacer(level-1));
@@ -321,9 +321,9 @@ JSONFormatter.prototype = {
     expander.className = 'expander';
     expander.style.cursor = 'pointer';
     expander.style.paddingRight = '5px';
-    expander.onclick = function () {
+    expander.addEventListener('click', function () {
       this.toggle(obj_key);
-    }.bind(this);
+    }.bind(this));
     expander.appendChild(this.createImage('minus_node.png'));
     return expander;
   },
@@ -334,9 +334,9 @@ JSONFormatter.prototype = {
     expander.className = 'expander';
     expander.style.cursor = 'pointer';
     expander.style.paddingRight = '5px';
-    expander.onclick = function () {
+    expander.addEventListener('click', function () {
       this.toggle(obj_key);
-    }.bind(this);
+    }.bind(this));
     expander.appendChild(this.createImage('plus_node.png'));
     return expander;
   },
@@ -354,12 +354,12 @@ JSONFormatter.prototype = {
     lineNumber.style.width = '10px';
     lineNumber.style.textAlign = 'right';
     lineNumber.style.color = '#ccc';
-    
-    lineNumber.onclick = function () {
+
+    lineNumber.addEventListener('click', function () {
       var currentLocation = window.location + "";
       currentLocation = currentLocation.substring(0, currentLocation.indexOf("#"));
       window.location = currentLocation + "#" + line_id;
-    }.bind(this);
+    }.bind(this));
 
     container.appendChild(lineNumber);
     return container;
@@ -388,7 +388,7 @@ JSONFormatter.prototype = {
 
     var spacer = document.createElement('div');
     spacer.style.display = 'inline-block';
-    spacer.style.width = (level * 20) + 'px'; 
+    spacer.style.width = (level * 20) + 'px';
     spacer.innerHTML = " ";
     container.appendChild(spacer);
 
@@ -453,11 +453,11 @@ JSONFormatter.prototype = {
       val.innerHTML = this.escapeHTML(value);
       val.style.color = 'red';
     }
-  
+
     container.appendChild(val);
     if (key == null)
       return container;
-    
+
     container.appendChild(this.createName(key));
     container.appendChild(val);
 

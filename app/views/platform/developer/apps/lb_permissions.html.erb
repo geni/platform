@@ -29,7 +29,7 @@
 <div style="max-height:250px;overflow:auto;">
 <table>
 	<% @options.each_with_index do |p, index| %>
-		<tr class="perm_row" onClick="Platform.element('perm_<%=index%>').checked = !Platform.element('perm_<%=index%>').checked;">
+		<tr class="perm_row" data-perm-idx="<%= index -%>">
 			<td style="width:20px;">
 				<%=check_box_tag("perm_#{index}", p.keyword, @permissions.include?(p))%>
 			</td>
@@ -52,3 +52,17 @@
 	<%=tr("or")%>
 	<%=link_to_function(tr("Cancel"), "Platform.Effects.hide('permissions_dialog');") %>
 </div>
+
+<%= javascript_tag %{
+	document.addEventListener("DOMContentLoaded", function() {
+    var rows = document.getElementsByClassName('perm_row');
+    for(i = 0; i < rows.length; i++) {
+			rows[i].addEventListener('click', function() {
+			  var idx = this.getAttribute('data-perm-idx');
+				if (historyIdx) {
+					Platform.element('perm_' + idx).checked = !Platform.element('perm_' + idx).checked;
+				}
+			});
+		}
+	}
+} %>

@@ -230,7 +230,7 @@ function toggleApiHistory(trigger) {
     html.push("<table>");
     for(var i=0; i<api_history.length; i++) {
       var call = api_history[i];
-      html.push("<tr style='border-bottom:1px solid #ccc; cursor:pointer;' onClick='callHistoricApi(" + i + ")'><td style='padding:2px;'>" + call.method + " /" + call.path + "</td></tr>");
+      html.push("<tr class='api-row' data-history-idx='#{i}' style='border-bottom:1px solid #ccc; cursor:pointer;'><td style='padding:2px;'>" + call.method + " /" + call.path + "</td></tr>");
     }
     html.push("</table>");
 
@@ -337,7 +337,13 @@ function addPostField(name, value) {
   field.appendChild(field_value);
 
   var field_action = document.createElement("a");
-  field_action.setAttribute("onclick", "removePostField(" + field_count + "); return false;");
+  field_action.addEventListener('click', function(event) {
+    var idxMatch = event.target.id.match(/field_value(\d+)/);
+    if (idxMatch) {
+      removePostField(idxMatch[1]);
+      event.preventDefault();
+    }
+  });
   field_action.innerHTML="<span>X</span>";
   field_action.className="field_action";
   field_action.id="field_action" + field_count;
@@ -374,7 +380,13 @@ function removePostField(field_index) {
     field_value.id="field_value" + (field_index-1);
     var field_action = Platform.element("field_action" + field_index);
     field_action.id="field_action" + (field_index-1);
-    field_action.setAttribute("onclick", "removePostField(" + (field_index-1) + "); return false;");
+    field_action.addEventListener("click", function(event) {
+      var idxMatch = event.target.id.match(/field(\d+)/);
+      if (idxMatch) {
+        removePostField(idxMatch[1]);
+        event.preventDefault();
+      }
+    });
     field_index ++;
     next_field = Platform.element("field" + field_index);
   }
@@ -512,4 +524,17 @@ function expandAllResponseObjects() {
 function collapseAllResponseObjects() {
   if (!api_response_formatter) return;
   api_response_formatter.collapseAll();
+}
+
+/************************************************************************************
+** Element Bindings
+************************************************************************************/
+document.addEventListener("DOMContentLoaded", function() {
+  var rows = document.getElementsByClassName('api-row');
+  for(i = 0; i < rows.length; i++) {
+    rows[i].addEventListener('click', function() {
+      var historyIdx = this.getAttribute('data-history-idx');
+      if (historyIdx) callHistoricApi(historyIdx);
+    });
+  }
 }

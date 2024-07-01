@@ -5,7 +5,7 @@
 <div class="section_box colored">
   <% form_tag({:action => :topic}, {:method => :post, :id => "forum_topic_form"}) do %>
     <%=hidden_field_tag(:language_id, params[:language_id])%>
-    
+
     <table style="width:99%">
       <tr>
         <td style="width:80px; text-align:right; padding-right:10px; font-weight:bold;">
@@ -24,16 +24,27 @@
         </td>
       </tr>
     </table>
-    
+
     <div style="padding-top:20px; padding-bottom:10px;text-align:center">
-        <button type="submit" class="translator_btn translator_submit_btn" onClick=" Tr8n.Effects.submit('forum_topic_form'); return false;">
+        <button type="submit" id="submit-msg" class="translator_btn translator_submit_btn">
             <span><%=tr("Start a New Discussion")%></span>
         </button>
         <% if include_cancel_button %>
-        or 
+        or
         <%=link_to(tr("Cancel"), :action => :index)%>
-        <% end %>  
+        <% end %>
     </div>
   <% end %>
 </div>
-  
+
+<%= javascript_tag %{
+	document.addEventListener("DOMContentLoaded", function() {
+    var element = document.getElementById('submit-msg');
+    if (element) {
+      element.addEventListener('click', function(event) {
+        event.preventDefault();
+        Platform.Effects.submit('forum_topic_form');
+      });
+    }
+	}
+} %>

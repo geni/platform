@@ -33,10 +33,10 @@
               </div>
             <%- end -%>
 							<div class='platform-authorize__button-row'>
-							 <button class="blue super large button" onClick="$('authorize').value = 1; doAccept()">
+							 <button id='auth-do-accept' class="blue super large button">
 									<%=trl('Authorize', 'Client application action label')%>
 							 </button>
-							 <button class="white super large button"  onClick="$('authorize').value = 0; $('auth_form').submit()">
+							 <button id='auth-do-cancel' class="white super large button">
 									<%=trl("Cancel", 'Client application action label')%>
 							 </button>
 							</div>
@@ -73,25 +73,6 @@
 
 </div>
 <%= render :partial => "authorize_form" %>
-
-
-
-<%= javascript_tag %{
-  function $(element_id) {
-    if (typeof element_id == 'string') return document.getElementById(element_id);
-    return element_id;
-  }
-
-  function doAccept() {
-    if( $('tos-accepted') && !$('tos-accepted').checked ) {
-      $$('.platform-authorize__tos-row').first().show();
-      return false;
-    } else {
-      $('auth_form').submit();
-    }
-  }
-
-} %>
 
   </div>
 </body>

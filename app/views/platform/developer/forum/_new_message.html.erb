@@ -6,7 +6,7 @@
 <div class="section_box colored">
   <% form_tag({:action => :topic}, {:method => :post, :id => "forum_topic_form"}) do %>
     <%=hidden_field_tag(:topic_id, @topic.id)%>
-    
+
     <table style="width:99%">
       <tr>
         <td style="width:80px; text-align:right; padding-right:10px; font-weight:bold;">
@@ -17,12 +17,24 @@
         </td>
       </tr>
     </table>
-    
+
     <div style="padding-top:20px; padding-bottom:10px;text-align:center">
-        <button type="submit" class="translator_btn translator_submit_btn" onClick="Platform.Effects.submit('forum_topic_form'); return false;">
+        <button type="submit" id="submit-reply" class="translator_btn translator_submit_btn">
             <span><%=tr("Reply to This Discussion")%></span>
         </button>
     </div>
   <% end %>
-  
-</div>  
+
+</div>
+
+<%= javascript_tag %{
+	document.addEventListener("DOMContentLoaded", function() {
+    var element = document.getElementById('submit-reply');
+    if (element) {
+      element.addEventListener('click', function(event) {
+        event.preventDefault();
+        Platform.Effects.submit('forum_topic_form');
+      });
+    }
+	}
+} %>
