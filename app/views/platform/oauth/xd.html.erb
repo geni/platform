@@ -1,13 +1,13 @@
-<!doctype html> 
-<html> 
-  <head> 
-    <title>XD</title> 
-  </head> 
-  <body onload="sendFragment()"> 
+<!doctype html>
+<html>
+  <head>
+    <title>XD</title>
+  </head>
+  <body onload="sendFragment()">
     <%= javascript_tag %{
 			function sendFragment() {
-				(window.opener || window.parent || window.top).postMessage("<%=params.to_query%>", "<%= params[:origin] %>");
+				(window.opener || window.parent || window.top).postMessage("#{params.to_query}", "#{params[:origin]}");
 			}
     } %>
-  </body> 
-</html> 
+  </body>
+</html>

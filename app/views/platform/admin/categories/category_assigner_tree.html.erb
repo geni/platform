@@ -36,7 +36,7 @@
 
 	        function assignCategory(chk) {
 	          category_id = chk.id.split("_")[1];
-						top.assignCategory('<%=@app.id%>', category_id, chk.checked);
+						top.assignCategory('#{@app.id}', category_id, chk.checked);
 	        }
 
 	        function checkCategory(id, flag) {
@@ -46,12 +46,7 @@
 	        }
 
 					function checkAssignedCategories() {
-	        	<%
-	            @app.categories.each do |category|
-							     next unless category
-	           %>
-		            checkCategory("check_<%=category.id%>", true);
-	           <% end %>
+						#{ @app.categories.collect {|category| "checkCategory(\"check_#{category.id}\", true);" if category }.compact.join("\n") }
 	        }
 
 	      	USETEXTLINKS = 0
@@ -61,7 +56,7 @@
 	      	USEICONS = 0
 	      	BUILDALL = 1
 
-	       	<%= generate_categories_javascript(@root, true) %>
+	       	#{generate_categories_javascript(@root, true)}
 				} %>
     </head>
     <body topmargin=0>
