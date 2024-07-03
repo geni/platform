@@ -28,8 +28,7 @@
    <% end %>
  </div>
 
-
-<%= javascript_tag %{
+<% javascript_tag do %>
   var selectedRating = 0;
 
   function ratingMouseOver(index) {
@@ -88,4 +87,5 @@
     for(i = 0; i < rows.length; i++) {
 			rows[i].addEventListener('mouseout', ratingBlockMouseOut);
     }
-  } %>
+  }
+<% end %>

@@ -1,8 +1,8 @@
 <%= render :partial => "/platform/developer/common/header" %>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<%= javascript_tag %{
+<% javascript_tag do %>
     google.load("visualization", "1", {packages:["corechart"]});
-} %>
+<% end %>
 
 <div class="section_title">
   <div style="float:right; font-size:12px; padding-top:5px;">

@@ -8,8 +8,8 @@
 	</div>
 <% end %>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
   function resizeFrame(height) {
     document.getElementById('app_content_frame').style.height = parseInt(height)+60 + "px";
   }
-} %>
+<% end %>

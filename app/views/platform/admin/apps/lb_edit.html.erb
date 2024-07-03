@@ -123,7 +123,7 @@
     </div>
 </div>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
   if (typeof LabelMaker == 'function')
     new LabelMaker('app_consent_label', '<%= @app.default_terms_statement_tr_label.gsub(/'/, "\\\\'") -%>')
-} %>
+<% end %>

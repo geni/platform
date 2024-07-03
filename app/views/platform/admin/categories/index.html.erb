@@ -1,10 +1,10 @@
 <%= render :partial => "/platform/admin/common/header" %>
 <%= render :partial => "tabs" %>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
 
-var selectedCategoryId = '#{@category.id}';
-var selectedCategoryName = '#{@category.name}';
+var selectedCategoryId = '<%= @category.id %>';
+var selectedCategoryName = '<%= @category.name %>}';
 
 function openSubCategory(id, name) {
   selectedCategoryId = id;
@@ -75,7 +75,7 @@ function findAndHighlight(id) {
 	window.frames.categoriesFrame.findAndHighlight(id);
 }
 
-} %>
+<% end %>
 
 <div style="height:700px;">
 	<table width="100%" height="100%" style="border: 1px dotted #ccc;">

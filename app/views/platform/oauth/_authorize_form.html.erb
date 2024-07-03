@@ -10,7 +10,7 @@
   <%= hidden_field_tag 'authorize', 1 %>
 <% end %>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
   function $(element_id) {
     if (typeof element_id == 'string') return document.getElementById(element_id);
     return element_id;
@@ -45,4 +45,4 @@
 		  });
 		}
 	});
-} %>
+<% end %>

@@ -41,7 +41,7 @@
 					  <div id="daily_active_users_chart_<%=app.id%>">
 					  </div>
 
-					  <%= javascript_tag %{
+            <% javascript_tag do %>
 					    var data = new google.visualization.DataTable();
 					    data.addColumn('string', 'Date');
 					    data.addColumn('number', 'Active Users');
@@ -58,7 +58,7 @@
 
 					    var chart = new google.visualization.LineChart(document.getElementById("daily_active_users_chart_<%=app.id%>"));
 					    chart.draw(data, {width: 450, height: 200});
-					  } %>
+            <% end %>
 
 
 					  <div style="margin:10px; color:#ccc; text-align:center; width:100%;">
@@ -76,16 +76,15 @@
             <div id="daily_new_users_chart_<%=app.id%>">
             </div>
 
-            <%= javascript_tag %{
+            <% javascript_tag do %>
               var data = new google.visualization.DataTable();
               data.addColumn('string', 'Date');
               data.addColumn('number', 'New Users');
               data.addRows(7);
-              #{new_users_data.each_with_index.collect {|data, index | "data.setValue(#{index}, 0, '#{data.first}'); data.setValue(#{index}, 1, #{data.last});"}.join("\n")}
+              <%= new_users_data.each_with_index.collect {|data, index | "data.setValue(#{index}, 0, '#{data.first}'); data.setValue(#{index}, 1, #{data.last});"}.join("\n") %>
               var chart = new google.visualization.LineChart(document.getElementById("daily_new_users_chart_#{app.id}"));
               chart.draw(data, {width: 450, height: 200});
-            } %>
-
+            <% end %>
 
             <div style="margin:10px; color:#ccc; text-align:center; width:100%;">
                 <%=tr("The stats are calculated daily", "Dashboard section header")%>
@@ -95,4 +94,3 @@
 	  </tr>
 	</table>
 </div>
-

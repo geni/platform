@@ -90,26 +90,26 @@
 	</center>
 
 	<%= render :partial => "authorize_form" %>
-<%= javascript_tag %{
-  function $(element_id) {
-    if (typeof element_id == 'string') return document.getElementById(element_id);
-    return element_id;
-  }
 
-  function $S(element_id) {
-    $(element_id).submit();
-  }
-
-  function doAccept() {
-    if( $('tos-accepted') && !$('tos-accepted').checked ) {
-      $$('.platform-authorize__tos-row').first().show();
-      return false;
-    } else {
-      $('auth_form').submit();
+  <% javascript_tag do %>
+    function $(element_id) {
+      if (typeof element_id == 'string') return document.getElementById(element_id);
+      return element_id;
     }
-  }
 
-} %>
+    function $S(element_id) {
+      $(element_id).submit();
+    }
+
+    function doAccept() {
+      if( $('tos-accepted') && !$('tos-accepted').checked ) {
+        $$('.platform-authorize__tos-row').first().show();
+        return false;
+      } else {
+        $('auth_form').submit();
+      }
+    }
+  <% end %>
 
 </body>
 </html>

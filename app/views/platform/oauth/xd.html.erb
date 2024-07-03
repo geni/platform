@@ -4,10 +4,10 @@
     <title>XD</title>
   </head>
   <body onload="sendFragment()">
-    <%= javascript_tag %{
+    <% javascript_tag do %>
 			function sendFragment() {
-				(window.opener || window.parent || window.top).postMessage("#{params.to_query}", "#{params[:origin]}");
+				(window.opener || window.parent || window.top).postMessage("<%= params.to_query %>", "<%= params[:origin] %>");
 			}
-    } %>
+    <% end %>
   </body>
 </html>

@@ -4,13 +4,13 @@
 
 <%= render :partial => "/platform/developer/common/footer" %>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
   function switchSectionMode(section, mode) {
     Platform.Utils.update(section + '_container', '/platform/developer/info/update_section', {
       parameters: {section:section, mode:mode}
     });
   }
-  
+
   function submitSection(section) {
     var params = Platform.Utils.serializeForm(section + '_form');
     params['section'] = section;
@@ -19,5 +19,4 @@
       method: 'post'
     });
   }
-} %>
-
+<% end %>

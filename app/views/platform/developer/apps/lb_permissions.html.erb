@@ -53,7 +53,7 @@
 	<%=link_to_function(tr("Cancel"), "Platform.Effects.hide('permissions_dialog');") %>
 </div>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
 	document.addEventListener("DOMContentLoaded", function() {
     var rows = document.getElementsByClassName('perm_row');
     for(i = 0; i < rows.length; i++) {
@@ -65,4 +65,4 @@
 			});
 		}
 	}
-} %>
+<% end %>

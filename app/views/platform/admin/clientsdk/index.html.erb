@@ -45,43 +45,40 @@ Geni.api('/profile',function(r) {
 <br><br>
 <div id="profile_data"></div>
 
-<%= javascript_tag %{
-
-
-$('#connect_btn').click(function(){
-  Geni.Auth.connect();
-})
-
-$('#disconnect_btn').click(function(){
-  Geni.Auth.disconnect();
-})
-
-$('#logout_btn').click(function(){
-  Geni.Auth.logout();
-})
-
-$('#user_btn').click(function(){
-  var div = document.getElementById('profile_data');
-  Geni.api('/profile',function(r) {
-    var html = '<table>';
-    for (var key in r) {
-      html += (
-        '<tr>' +
-          '<th>' + key + '</th>' +
-          '<td>' + r[key] + '</td>' +
-        '</tr>'
-      );
-    }
-    div.innerHTML = html;
+<% javascript_tag do %>
+  $('#connect_btn').click(function(){
+    Geni.Auth.connect();
   })
-})
+
+  $('#disconnect_btn').click(function(){
+    Geni.Auth.disconnect();
+  })
+
+  $('#logout_btn').click(function(){
+    Geni.Auth.logout();
+  })
+
+  $('#user_btn').click(function(){
+    var div = document.getElementById('profile_data');
+    Geni.api('/profile',function(r) {
+      var html = '<table>';
+      for (var key in r) {
+        html += (
+          '<tr>' +
+            '<th>' + key + '</th>' +
+            '<td>' + r[key] + '</td>' +
+          '</tr>'
+        );
+      }
+      div.innerHTML = html;
+    })
+  })
 
 
 
-Geni.Event.bind('log',function(args) {
-  $('#debug')[0].innerHTML += "<li>" + args + "</li>";
-  
-  
-})
+  Geni.Event.bind('log',function(args) {
+    $('#debug')[0].innerHTML += "<li>" + args + "</li>";
 
-} %>
+
+  })
+<% end %>

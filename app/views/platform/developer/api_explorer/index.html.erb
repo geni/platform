@@ -124,27 +124,25 @@
 
 <div id="api_clipboard" class="api_options" style="display:none;">
   <div id="api_clipboard_container" class="inner">
-  	<%=text_area_tag("api_clipboard_text", "", :style => "width:745px;height:300px;")%>
+  	<%=text_area_tag("api_clipboard_text", "", :style => "width:745px;height:300px;") %>
 		<div style="padding-top:5px;color:#444;">
-		  <%=tr("Use ctrl+c to copy the contents of the text area to your clipboard.")%>
+		  <%=tr("Use ctrl+c to copy the contents of the text area to your clipboard.") %>
 		</div>
   </div>
 </div>
 
-<%= javascript_tag %{
+<% javascript_tag do %>
+  Platform.Utils.addEvent(window, 'load', function() {
+    initApiExplorer('<%=Platform::Config.api_explorer_app_id%>', '<%=Platform::Config.site_base_url%>', '/api', '<%=@api_history%>');
+    <% params.each do |key, value| %>
+    <% next if ['controller', 'action', 'access_token', 'method', 'path', 'api_version'].include?(key) %>
+    addPostField('<%=key%>', '<%=value%>');
+    <% end %>
 
-Platform.Utils.addEvent(window, 'load', function() {
-	initApiExplorer('<%=Platform::Config.api_explorer_app_id%>', '<%=Platform::Config.site_base_url%>', '/api', '<%=@api_history%>');
-	<% params.each do |key, value| %>
-	 <% next if ['controller', 'action', 'access_token', 'method', 'path', 'api_version'].include?(key) %>
-	 addPostField('<%=key%>', '<%=value%>');
-	<% end %>
-
-	<% if params['api_version'] %>
-	Platform.element("api_version").value = "<%= h(params['api_version']) %>";
-	<% end %>
-});
-
-</script>
+    <% if params['api_version'] %>
+    Platform.element("api_version").value = "<%= h(params['api_version']) %>";
+    <% end %>
+  });
+<% end %>
 
 <%= render :partial => "/platform/developer/common/footer" %>

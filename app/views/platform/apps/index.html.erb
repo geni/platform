@@ -8,21 +8,21 @@
     border-bottom: 1px solid #ccc;
     font-weight:bold;
   }
-  
+
   .apps_section {
-    text-align:left; 
-    border:1px dotted #ccc; 
+    text-align:left;
+    border:1px dotted #ccc;
     padding:10px;
     margin-bottom:10px;
   }
-	
+
   .apps_body {
     padding:0px;
     font-size:14px;
     color:#666;
     padding-bottom:10px;
   }
-	
+
   .cat_item {
     padding-left:10px;
     padding-top:5px;
@@ -30,7 +30,7 @@
     font-size:12px;
     border-bottom: 1px dotted #ccc;
   }
-  
+
   .cat_item_selected {
     background:#406790;
     color:white;
@@ -38,8 +38,8 @@
 
   .cat_item_selected a {
     color:white;
-  }	
-	
+  }
+
   .sub_cat_item {
     padding-left:30px;
     padding-top:5px;
@@ -47,7 +47,7 @@
     font-size:12px;
 		background: #F4F4F4;
   }
-  
+
   .sub_cat_item_selected {
     background:#406790;
     color:white;
@@ -55,8 +55,8 @@
 
   .sub_cat_item_selected a {
     color:white;
-  } 
-	
+  }
+
 	td {
 		vertical-align:top;
 	}
@@ -73,7 +73,7 @@
            <%=link_to(tr('Become a developer!', 'Client application action label'), {:controller => "/platform/developer/apps", :action=>:index}) %>
 				 <% end %>
       </span>
-    	
+
       <h1><%= tr('Application Directory', 'Client application section title') %></h1>
     </div>
   </div>
@@ -92,7 +92,7 @@
 	            <% if cat == @category %>
 	                <div class="cat_item cat_item_selected">
 	            <% else %>
-	                <div class="cat_item">    
+	                <div class="cat_item">
 	            <% end %>
 	              <%=link_to(cat.name, {:cat_id=>cat.id}) %>
 	            </div>
@@ -101,13 +101,13 @@
 		              <% if sub_cat == @category %>
 		                  <div class="sub_cat_item sub_cat_item_selected">
 		              <% else %>
-		                  <div class="sub_cat_item">    
+		                  <div class="sub_cat_item">
 		              <% end %>
 		                <%=link_to(sub_cat.name, {:cat_id=>sub_cat.id}) %>
 		              </div>
 								<% end %>
               <% end %>
-	          <% end %>						
+	          <% end %>
 					</div>
 				</td>
 				<td>
@@ -121,28 +121,28 @@
 	            <div id="featured_apps">
 	              <%= render(:partial => 'featured_apps_module', :locals => {:apps => @featured_apps, :per_row => Platform::Config.featured_apps_per_row})%>
 							</div>
-						<% end %>	
-						
+						<% end %>
+
             <div id="suggested_apps">
   						<%= render(:partial => 'apps_module', :locals => {:apps => @apps, :per_row => Platform::Config.suggested_apps_per_row})%>
-						</div>	
-						
+						</div>
+
             <div id="searched_apps">
               <%= render(:partial => 'search_apps_module', :locals => {:apps => @search_apps})%>
-						</div>	
+						</div>
 				</td>
 			</tr>
 		</table>
   </div>
-</div>	
+</div>
 
 
-<%= javascript_tag %{
+<% javascript_tag do %>
 	function goPage(module, page) {
 		if (page == "") return;
 		Platform.Utils.update(module, "/platform/apps/paginate_module", {
 			 parameters: {module:module, page:page, search:"<%=params[:search]%>", cat_id:"<%=@category ? @category.id : ''%>"}
 		});
 	}
-} %>
+<% end %>
 <%= render :partial => "/platform/common/footer" %>

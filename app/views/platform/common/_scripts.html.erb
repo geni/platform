@@ -1,7 +1,5 @@
 <%=stylesheet_link_tag("/platform/stylesheets/platform.css") -%>
 <%=javascript_include_tag("/platform/javascripts/platform.js") -%>
-<%= javascript_tag %{
+<% javascript_tag do %>
    initializePlatform();
-} %>
-
-  
+<% end %>
