@@ -9,8 +9,8 @@ var api_result_object_keys = [];
 var api_response_formatter;
 
 function initApiExplorer(app_id, site_url, api_url, api_history_string) {
-	api_explorer_app_id = app_id;
-	oauth_base_url = site_url;
+  api_explorer_app_id = app_id;
+  oauth_base_url = site_url;
   api_base_url = api_url;
   // api_history = JSON.parse(api_history_string);
   updateHistoryButtons();
@@ -30,19 +30,19 @@ function getAccessToken() {
   var height = 600;
   var top = (parseInt(window.innerHeight)-height)/2;
   var left = (parseInt(window.innerWidth)-width)/2;
-	var land_url = oauth_base_url + "/platform/developer/api_explorer/oauth_lander";
-	if (land_url.indexOf("http") == -1) {
-		land_url = "http://" + land_url;
-	}
+  var land_url = oauth_base_url + "/platform/developer/api_explorer/oauth_lander";
+  if (land_url.indexOf("http") == -1) {
+    land_url = "http://" + land_url;
+  }
 
-	var app_id = Platform.element("app_id").value;
+  var app_id = Platform.element("app_id").value;
 
-	var oauth_url = '/platform/oauth/authorize?client_id=' + app_id + '&response_type=token&display=mobile&redirect_url=' + escape(land_url)
+  var oauth_url = '/platform/oauth/authorize?client_id=' + app_id + '&response_type=token&display=mobile&redirect_url=' + escape(land_url)
   var win = window.open(oauth_url, 'oauthx_auth', 'width=' + width +',height=' + height + ',top=' + top  + ',left=' + left);
 }
 
 function updateAccessToken(token) {
-	Platform.element("access_token").value = token;
+  Platform.element("access_token").value = token;
 }
 
 /************************************************************************************
@@ -145,11 +145,11 @@ function switchApiVersion() {
   if (options.style.display != "none") {
     Platform.element("api_options_container").innerHTML = "<img src='/platform/images/loading.gif' style='width:16px;vertical-align:middle;'>&nbsp;  Loading...";
 
-  	Platform.Utils.update("api_options_container", "/platform/developer/api_explorer/options", {
-  		parameters: {
-  			api_version: Platform.value("api_version")
-  		}
-  	});
+    Platform.Utils.update("api_options_container", "/platform/developer/api_explorer/options", {
+      parameters: {
+        api_version: Platform.value("api_version")
+      }
+    });
   }
 }
 
@@ -426,26 +426,26 @@ function submitRequest() {
 
   var params = generateRequestParams();
   // add access token
-	if (Platform.element("access_token") && Platform.value("access_token") != "") {
-  	params['access_token'] = Platform.value("access_token");
+  if (Platform.element("access_token") && Platform.value("access_token") != "") {
+    params['access_token'] = Platform.value("access_token");
   }
 
-	// add version
-	params['api_version'] = Platform.value('api_version');
+  // add version
+  params['api_version'] = Platform.value('api_version');
 
   saveCallToHistory(Platform.value("api_path"), Platform.value("request_method"), params);
 
-	var path =  Platform.value("api_path");
-	var method = Platform.value("request_method");
-	if (method == 'GET') {
-		var path_params = [];
-		for (key in params) {
+  var path =  Platform.value("api_path");
+  var method = Platform.value("request_method");
+  if (method == 'GET') {
+    var path_params = [];
+    for (key in params) {
       if (key == "") continue;
       path_params.push(encodeURI(key) + "=" + encodeURI(params[key]));
     }
-		path += (path.indexOf("?") == -1) ? "?" : "&";
-		path += path_params.join("&");
-	}
+    path += (path.indexOf("?") == -1) ? "?" : "&";
+    path += path_params.join("&");
+  }
 
   var t0 = new Date();
 
@@ -480,13 +480,13 @@ function updateApi(path, method, params) {
   switchRequestMethod();
   removeAllPostFields();
   for (key in params) {
-		if (key == 'api_version') continue;
+    if (key == 'api_version') continue;
     addPostField(key, params[key]);
   }
 
-	if (params['api_version']) {
+  if (params['api_version']) {
     Platform.element('api_version').value = params['api_version'];
-	}
+  }
 }
 
 function callApi(path, method, params) {

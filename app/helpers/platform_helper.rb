@@ -29,17 +29,18 @@ module PlatformHelper
   end
 
   def platform_toggler_tag(content_id, label = "", open = true, opts = {})
-    style = opts[:style] || 'text-align:center; vertical-align:middle'
+    style = opts[:style] || 'text-align:center;vertical-align:middle;'
+    style = style + ';text-decoration:none;'
 
     html = "<span id='#{content_id}_open' "
     html << "style='display:none'" unless open
     html << ">"
-    html << link_to_function("#{image_tag("/platform/images/arrow_down.gif", :style=>style)} #{label}", "Tr8n.Effects.hide('#{content_id}_open'); Tr8n.Effects.show('#{content_id}_closed'); Tr8n.Effects.blindUp('#{content_id}');", :style=> "text-decoration:none")
+    html << link_to_function("&#x25BC; #{label}", "Platform.Effects.toggle('#{content_id}_open','#{content_id}_closed','#{content_id}')", :style => style)
     html << "</span>"
     html << "<span id='#{content_id}_closed' "
     html << "style='display:none'" if open
     html << ">"
-    html << link_to_function("#{image_tag("/platform/images/arrow_right.gif", :style=>style)} #{label}", "Tr8n.Effects.show('#{content_id}_open'); Tr8n.Effects.hide('#{content_id}_closed'); Tr8n.Effects.blindDown('#{content_id}');", :style=> "text-decoration:none")
+    html << link_to_function("&#x25BA; #{label}", "Platform.Effects.toggle('#{content_id}_open','#{content_id}_closed','#{content_id}')", :style => style)
     html << "</span>"
   end
 
