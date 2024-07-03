@@ -537,4 +537,4 @@ document.addEventListener("DOMContentLoaded", function() {
       if (historyIdx) callHistoricApi(historyIdx);
     });
   }
-}
+});
