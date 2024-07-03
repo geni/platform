@@ -46,7 +46,7 @@
         <th></th>
         <td>
         	 <% html = []
-           	  html << link_to_function("Edit Details", "tr8nLightbox.show('/platform/admin/developers/lb_edit?dev_id=#{@dev.id}', {height:400})")
+           	  html << link_to_function("Edit Details", "tr8nLightbox.show('/platform/admin/developers/lb_edit?dev_id=#{@dev.id}', {\"height\":400})")
            %>
 					 <%= html.join(" | ") %>
         </td>

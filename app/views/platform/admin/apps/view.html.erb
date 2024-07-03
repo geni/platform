@@ -159,7 +159,7 @@
         <th></th>
         <td>
         	 <% html = []
-           	  html << link_to_function("Edit Details", "tr8nLightbox.show('/platform/admin/apps/lb_edit?app_id=#{@app.id}', {height:600})")
+           	  html << link_to_function("Edit Details", "tr8nLightbox.show('/platform/admin/apps/lb_edit?app_id=#{@app.id}', {\"height\":600})")
 
               html << link_to_function("Manage Categories", "assignCategories(#{@app.id})")
 

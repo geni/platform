@@ -94,7 +94,7 @@
 	  <div style="float:right;">
 	    <%=link_to_function('<<', "makePreviousCall()", :class=>"button super gray small", :id => "history_previous") %>
 	    <%=link_to_function('>>', "makeNextCall()", :class=>"button super gray small", :id => "history_next") %>
-  	  <%=link_to_function(image_tag("/platform/images/arrow_down.gif", :style=>"vertical-align:middle"), "toggleApiHistory(this)", :class=>"button super gray small")%>
+  	  <%=link_to_function(image_tag("/platform/images/arrow_down.gif", :style=>"vertical-align:middle"), "toggleApiHistory(this)", :class=>"button super gray small") %>
 		</div>
 
 		<%=link_to_function(image_tag("/platform/images/clipboard_icon.gif", :style=>"height:14px;"), "copyToClipboard(this)", :class=>"button super gray small", :id => "") %>
