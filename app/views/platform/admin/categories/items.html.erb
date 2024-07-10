@@ -35,7 +35,7 @@
 				        child_name = child.name.gsub("'", "\\'")
 				  %>
 				  <tr class='data_row <%=(index % 2 == 0) ? "wf_row_even" : "wf_row_odd"%>'>
-				    <td style="padding:3px;"><%=link_to_function(child_name, "javascript:openSubCategory(\"#{child.id}\", \"#{child_name}\");")%></td>
+				    <td style="padding:3px;"><%=link_to_function(child_name, "openSubCategory(\"#{child.id}\", \"#{child_name}\");")%></td>
 				    <td style="padding:3px;"><%=child.keyword%></td>
             <td style="padding:3px;"><%=child.position%></td>
 				    <td style="padding:3px;"><%=child.children.size%></td>

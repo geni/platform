@@ -48,7 +48,7 @@
 </div>
 
 <div style="padding-top:30px; padding-bottom:10px; text-align:center;">
-	<%=link_to_function("<span>#{tr("Set")}</span>", "setPermissions(); Platform.Effects.hide('permissions_dialog');", :class => "button super blue large") %>
+	<%=link_to_function("<span>#{tr("Set")}</span>", "setPermissions()", :class => "button super blue large") %>
 	<%=tr("or")%>
 	<%=link_to_function(tr("Cancel"), "Platform.Effects.hide('permissions_dialog');") %>
 </div>

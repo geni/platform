@@ -80,8 +80,8 @@
                   <%= tr('You must approve the Terms of Service and Privacy Policy', 'Client application error text') %>
                 </div>
               <%- end -%>
-			        <%= link_to_function(trl('Allow', 'Client application action label'), %Q{$('authorize').value = 1; doAccept()}, :class=>'button super blue medium') %>
-			        <%= link_to_function(trl("Don't Allow", 'Client application action label'), %Q{$('authorize').value = 0; $S('auth_form')}, :class=>'button super blue medium') %>
+			        <%= link_to_function(trl('Allow', 'Client application action label'), 'allowClicked()', :class=>'button super blue medium') %>
+			        <%= link_to_function(trl("Don't Allow", 'Client application action label'), 'denyClicked()', :class=>'button super blue medium') %>
 						</td>
 			  	</tr>
 			  </table>
@@ -108,6 +108,16 @@
       } else {
         $('auth_form').submit();
       }
+    }
+
+    function allowClicked() {
+      $('authorize').value = 1;
+      doAccept();
+    }
+
+    function denyClicked() {
+      $('authorize').value = 0;
+      $S('auth_form');
     }
   <% end %>
 

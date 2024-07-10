@@ -42,7 +42,12 @@
 						<%=select_tag("app_id", options_for_select(platform_current_developer.app_options, params[:app_id]), :style=>"width:95%")%>
 					</td>
 					<td><%=text_field_tag(:access_token, "", :style=>"width:95%;", :placeholder => "Paste an access token or click on the 'Get Access Token' button to generate one.")%> &nbsp;
-					   <%=link_to_function("X", "Platform.element('access_token').value = '';")%>
+					  <%=link_to_function("X", "clearAccessToken()")%>
+            <% javascript_tag do %>
+              function clearAccessToken() {
+                Platform.element('access_token').value = '';
+              }
+            <% end %>
 					</td>
 					<td style="width:150px; text-align:right;">
 						<%= link_to_function(trl('Get Access Token', 'Client application action label'), "getAccessToken()", :class=>'button super blue medium') %>
@@ -63,12 +68,18 @@
   			</td>
 				<td style="border:1px solid #ccc;padding:0px;margin:0px;font-size:12px;color:#888;vertical-align:middle; background-color:white;">
 				  <span style="float:right;padding-right:5px;"><%=link_to_function(image_tag("/platform/images/arrow_down.gif"), "toggleApiOptions(this)")%></span>
-				  <span style="padding-left:5px;vertical-align:middle;white-space:nowrap;">//<%=Platform::Config.api_base_url%></span><%=text_field_tag(:api_path, params[:path],
-            :class=>"path", :onKeyUp=>"if (event.keyCode == 13) {api_history_index=-1; submitRequest();}")%>
+				  <span style="padding-left:5px;vertical-align:middle;white-space:nowrap;">//<%=Platform::Config.api_base_url%></span>
+          <%=text_field_tag(:api_path, params[:path], :class=>"path")%>
 				</td>
 				<td style="padding-left:5px;text-align:right;">
-          <%= link_to_function(trl('Submit', 'Client application action label'), "api_history_index=-1; submitRequest();", :class=>'button super blue medium') %>
+          <%= link_to_function(trl('Submit', 'Client application action label'), "clearHistoryAndSubmitRequest();", :class=>'button super blue medium') %>
 				</td>
+        <% javascript_tag do %>
+          function clearHistoryAndSubmitRequest() {
+            api_history_index = -1;
+            submitRequest();
+          }
+        <% end %>
   		</tr>
 			<tr>
 				<td></td><td></td>
