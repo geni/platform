@@ -76,16 +76,16 @@
 <%
               html = []
               if @app.new?
-                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :confirm => "Are you sure you want to approve this application?")
+                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to approve this application?")
               elsif @app.submitted?
-                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :confirm => "Are you sure you want to approve this application?")
-                 html << link_to("Reject", {:action => :reject, :app_id => @app.id}, :confirm => "Are you sure you want to reject this application?")
+                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to approve this application?")
+                 html << link_to("Reject", {:action => :reject, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to reject this application?")
               end
 
               if @app.blocked?
-                 html << link_to("Unblock", {:action => :unblock, :app_id => @app.id}, :confirm => "Are you sure you want to unblock this application?")
+                 html << link_to("Unblock", {:action => :unblock, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to unblock this application?")
               else
-                 html << link_to("Block", {:action => :block, :app_id => @app.id}, :confirm => "Are you sure you want to block this application?")
+                 html << link_to("Block", {:action => :block, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to block this application?")
               end
 %>
            - <%= html.join(" | ") %>
@@ -167,9 +167,9 @@
 
               Platform::Application.permissions.each do |perm|
 	              if @app.has_permission?(perm)
-	                 html << link_to("Remove <strong>'#{perm}'</strong> permission", {:action => :remove_permission, :perm => perm, :app_id => @app.id}, :confirm => "Are you sure you want to remove #{perm} permission?")
+	                 html << link_to("Remove <strong>'#{perm}'</strong> permission", {:action => :remove_permission, :perm => perm, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to remove #{perm} permission?")
 	              else
-	                 html << link_to("Add <strong>'#{perm}'</strong> permission", {:action => :set_permission, :perm => perm,  :app_id => @app.id}, :confirm => "Are you sure you want to add #{perm} permission?")
+	                 html << link_to("Add <strong>'#{perm}'</strong> permission", {:action => :set_permission, :perm => perm,  :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to add #{perm} permission?")
 	              end
               end
            %>
