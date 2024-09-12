@@ -3,11 +3,13 @@
   <head>
     <title>XD</title>
   </head>
-  <body onload="sendFragment()">
+  <body>
     <% javascript_tag do %>
 			function sendFragment() {
-				(window.opener || window.parent || window.top).postMessage("<%= params.to_query %>", "<%= params[:origin] %>");
+				(window.opener || window.parent || window.top).postMessage("<%= params.to_query -%>", "*");
 			}
+
+      document.addEventListener("DOMContentLoaded", sendFragment);
     <% end %>
   </body>
 </html>

@@ -1,9 +1,11 @@
 <html>
-  <body onload="processCallback()">
+  <body>
     <% javascript_tag do %>
 	      function processCallback() {
           <%= ("parent.parent.resizeFrame(" + h(params[:height]) + ");") if params[:method] == 'resizeFrame' %>
 	      }
+
+        document.addEventListener("DOMContentLoaded", processCallback);
     <% end %>
   </body>
 </html>
