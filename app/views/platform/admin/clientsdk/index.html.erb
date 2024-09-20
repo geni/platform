@@ -46,19 +46,19 @@ Geni.api('/profile',function(r) {
 <div id="profile_data"></div>
 
 <% javascript_tag do %>
-  $('#connect_btn').click(function(){
+  document.getElementById('connect_btn').addEventListener('click', function(){
     Geni.Auth.connect();
   })
 
-  $('#disconnect_btn').click(function(){
+  document.getElementById('disconnect_btn').addEventListener('click', function(){
     Geni.Auth.disconnect();
   })
 
-  $('#logout_btn').click(function(){
+  document.getElementById('logout_btn').addEventListener('click', function(){
     Geni.Auth.logout();
   })
 
-  $('#user_btn').click(function(){
+  document.getElementById('user_btn').addEventListener('click', function(){
     var div = document.getElementById('profile_data');
     Geni.api('/profile',function(r) {
       var html = '<table>';
@@ -77,8 +77,6 @@ Geni.api('/profile',function(r) {
 
 
   Geni.Event.bind('log',function(args) {
-    $('#debug')[0].innerHTML += "<li>" + args + "</li>";
-
-
+    document.getElementById('debug').innerHTML += "<li>" + args + "</li>";
   })
 <% end %>

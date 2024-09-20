@@ -1,6 +1,6 @@
 <html>
     <head>
-    	  <%=javascript_include_tag("/platform/javascripts/ua.js")%>
+        <%=javascript_include_tag("/platform/javascripts/ua.js")%>
         <%=javascript_include_tag("/platform/javascripts/ftiens4.js")%>
         <style>
             .tree_root {
@@ -18,66 +18,62 @@
             }
         </style>
         <% javascript_tag do %>
-					function $(elmId) {
-						return document.getElementById(elmId);
-					}
+          function hide(elmId) {
+            document.getElementById(elmId).style.display = "none";
+          }
+          function show(elmId) {
+            document.getElementById(elmId).style.display = "block";
+          }
 
-					function hide(elmId) {
-						$(elmId).style.display = "none";
-					}
-					function show(elmId) {
-						$(elmId).style.display = "block";
-					}
+          function setToLoading() {
+            hide("assignerTree");
+            show("loadingTree");
+          }
 
-					function setToLoading() {
-						hide("assignerTree");
-						show("loadingTree");
-					}
+          function assignCategory(chk) {
+            category_id = chk.id.split("_")[1];
+            top.assignCategory('<%= @app.id %>', category_id, chk.checked);
+          }
 
-	        function assignCategory(chk) {
-	          category_id = chk.id.split("_")[1];
-						top.assignCategory('<%= @app.id %>', category_id, chk.checked);
-	        }
+          function checkCategory(id, flag) {
+            if (document.getElementById(id)) {
+                document.getElementById(id).checked = flag;
+             }
+          }
 
-	        function checkCategory(id, flag) {
-	        	if ($(id)) {
-	        			$(id).checked = flag;
-	       		}
-	        }
+          function checkAssignedCategories() {
+            <%= @app.categories.collect {|category| "checkCategory(\"check_#{category.id}\", true);" if category }.compact.join("\n") %>
+          }
 
-					function checkAssignedCategories() {
-						<%= @app.categories.collect {|category| "checkCategory(\"check_#{category.id}\", true);" if category }.compact.join("\n") %>
-	        }
+          USETEXTLINKS = 0
+          STARTALLOPEN = 0
+          HIGHLIGHT = 0
+          PRESERVESTATE = 1
+          USEICONS = 0
+          BUILDALL = 1
 
-	      	USETEXTLINKS = 0
-	      	STARTALLOPEN = 0
-	      	HIGHLIGHT = 0
-	      	PRESERVESTATE = 1
-	      	USEICONS = 0
-	      	BUILDALL = 1
-
-	       	<%= generate_categories_javascript(@root, true) %>
-				<% end %>
+           <%= generate_categories_javascript(@root, true) %>
+        <% end %>
     </head>
     <body topmargin=0>
-	    <A style="font-size:7pt;text-decoration:none;color:silver;visibility:hidden;" href="http://www.treemenu.net/" target=_blank>Javascript Tree Menu</A>
-			<div id="loadingTree" style="display:none">
-				<center><br><br><br><img alt="Spinner" src="/images/spinner.gif" /></center>
-			</div>
-			<div id="assignerTree" style="">
-		        <FORM name="ft" method="">
-		            <% javascript_tag do %>
-		                initializeDocument();
-		                checkAssignedCategories();
+      <A style="font-size:7pt;text-decoration:none;color:silver;visibility:hidden;" href="http://www.treemenu.net/" target=_blank>Javascript Tree Menu</A>
+      <div id="loadingTree" style="display:none">
+        <center><br><br><br><img alt="Spinner" src="/images/spinner.gif" /></center>
+      </div>
+      <div id="assignerTree" style="">
+            <FORM name="ft" method="">
+                <% javascript_tag do %>
+                    initializeDocument();
+                    checkAssignedCategories();
 
-										var boxes = document.getElementsByClassName('tree-checkbox');
-										for(i = 0; i < boxes.length; i++) {
-											boxes[i].addEventListener('click', function(event) {
-												assignCategory(event.target);
-											});
-										}
+                    var boxes = document.getElementsByClassName('tree-checkbox');
+                    for(i = 0; i < boxes.length; i++) {
+                      boxes[i].addEventListener('click', function(event) {
+                        assignCategory(event.target);
+                      });
+                    }
                 <% end %>
-		        </FORM>
-			</div>
+            </FORM>
+      </div>
     </body>
 </html>

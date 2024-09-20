@@ -8,58 +8,58 @@
   <%= stylesheet_link_tag '/tr8n/stylesheets/tr8n.css' %>
 </head>
 <body style="margin:0px;">
-	<center>
-	  <div style="width:700px; border:1px dotted #ccc; margin-bottom:30px;">
-	    <div style="background:url('/platform/images/oauth/perm_tile.gif'); height:15px;">&nbsp;</div>
+  <center>
+    <div style="width:700px; border:1px dotted #ccc; margin-bottom:30px;">
+      <div style="background:url('/platform/images/oauth/perm_tile.gif'); height:15px;">&nbsp;</div>
 
-			<div style="margin:20px; text-align:left;">
-				<div style="border-bottom:1px solid #ccc; font-size:20px; font-weight:bold;">
-					<%=tr("Authorization Request")%>
-				</div>
+      <div style="margin:20px; text-align:left;">
+        <div style="border-bottom:1px solid #ccc; font-size:20px; font-weight:bold;">
+          <%=tr("Authorization Request")%>
+        </div>
 
-				<div style="margin-top:10px;margin-bottom:10px;">
-			    <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
-	      </div>
+        <div style="margin-top:10px;margin-bottom:10px;">
+          <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
+        </div>
 
-	      <div style="padding:10px;">
-					<table style="width:100%">
-						<tr>
-							<td style="vertical-align:top">
-								<table>
-									<tr>
-										<td style="vertical-align:top">
-								       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :style => "padding-right:15px;")%>
-										</td>
-										<td>
-				              <div style="font-weight:bold;"><%=tr("Access to my profile information")%></div>
-				              <div style="margin-top:10px; color:#666; padding-right:15px; ">
-				                 <%=tr("Includes name, profile picture, gender, family, photos, videos and any information available on my profile or through my user account.")%>
-				              </div>
-										</td>
-									</tr>
-								</table>
-							</td>
-							<td style="vertical-align:middle">
-								<%=image_tag("/platform/images/oauth/right_grey.png")%>
-							</td>
-							<td style="width:30%">
-		             <div style="height:130px; padding:5px; margin:3px; text-align:center;">
-		                <div style="">
-		                   <%= image_tag(h(@client_application.logo_url), :style => "width:75px;height:75px;") %>
-		                </div>
-		                <div style="font-size:12px; padding-top:10px;">
-		                  <%= link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
-		                </div>
-		                <div style="font-size:11px; padding-top:10px;">
-		                 <%= platform_app_rank_tag(@client_application) %>
-		                </div>
-		             </div>
-							</td>
-						</tr>
-					</table>
-	      </div>
+        <div style="padding:10px;">
+          <table style="width:100%">
+            <tr>
+              <td style="vertical-align:top">
+                <table>
+                  <tr>
+                    <td style="vertical-align:top">
+                       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :style => "padding-right:15px;")%>
+                    </td>
+                    <td>
+                      <div style="font-weight:bold;"><%=tr("Access to my profile information")%></div>
+                      <div style="margin-top:10px; color:#666; padding-right:15px; ">
+                         <%=tr("Includes name, profile picture, gender, family, photos, videos and any information available on my profile or through my user account.")%>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style="vertical-align:middle">
+                <%=image_tag("/platform/images/oauth/right_grey.png")%>
+              </td>
+              <td style="width:30%">
+                 <div style="height:130px; padding:5px; margin:3px; text-align:center;">
+                    <div style="">
+                       <%= image_tag(h(@client_application.logo_url), :style => "width:75px;height:75px;") %>
+                    </div>
+                    <div style="font-size:12px; padding-top:10px;">
+                      <%= link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
+                    </div>
+                    <div style="font-size:11px; padding-top:10px;">
+                     <%= platform_app_rank_tag(@client_application) %>
+                    </div>
+                 </div>
+              </td>
+            </tr>
+          </table>
+        </div>
 
-	      <div class="checkbox-wrapper" style="margin-top:10px; color: #888;">
+        <div class="checkbox-wrapper" style="margin-top:10px; color: #888;">
           <%- if @client_application.tos_required? -%>
             <input id='tos-accepted' type='checkbox'/>
           <%- end -%>
@@ -67,57 +67,51 @@
                  :application  => h(@client_application.name),
                  :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
                  :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
-			</div>
+      </div>
 
-			<div style="background:#eee; text-align:left; padding:10px; vertical-align:middle; ">
-			  <table style="width:100%">
-			  	<tr>
-			  		<td style='text-align:left; vertical-align:middle;'>
-			  		</td>
-						<td style='text-align:right;'>
-			        <%- if @client_application.tos_required? -%>
+      <div style="background:#eee; text-align:left; padding:10px; vertical-align:middle; ">
+        <table style="width:100%">
+          <tr>
+            <td style='text-align:left; vertical-align:middle;'>
+            </td>
+            <td style='text-align:right;'>
+              <%- if @client_application.tos_required? -%>
                 <div class='platform-authorize__tos-row' style='display:none;'>
                   <%= tr('You must approve the Terms of Service and Privacy Policy', 'Client application error text') %>
                 </div>
               <%- end -%>
-			        <%= link_to_function(trl('Allow', 'Client application action label'), 'allowClicked()', :class=>'button super blue medium') %>
-			        <%= link_to_function(trl("Don't Allow", 'Client application action label'), 'denyClicked()', :class=>'button super blue medium') %>
-						</td>
-			  	</tr>
-			  </table>
-			</div>
-	  </div>
-	</center>
+              <%= link_to_function(trl('Allow', 'Client application action label'), 'allowClicked()', :class=>'button super blue medium') %>
+              <%= link_to_function(trl("Don't Allow", 'Client application action label'), 'denyClicked()', :class=>'button super blue medium') %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </center>
 
-	<%= render :partial => "authorize_form" %>
+  <%= render :partial => "authorize_form" %>
 
   <% javascript_tag do %>
-    function $(element_id) {
-      if (typeof element_id == 'string') return document.getElementById(element_id);
-      return element_id;
-    }
-
-    function $S(element_id) {
-      $(element_id).submit();
-    }
-
     function doAccept() {
-      if( $('tos-accepted') && !$('tos-accepted').checked ) {
-        $$('.platform-authorize__tos-row').first().show();
+      var tosEl = document.getElementById('tos-accepted');
+
+      if( tosEl && !tosEl.checked ) {
+        var tosRow = document.querySelector('.platform-authorize__tos-row');
+        if (tosRow) tosRow.style.display = 'block';
         return false;
       } else {
-        $('auth_form').submit();
+        document.getElementById('auth_form').submit();
       }
     }
 
     function allowClicked() {
-      $('authorize').value = 1;
+      document.getElementById('authorize').value = 1;
       doAccept();
     }
 
     function denyClicked() {
-      $('authorize').value = 0;
-      $S('auth_form');
+      document.getElementById('authorize').value = 0;
+      document.getElementById('auth_form').submit();
     }
   <% end %>
 
