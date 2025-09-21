@@ -4,8 +4,7 @@
   The code was extracted from the Geni codebase.
 
 ## Testing/Coverage
-  bundle install vendor/bundle
+  bundle install
+  bundle exec rake db:migrate
   bundle exec rake test
 
-  bundle exec rake platform:coverage_server
-  # point your browser at <host>:3000
