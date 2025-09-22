@@ -16,4 +16,4 @@ rm -f Gemfile.lock
 bundle install
 
 rm -f db/test.sqlite3
-bundle exec rake test
+bundle exec rake db:migrate test
