@@ -21,6 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::DeveloperFilter < Platform::BaseFilter
+module Platform
+  class DeveloperFilter < BaseFilter
 
-end
+  end # class DeveloperFilter
+end # module Platform

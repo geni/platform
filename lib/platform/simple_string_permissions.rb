@@ -21,6 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# TODO: Convert to concern
 module Platform::SimpleStringPermissions
 
   def set_permission(key, value)

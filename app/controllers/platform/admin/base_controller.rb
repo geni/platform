@@ -21,42 +21,45 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+module Platform
+  module Admin
+    class BaseController < Platform::BaseController
 
-class Platform::Admin::BaseController < Platform::BaseController
+      if Platform::Config.admin_helpers.any?
+        helper *Platform::Config.admin_helpers
+      end
 
-  if Platform::Config.admin_helpers.any?
-    helper *Platform::Config.admin_helpers
-  end
+      before_action :validate_admin
 
-  before_filter :validate_admin
-  
-  layout Platform::Config.admin_layout
-  
-private
+      layout Platform::Config.admin_layout
 
-  def validate_platform_enabled
-    # don't do anything for admin pages
-  end
-  
-  def platform_admin_tabs
-    [
-        {"title" => "Applications", "description" => "Admin tab", "controller" => "apps"},
-        {"title" => "Developers", "description" => "Admin tab", "controller" => "developers"},
-        {"title" => "Categories", "description" => "Admin tab", "controller" => "categories"},
-        {"title" => "Forum", "description" => "Admin tab", "controller" => "forum"},
-        {"title" => "Metrics", "description" => "Admin tab", "controller" => "metrics"},
-        {"title" => "Exceptions", "description" => "Admin tab", "controller" => "exceptions"},
-    ]
-  end
-  helper_method :platform_admin_tabs
+    private
 
-  def validate_admin
-    return if Rails.env.development?
-    
-    unless platform_current_user_is_admin?
-      trfe("You must be an admin in order to view this section of the site")
-      redirect_to_site_default_url
-    end
-  end
-  
-end
+      def validate_platform_enabled
+        # don't do anything for admin pages
+      end
+
+      def platform_admin_tabs
+        [
+            {"title" => "Applications", "description" => "Admin tab", "controller" => "apps"},
+            {"title" => "Developers", "description" => "Admin tab", "controller" => "developers"},
+            {"title" => "Categories", "description" => "Admin tab", "controller" => "categories"},
+            {"title" => "Forum", "description" => "Admin tab", "controller" => "forum"},
+            {"title" => "Metrics", "description" => "Admin tab", "controller" => "metrics"},
+            {"title" => "Exceptions", "description" => "Admin tab", "controller" => "exceptions"},
+        ]
+      end
+      helper_method :platform_admin_tabs
+
+      def validate_admin
+        return if Rails.env.development?
+
+        unless platform_current_user_is_admin?
+          trfe("You must be an admin in order to view this section of the site")
+          redirect_to_site_default_url
+        end
+      end
+
+    end # class BaseController
+  end # module Admin
+end # module Platform

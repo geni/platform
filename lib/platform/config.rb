@@ -171,13 +171,16 @@ class Platform::Config
   end
 
   def self.load_yml(file_path, for_env = env)
-    yml = YAML.load_file("#{root}#{file_path}")
+    file = Rails.root.join(file_path)
+    file = Platform::Engine.root.join(file_path) unless File.exist?(file)
+
+    yml = YAML.load_file(file, :aliases => true)
     yml = yml[for_env] unless for_env.nil?
     HashWithIndifferentAccess.new(yml)
   end
 
   def self.config
-    @config ||= load_yml("/config/platform/config.yml")
+    @config ||= load_yml('config/platform/config.yml')
   end
 
   def self.enabled?
@@ -324,19 +327,19 @@ class Platform::Config
     @admin_helpers ||= site_info[:admin_helpers].collect{|helper| helper.to_sym}
   end
 
-  def self.skip_before_filters
-    return [] unless site_info[:skip_before_filters]
-    @skip_before_filters ||= site_info[:skip_before_filters].collect{|filter| filter.to_sym}
+  def self.skip_before_actions
+    return [] unless site_info[:skip_before_actions]
+    @skip_before_actions ||= site_info[:skip_before_actions].collect{|action| action.to_sym}
   end
 
-  def self.before_filters
-    return [] unless site_info[:before_filters]
-    @before_filters ||= site_info[:before_filters].collect{|filter| filter.to_sym}
+  def self.before_actions
+    return [] unless site_info[:before_actions]
+    @before_actions ||= site_info[:before_actions].collect{|action| action.to_sym}
   end
 
-  def self.after_filters
-    return [] unless site_info[:after_filters]
-    @after_filters ||= site_info[:after_filters].collect{|filter| filter.to_sym}
+  def self.after_actions
+    return [] unless site_info[:after_actions]
+    @after_actions ||= site_info[:after_actions].collect{|action| action.to_sym}
   end
 
   #########################################################

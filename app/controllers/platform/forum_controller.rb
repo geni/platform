@@ -21,64 +21,66 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ForumController < Platform::BaseController
+module Platform
+  class ForumController < BaseController
 
-  def new_message
-    app = Platform::Application.find(params[:app_id])
+    def new_message
+      app = Platform::Application.find(params[:app_id])
 
-    if request.post? and verified_request?
-      if params[:topic_id]
-        topic = Platform::ForumTopic.find_by_id(params[:topic_id])
-      else
-        topic = Platform::ForumTopic.create(:subject => app, :user => Platform::Config.current_user, :topic => params[:topic])
+      if request.post? and verified_request?
+        if params[:topic_id]
+          topic = Platform::ForumTopic.find_by_id(params[:topic_id])
+        else
+          topic = Platform::ForumTopic.create(:subject => app, :user => Platform::Config.current_user, :topic => params[:topic])
+        end
+
+        Platform::ForumMessage.create(:topic => topic, :message => params[:message], :user => Platform::Config.current_user)
       end
 
-      Platform::ForumMessage.create(:topic => topic, :message => params[:message], :user => Platform::Config.current_user)
+      redirect_to(:controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Discussions', :topic_id => topic&.id, :last_page => true)
     end
 
-    redirect_to(:controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Discussions', :topic_id => topic&.id, :last_page => true)
-  end
+    def delete_topic
+      topic = Platform::ForumTopic.find_by_id(params[:topic_id])
 
-  def delete_topic
-    topic = Platform::ForumTopic.find_by_id(params[:topic_id])
+      if request.post? and verified_request?
+        unless topic
+          trfe("This topic does not exist")
+          return redirect_to_source
+        end
 
-    if request.post? and verified_request?
-      unless topic
-        trfe("This topic does not exist")
-        return redirect_to_source
+        if topic.user != platform_current_user
+          trfe("You cannot delete topics you didn't create.")
+          return redirect_to_source
+        end
+
+        topic.destroy
+        trfn("The topic {topic} has been removed", nil, :topic => "\"#{Platform.escape_html(topic.topic)}\"")
       end
 
-      if topic.user != platform_current_user
-        trfe("You cannot delete topics you didn't create.")
-        return redirect_to_source
-      end
-
-      topic.destroy
-      trfn("The topic {topic} has been removed", nil, :topic => "\"#{Platform.escape_html(topic.topic)}\"")
+      redirect_to_source
     end
 
-    redirect_to_source
-  end
+    def delete_message
+      message = Platform::ForumMessage.find_by_id(params[:message_id])
 
-  def delete_message
-    message = Platform::ForumMessage.find_by_id(params[:message_id])
+      if request.post? and verified_request?
+        unless message
+          trfe("This message does not exist")
+          return redirect_to_source
+        end
 
-    if request.post? and verified_request?
-      unless message
-        trfe("This message does not exist")
-        return redirect_to_source
+        if message.user != platform_current_user
+          trfe("You cannot delete messages you didn't post.")
+          return redirect_to_source
+        end
+
+        message.destroy
+        trfn("The message has been removed")
       end
 
-      if message.user != platform_current_user
-        trfe("You cannot delete messages you didn't post.")
-        return redirect_to_source
-      end
-
-      message.destroy
-      trfn("The message has been removed")
+      redirect_to_source
     end
 
-    redirect_to_source
-  end
-
-end
+  end # class ForumController
+end # module Platform

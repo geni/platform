@@ -21,10 +21,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::BlogController < Platform::Developer::BaseController
+module Platform
+  module Developer
+    class BlogController < BaseController
 
-  def index
-    
-  end
+      def index
+      end
 
-end
+    end # class BlogController
+  end # module Developer
+end # module Platform

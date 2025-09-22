@@ -21,10 +21,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::ResourcesController < Platform::Developer::BaseController
-  
-  def index
-    
-  end
+module Platform
+  module Developer
+    class ResourcesController < BaseController
 
-end
+      def index
+      end
+
+    end # class ResourcesController
+  end # module Developer
+end # module Platform

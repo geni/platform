@@ -21,6 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::PermissionFilter < Platform::BaseFilter
+module Platform
+  class PermissionFilter < BaseFilter
 
-end
+  end # class PermissionFilter
+end # module Platform

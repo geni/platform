@@ -1,33 +1,45 @@
-ActionController::Routing::Routes.draw do |map|
+Tr8n::Engine.routes.draw do
+  mount WillFilter::Engine => '/will_filter'
 
-  map.connect '/platform/developer/apps/:id',
-              :controller => 'platform/developer/apps', :action => 'delete',
-              :conditions => {:method => :delete}
+  namespace :developer do
+    delete  '/apps/:id' => 'platform/developer/apps#delete'
+    put     '/apps/:id' => 'platform/developer/apps#update'
+    root :to => 'dashboard#index'
+  end # namespace :developer
 
-  map.connect '/platform/developer/apps/:id',
-              :controller => 'platform/developer/apps', :action => 'update',
-              :conditions => {:method => :put}
+  namespace :admin do
+    root :to => 'apps#index'
+  end # namespace :admin
 
-  [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-    map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
-  end
+  get '/', :to => 'home#index'
 
-  [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-    map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
-  end
+#  map.connect '/platform/developer/apps/:id',
+#              :controller => 'platform/developer/apps', :action => 'delete',
+#              :conditions => {:method => :delete}
 
-  [:apps, :categories, :developers].each do |ctrl|
-    map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
-  end
+#  map.connect '/platform/developer/apps/:id',
+#              :controller => 'platform/developer/apps', :action => 'update',
+#              :conditions => {:method => :put}
 
-  map.namespace :platform do |subdomain|
-    subdomain.root :controller => 'home', :action => 'index'
-    subdomain.namespace :developer do |subsubdomain|
-      subsubdomain.root :controller => 'dashboard', :action => 'index'
-    end
-    subdomain.namespace :admin do |subsubdomain|
-      subsubdomain.root :controller => 'apps', :action => 'index'
-    end
-  end
+#  [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
+#    map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
+#  end
 
-end
+#  [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
+#    map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
+#  end
+
+#  [:apps, :categories, :developers].each do |ctrl|
+#    map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
+#  end
+
+#  map.namespace :platform do |subdomain|
+#    subdomain.root :controller => 'home', :action => 'index'
+#    subdomain.namespace :developer do |subsubdomain|
+#      subsubdomain.root :controller => 'dashboard', :action => 'index'
+#    end
+#    subdomain.namespace :admin do |subsubdomain|
+#      subsubdomain.root :controller => 'apps', :action => 'index'
+#    end
+#  end
+end # Tr8n::Engine.routes.draw

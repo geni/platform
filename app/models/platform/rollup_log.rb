@@ -21,8 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::RollupLog < ActiveRecord::Base
-  set_table_name :platform_rollup_logs
-
-  
-end
+module Platform
+  class RollupLog < ApplicationRecord
+    self.table_name = :platform_rollup_logs
+  end # class RollupLog
+end # module Platform

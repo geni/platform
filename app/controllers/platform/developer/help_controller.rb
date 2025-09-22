@@ -21,103 +21,108 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::HelpController < Platform::Developer::BaseController
-  
-  before_filter :set_version
-  skip_filter :validate_guest_user
-  skip_filter :validate_developer
+module Platform
+  module Developer
+    class HelpController < BaseController
 
-  def index
-    unless request.url.index("developer")
-      return redirect_to(:controller=>"/platform/developer/help", :action=>"index")
-    end
-  end
+      before_action :set_version
+      skip_before_action :validate_guest_user
+      skip_before_action :validate_developer
 
-  def reference
-    
-  end
-  
-  def branding
-  
-  end
-  
-  def oauth_intro
-    
-  end
-
-  def oauth_server_side
-    
-  end
-
-  def oauth_client_side
-    
-  end
-
-  def oauth_trusted_client
-    
-  end
-  
-  def oauth_app_login
-    
-  end
-    
-  def oauth_desktop
-    
-  end
-
-  def oauth_mobile
-    
-  end
-
-  def oauth_extensions
-    
-  end
-  
-  def sdk_js
-    
-  end
-  
-  def sdk_ios
-    
-  end
-  
-  def api
-    ref = Platform::Config.api_reference(@version) 
-    unless ref
-      trfe("Unsupported API version")
-      return redirect_to(:action => :index, :version => @version)
-    end
-        
-    if params[:path].blank?
-      trfe("API path must be provided")
-      return redirect_to(:action => :index, :version => @version)
-    end
-    
-    parts = params[:path].split("/")
-    parts.delete(parts.first) if [''].include?(parts.first)
-    
-    @api = ref[parts.first]
-    unless @api
-      trfe("Unsupported API path")
-      return redirect_to(:action => :index, :version => @version)
-    end
-    
-    parts << @api[:default_action] if parts.size == 1 and @api[:default_action]
-
-    if parts.size > 1 
-      if @api[:actions] and @api[:actions][parts.last]
-        action_api = @api[:actions][parts.last]
-        action_api[:parent] = @api
-        @api = action_api
-      else  
-        trfe("Unsupported API path")
+      def index
+        unless request.url.index("developer")
+          return redirect_to(:controller=>"/platform/developer/help", :action=>"index")
+        end
       end
-    end
-  end
 
-private
+      def reference
 
-  def set_version
-    @version = params[:version] || Platform::Config.api_default_version
-  end
-end
+      end
+
+      def branding
+
+      end
+
+      def oauth_intro
+
+      end
+
+      def oauth_server_side
+
+      end
+
+      def oauth_client_side
+
+      end
+
+      def oauth_trusted_client
+
+      end
+
+      def oauth_app_login
+
+      end
+
+      def oauth_desktop
+
+      end
+
+      def oauth_mobile
+
+      end
+
+      def oauth_extensions
+
+      end
+
+      def sdk_js
+
+      end
+
+      def sdk_ios
+
+      end
+
+      def api
+        ref = Platform::Config.api_reference(@version)
+        unless ref
+          trfe("Unsupported API version")
+          return redirect_to(:action => :index, :version => @version)
+        end
+
+        if params[:path].blank?
+          trfe("API path must be provided")
+          return redirect_to(:action => :index, :version => @version)
+        end
+
+        parts = params[:path].split("/")
+        parts.delete(parts.first) if [''].include?(parts.first)
+
+        @api = ref[parts.first]
+        unless @api
+          trfe("Unsupported API path")
+          return redirect_to(:action => :index, :version => @version)
+        end
+
+        parts << @api[:default_action] if parts.size == 1 and @api[:default_action]
+
+        if parts.size > 1
+          if @api[:actions] and @api[:actions][parts.last]
+            action_api = @api[:actions][parts.last]
+            action_api[:parent] = @api
+            @api = action_api
+          else
+            trfe("Unsupported API path")
+          end
+        end
+      end
+
+    private
+
+      def set_version
+        @version = params[:version] || Platform::Config.api_default_version
+      end
+
+    end # class HelpController
+  end # module Developer
+end # module Platform

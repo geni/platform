@@ -1,62 +1,21 @@
-# This has to happen before other files are loaded
-begin
-  require 'simplecov'
-  SimpleCov.start do
-    command_name 'Tests'
-
-    load_profile 'bundler_filter'
-    load_profile 'test_frameworks'
-
-    # these files will be overwritten by
-    # the including application
-    add_filter %r{^/config|platform_user.rb|application_(controller|helper).rb}
-
-    add_group   'Controllers',  'app/controllers'
-    add_group   'Helpers',      'app/helpers'
-    add_group   'Libs',         'lib'
-    add_group   'Models',       'app/models'
-  end
-rescue LoadError
-  # don't load SimpleCov
-end
-
-require_relative '../config/environment'
-require 'test_help'
+require 'mocha/minitest'
 require 'pp'
 
+ENV["RAILS_ENV"] = "test"
+
+# This has to happen before other files are loaded
+unless defined?($SKIP_COVERAGE)
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter 'config'
+    add_filter 'test'
+    add_filter 'vendor'
+  end
+end
+
+require_relative "../test/dummy/config/environment"
+
 class ActiveSupport::TestCase
-  # Transactional fixtures accelerate your tests by wrapping each test method
-  # in a transaction that's rolled back on completion.  This ensures that the
-  # test database remains unchanged so your fixtures don't have to be reloaded
-  # between every test method.  Fewer database queries means faster tests.
-  #
-  # Read Mike Clark's excellent walkthrough at
-  #   http://clarkware.com/cgi/blosxom/2005/10/24#Rails10FastTesting
-  #
-  # Every Active Record database supports transactions except MyISAM tables
-  # in MySQL.  Turn off transactional fixtures in this case; however, if you
-  # don't care one way or the other, switching from MyISAM to InnoDB tables
-  # is recommended.
-  #
-  # The only drawback to using transactional fixtures is when you actually
-  # need to test transactions.  Since your test is bracketed by a transaction,
-  # any transactions started in your code will be automatically rolled back.
-  self.use_transactional_fixtures = true
-
-  # Instantiated fixtures are slow, but give you @david where otherwise you
-  # would need people(:david).  If you don't want to migrate your existing
-  # test cases which use the @david style and don't mind the speed hit (each
-  # instantiated fixtures translates to a database query per test method),
-  # then set this back to true.
-  self.use_instantiated_fixtures  = false
-
-  # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
-  #
-  # Note: You'll currently still have to declare fixtures explicitly in integration tests
-  # -- they do not yet inherit this setting
-  fixtures :all
-
-  # Add more helper methods to be used by all tests here...
 
 private
 
@@ -70,7 +29,6 @@ private
       Platform::Application.create!(params)
     end
   end
-
 
   def user
     @user ||= Platform::PlatformUser.create!(:name => 'user name')
@@ -109,3 +67,15 @@ class Object
 end # class Object
 
 Tr8n::Config.config[:enable_tr8n] = false
+
+ActiveRecord::Migrator.migrations_paths = [ File.expand_path("../test/dummy/db/migrate", __dir__) ]
+ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __dir__)
+require "rails/test_help"
+
+# Load fixtures from the engine
+if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
+  ActiveSupport::TestCase.fixture_paths = [ File.expand_path("fixtures", __dir__) ]
+  ActionDispatch::IntegrationTest.fixture_paths = ActiveSupport::TestCase.fixture_paths
+  ActiveSupport::TestCase.file_fixture_path = File.expand_path("fixtures", __dir__) + "/files"
+  ActiveSupport::TestCase.fixtures :all
+end

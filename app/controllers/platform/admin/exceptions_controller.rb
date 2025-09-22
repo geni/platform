@@ -21,10 +21,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Admin::ExceptionsController < Platform::Admin::BaseController
+module Platform
+  module Admin
+    class ExceptionsController < Admin::BaseController
 
-  def index
-    @exceptions = Platform::LoggedException.filter(:params => params, :filter => Platform::LoggedExceptionFilter)
-  end
-  
-end
+      def index
+        @exceptions = Platform::LoggedException.filter(:params => params, :filter => Platform::LoggedExceptionFilter)
+      end
+
+    end # class ExceptionsController
+  end # module Admin
+end # module Platform

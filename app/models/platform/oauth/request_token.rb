@@ -21,16 +21,20 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::RequestToken < Platform::Oauth::OauthToken
+module Platform
+  module Oauth
+    class RequestToken < Oauth::OauthToken
 
-  validates_presence_of :user
+      validates_presence_of :user
 
-  def code
-    token
-  end
+      def code
+        token
+      end
 
-  def redirect_url
-    callback_url
-  end
+      def redirect_url
+        callback_url
+      end
 
-end
+    end # class RequestToken
+  end # module Oauth
+end # module Platform

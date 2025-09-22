@@ -21,10 +21,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Admin::ClientsdkController < Platform::Admin::BaseController
+module Platform
+  module Admin
+    class ClientsdkController < Admin::BaseController
 
-  def index
-    
-  end
+      def index
+      end
 
-end
+    end # module ClientsdkController
+  end # module Admin
+end # module Platform

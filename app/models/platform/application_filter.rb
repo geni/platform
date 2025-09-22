@@ -21,10 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationFilter < Platform::BaseFilter
-  
-  def inner_joins
-    [["Platform::Developer", :developer_id]]
-  end
+module Platform
+  class ApplicationFilter < BaseFilter
 
-end
+    def inner_joins
+      [["Platform::Developer", :developer_id]]
+    end
+
+  end # class ApplicationFilter
+end # module Platform

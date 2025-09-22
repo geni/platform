@@ -21,18 +21,20 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ForumTopic < ActiveRecord::Base
-  set_table_name :platform_forum_topics
+module Platform
+  class ForumTopic < ApplicationRecord
+    self.table_name = :platform_forum_topics
 
-  belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
-  belongs_to :subject, :polymorphic => true
+    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    belongs_to :subject, :polymorphic => true
 
-  def post_count
-    @post_count ||= Platform::ForumMessage.count(:conditions => ["forum_topic_id = ?", self.id])
-  end
+    def post_count
+      @post_count ||= Platform::ForumMessage.count("forum_topic_id = ?", self.id)
+    end
 
-  def last_post
-    @last_post ||= Platform::ForumMessage.find(:first, :conditions => ["forum_topic_id = ?", self.id], :order => "created_at desc")
-  end
+    def last_post
+      @last_post ||= Platform::ForumMessage.where("forum_topic_id = ?", self.id).order("created_at desc").first
+    end
 
-end
+  end # class ForumTopic
+end # module Platform

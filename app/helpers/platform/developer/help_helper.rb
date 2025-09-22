@@ -21,25 +21,29 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-module Platform::Developer::HelpHelper
+module Platform
+  module Developer
+    module HelpHelper
 
-  def documentation_field_type_tag(field)
-    return field[:type] if simple_field?(field[:type])
-    if field[:type] == "Array"
-      return "Array of #{field[:array_type].pluralize}" if simple_field?(field[:array_type])
-      return "Array of #{documentation_field_link_tag(field[:array_type].pluralize, field[:array_type])}" 
-    end
-    documentation_field_link_tag(field[:type], field[:type])
-  end
-  
-  def documentation_field_link_tag(name, type)
-    link_to(name, :controller => "/platform/developer/help", :action => :api, :path => type.underscore)
-  end
-  
-private
+      def documentation_field_type_tag(field)
+        return field[:type] if simple_field?(field[:type])
+        if field[:type] == "Array"
+          return "Array of #{field[:array_type].pluralize}" if simple_field?(field[:array_type])
+          return "Array of #{documentation_field_link_tag(field[:array_type].pluralize, field[:array_type])}"
+        end
+        documentation_field_link_tag(field[:type], field[:type])
+      end
 
-  def simple_field?(type)
-    ["String", "Number", "Boolean", "Array or String", "Hash", "Binary"].include?(type)
-  end
-  
-end
+      def documentation_field_link_tag(name, type)
+        link_to(name, :controller => "/platform/developer/help", :action => :api, :path => type.underscore)
+      end
+
+    private
+
+      def simple_field?(type)
+        ["String", "Number", "Boolean", "Array or String", "Hash", "Binary"].include?(type)
+      end
+
+    end # HelpHelper
+  end # Developer
+end # Platform

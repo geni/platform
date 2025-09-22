@@ -21,7 +21,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::AccessToken < Platform::Oauth::OauthToken
-  validates_presence_of :user_id
+module Platform
+  module Oauth
+    class AccessToken < Oauth::OauthToken
+      validates_presence_of :user_id
 
-end
+    end # class AccessToken
+  end # module Oauth
+end # module Platform

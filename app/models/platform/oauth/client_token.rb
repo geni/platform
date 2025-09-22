@@ -21,10 +21,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::ClientToken < Platform::Oauth::OauthToken
+module Platform
+  module Oauth
+    class ClientToken < Oauth::OauthToken
 
-  def code
-    token
-  end
+      def code
+        token
+      end
 
-end
+    end # class ClientToken
+  end # module Oauth
+end # module Platform

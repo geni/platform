@@ -21,6 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ForumTopicFilter < Platform::BaseFilter
+module Platform
+  class ForumTopicFilter < BaseFilter
 
-end
+  end # class ForumTopicFilter
+end # module Platform

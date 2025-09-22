@@ -21,10 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationDeveloper < ActiveRecord::Base
-  set_table_name :platform_application_developers
+module Platform
+  class ApplicationDeveloper < ApplicationRecord
+    self.table_name = :platform_application_developers
 
-  belongs_to :developer, :class_name => "Platform::Developer"
-  belongs_to :application, :class_name => "Platform::Application"
-  
-end
+    belongs_to :developer
+    belongs_to :application
+
+  end # class ApplicationDeveloper
+end # module Platform

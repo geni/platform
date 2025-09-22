@@ -21,28 +21,30 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationUser < ActiveRecord::Base
-  set_table_name :platform_application_users
+module Platform
+  class ApplicationUser < ApplicationRecord
+    self.table_name = :platform_application_users
 
-  belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
-  belongs_to :application, :class_name => "Platform::Application"
+    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    belongs_to :application
 
-  serialize :data
+    serialize :data, :type => Object, :coder => YAML
 
-  def self.for(app, user=Platform::Config.current_user)
-    # cache this method
-    find(:first, :conditions => ["application_id = ? and user_id = ?", app.id, user.id])
-  end
-  
-  def self.find_or_create(app, user=Platform::Config.current_user)
-    self.for(app, user) || create(:application => app, :user => user)
-  end
+    def self.for(app, user=Platform::Config.current_user)
+      where('application_id = ? and user_id = ?', app.id, user.id).first
+    end
 
-  def self.touch(app, user=Platform::Config.current_user)
-    find_or_create(app, user).touch
-  end
+    def self.find_or_create(app, user=Platform::Config.current_user)
+      self.for(app, user) || create(:application => app, :user => user)
+    end
 
-  def access_token
-    @access_token ||= Platform::AccessToken.find(:first, :conditions => ["application_id = ? and user_id = ?", application_id, user_id], :sort => "created_at desc")
-  end
-end
+    def self.touch(app, user=Platform::Config.current_user)
+      find_or_create(app, user).touch
+    end
+
+    def access_token
+      @access_token ||= Platform::AccessToken.where('application_id = ? and user_id = ?', application_id, user_id).order('created_at desc').first
+    end
+
+  end # ApplicationUser
+end # Platform

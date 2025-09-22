@@ -21,43 +21,47 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::DashboardController < Platform::Developer::BaseController
-  before_filter :prepare_apps, :only => [:settings, :update_section]
+module Platform
+  module Developer
+    class DashboardController < BaseController
+      before_action :prepare_apps, :only => [:settings, :update_section]
 
-  def index
-    selected_app_ids = session[:platform_dashboard_apps] || []
-    if selected_app_ids.empty?
-      @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc", :limit => 5)
-      session[:platform_dashboard_apps] = @apps.collect{|app| app.id}
-    else
-      @apps = Platform::Application.find(:all, :conditions => ["id in (?) and developer_id = ?", selected_app_ids, platform_current_developer.id], :order => "created_at desc")
-    end
-  end
+      def index
+        selected_app_ids = session[:platform_dashboard_apps] || []
+        if selected_app_ids.empty?
+          @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc", :limit => 5)
+          session[:platform_dashboard_apps] = @apps.collect{|app| app.id}
+        else
+          @apps = Platform::Application.find(:all, :conditions => ["id in (?) and developer_id = ?", selected_app_ids, platform_current_developer.id], :order => "created_at desc")
+        end
+      end
 
-  def settings
+      def settings
 
-  end
+      end
 
-  def update_section
-    unless request.post? and verified_request?
-      return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
-    end
+      def update_section
+        unless request.post? and verified_request?
+          return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
+        end
 
-    @selected_app_ids = params.keys - ['action', 'controller', 'section']
-    session[:platform_dashboard_apps] = @selected_app_ids
+        @selected_app_ids = params.keys - ['action', 'controller', 'section']
+        session[:platform_dashboard_apps] = @selected_app_ids
 
-#   persist in the database
-#    platform_current_developer.update_attributes(params[:developer])
-#    platform_current_developer.reload
+    #   persist in the database
+    #    platform_current_developer.update_attributes(params[:developer])
+    #    platform_current_developer.reload
 
-    render(:partial => params[:section], :locals => {:mode => :view})
-  end
+        render(:partial => params[:section], :locals => {:mode => :view})
+      end
 
-private
+    private
 
-  def prepare_apps
-    @selected_app_ids = session[:platform_dashboard_apps] || []
-    @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc")
-  end
+      def prepare_apps
+        @selected_app_ids = session[:platform_dashboard_apps] || []
+        @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc")
+      end
 
-end
+    end # class DashboardController
+  end # module Developer
+end # module Platform

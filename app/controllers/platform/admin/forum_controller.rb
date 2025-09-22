@@ -21,14 +21,18 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Admin::ForumController < Platform::Admin::BaseController
+module Platform
+  module Admin
+    class ForumController < Admin::BaseController
 
-  def index
-    @topics = Platform::ForumTopic.filter(:params => params, :filter => Platform::ForumTopicFilter)
-  end
+      def index
+        @topics = Platform::ForumTopic.filter(:params => params, :filter => Platform::ForumTopicFilter)
+      end
 
-  def messages
-    @messages = Platform::ForumMessage.filter(:params => params, :filter => Platform::ForumMessageFilter)
-  end
-  
-end
+      def messages
+        @messages = Platform::ForumMessage.filter(:params => params, :filter => Platform::ForumMessageFilter)
+      end
+
+    end # class ForumController
+  end # module Admin
+end # module Platform

@@ -2,9 +2,9 @@
 # will_filter configuration
 #
 # Default settings for all environments
-# 
-# You can overload any feature for any environment by changing the 
-# environment settings at the bottom of the file. 
+#
+# You can overload any feature for any environment by changing the
+# environment settings at the bottom of the file.
 #
 # Alternatively, you can overload any of the methods of WillFilter::Config
 #############################################################################
@@ -12,35 +12,35 @@
 defaults: &defaults
   effects_options:
     enabled:              false
-    script_path:          "/will_filter/javascripts/will_filter_prototype_effects.js"
-    
-  save_options: 
+    script_path:          "will_filter/will_filter_prototype_effects.js"
+
+  save_options:
     enabled:              true
     user_filters_enabled: false   # if set to true, the filters will be private
-    user_class_name:      "Platform::PlatformUser" 
-    current_user_method:  current_user 
+    user_class_name:      "Platform::PlatformUser"
+    current_user_method:  current_user
 
-  export_options:         
+  export_options:
     enabled:              true
     default_formats:      [html, csv, xml, json]
-  
+
   containers:             # container implementation mapping
-    nil:                  "WillFilter::Containers::Nil"
-    numeric:              "WillFilter::Containers::Numeric"
-    numeric_range:        "WillFilter::Containers::NumericRange"
-    numeric_delimited:    "WillFilter::Containers::NumericDelimited"
-    date_time_range:      "WillFilter::Containers::DateTimeRange"
-    single_date:          "WillFilter::Containers::SingleDate"
-    date:                 "WillFilter::Containers::Date"
-    date_time:            "WillFilter::Containers::DateTime"
-    date_range:           "WillFilter::Containers::DateRange"
-    text:                 "WillFilter::Containers::Text"
-    text_delimited:       "WillFilter::Containers::TextDelimited"
-    boolean:              "WillFilter::Containers::Boolean"
-    list:                 "WillFilter::Containers::List"
-    filter_list:          "WillFilter::Containers::FilterList"
-    
-  data_types:             # mapping between data types and containers   
+    nil:                  WillFilter::Containers::Nil
+    numeric:              WillFilter::Containers::Numeric
+    numeric_range:        WillFilter::Containers::NumericRange
+    numeric_delimited:    WillFilter::Containers::NumericDelimited
+    date_time_range:      WillFilter::Containers::DateTimeRange
+    single_date:          WillFilter::Containers::SingleDate
+    date:                 WillFilter::Containers::Date
+    date_time:            WillFilter::Containers::DateTime
+    date_range:           WillFilter::Containers::DateRange
+    text:                 WillFilter::Containers::Text
+    text_delimited:       WillFilter::Containers::TextDelimited
+    boolean:              WillFilter::Containers::Boolean
+    list:                 WillFilter::Containers::List
+    filter_list:          WillFilter::Containers::FilterList
+
+  data_types:             # mapping between data types and containers
     bigint:               [nil, numeric, numeric_range, numeric_delimited]
     numeric:              [nil, numeric, numeric_range, numeric_delimited]
     serial_primary_key:   [nil, numeric, numeric_range, numeric_delimited]
@@ -65,7 +65,7 @@ defaults: &defaults
     is_on:                300
     is_in:                400
     is_provided:          500
-    is_not_provided:      600 
+    is_not_provided:      600
     is_after:             700
     is_before:            800
     is_in_the_range:      900
@@ -76,18 +76,18 @@ defaults: &defaults
     is_greater_than:      1400
     is_less_than:         1500
     is_filtered_by:       1600
-    
-    
+
+
 #############################################################################
 # Environment Settings
 # You can overload any feature defined in the defaults for any environment
 #############################################################################
 development:
   <<: *defaults
-  
+
 test:
   <<: *defaults
-      
+
 qa:
   <<: *defaults
 

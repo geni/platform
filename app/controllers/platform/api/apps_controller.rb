@@ -21,15 +21,20 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Api::AppsController < Platform::Api::BaseController
-  def index
-    render_response(Platform::Application.all) 
-  end
+module Platform
+  module Api
+    class AppsController < Api::BaseController
 
-private 
+      def index
+        render_response(Platform::Application.all)
+      end
 
-  def model_class
-    Platform::Application
-  end
-  
-end
+    private
+
+      def model_class
+        Platform::Application
+      end
+
+    end # class AppsController
+  end # module Api
+end # module Platform

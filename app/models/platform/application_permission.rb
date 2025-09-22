@@ -21,10 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationPermission < ActiveRecord::Base
-  set_table_name :platform_application_permissions
-  
-  belongs_to :application, :class_name => "Platform::Application"
-  belongs_to :permission, :class_name => "Platform::Permission"
-  
-end
+module Platform
+  class ApplicationPermission < ApplicationRecord
+    self.table_name = :platform_application_permissions
+
+    belongs_to :application
+    belongs_to :permission
+
+  end # class Application
+end # module Platform

@@ -21,11 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::DailyApplicationMetric < Platform::ApplicationMetric
+module Platform
+  class DailyApplicationMetric < ApplicationMetric
 
-  def self.interval_duration
-    1.day
-  end
+    def self.interval_duration
+      1.day
+    end
 
-
-end
+  end # class DailyApplicationMetric
+end # module Platform

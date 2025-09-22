@@ -21,43 +21,47 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::ApiExplorerController < Platform::Developer::BaseController
+module Platform
+  module Developer
+    class ApiExplorerController < BaseController
 
-  before_filter :prepare_api_version
-  skip_filter :validate_guest_user
-  skip_filter :validate_developer
+      before_action :prepare_api_version
+      skip_before_action :validate_guest_user
+      skip_before_action :validate_developer
 
-  if defined?(SslRequirement)
-    include SslRequirement
-    ssl_required :index, :history, :options, :oauth_lander
-  end
+      if defined?(SslRequirement)
+        include SslRequirement
+        ssl_required :index, :history, :options, :oauth_lander
+      end
 
-  def index
-    @api_history = "[]"
-    @api_history = request.cookies["api_history"] unless request.cookies["api_history"].blank?
-    @api_history_index = request.cookies["api_history_index"] || 0
-  end
+      def index
+        @api_history = "[]"
+        @api_history = request.cookies["api_history"] unless request.cookies["api_history"].blank?
+        @api_history_index = request.cookies["api_history_index"] || 0
+      end
 
-  def history
-    @api_history = []
-    @api_history = JSON.parse(request.cookies["api_history"]) unless request.cookies["api_history"].blank?
-    @api_history_index = (params["api_history_index"] || -1).to_i
+      def history
+        @api_history = []
+        @api_history = JSON.parse(request.cookies["api_history"]) unless request.cookies["api_history"].blank?
+        @api_history_index = (params["api_history_index"] || -1).to_i
 
-    render(:layout => false)
-  end
+        render(:layout => false)
+      end
 
-  def options
-    render(:layout => false)
-  end
+      def options
+        render(:layout => false)
+      end
 
-  def oauth_lander
-    render :layout => false
-  end
+      def oauth_lander
+        render :layout => false
+      end
 
-private
+    private
 
-  def prepare_api_version
-    @api_version = params[:api_version] || Platform::Config.api_default_version
-  end
+      def prepare_api_version
+        @api_version = params[:api_version] || Platform::Config.api_default_version
+      end
 
-end
+    end # class ApiExplorerController
+  end # module Developer
+end # module Platform

@@ -21,31 +21,35 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::BaseController < Platform::BaseController
+module Platform
+  module Developer
+    class BaseController < Platform::BaseController
 
-  before_filter :validate_developer
+      before_action :validate_developer
 
-private
+    private
 
-  def platform_developer_tabs
-    @tabs ||= begin 
-      tabs = Platform::Config.features.clone
-      # we may need to do some extra filtering here
-      tabs
-    end
-  end
-  helper_method :platform_developer_tabs
-
-  def validate_developer
-    if Platform::Config.enable_developer_agreement?
-      unless platform_current_user_is_developer?
-        return redirect_to("/platform/developer/registration")
+      def platform_developer_tabs
+        @tabs ||= begin
+          tabs = Platform::Config.features.clone
+          # we may need to do some extra filtering here
+          tabs
+        end
       end
-    else
-      # automatically register the developer - if registration is disabled
-      Platform::Developer.find_or_create(Platform::Config.current_user)
-      Platform::Config.init(Platform::Config.current_user)
-    end
-  end
-  
-end
+      helper_method :platform_developer_tabs
+
+      def validate_developer
+        if Platform::Config.enable_developer_agreement?
+          unless platform_current_user_is_developer?
+            return redirect_to("/platform/developer/registration")
+          end
+        else
+          # automatically register the developer - if registration is disabled
+          Platform::Developer.find_or_create(Platform::Config.current_user)
+          Platform::Config.init(Platform::Config.current_user)
+        end
+      end
+
+    end # class BaseController
+  end # module Developer
+end # module Platform

@@ -21,38 +21,40 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::LoggedExceptionFilter <  Platform::BaseFilter
+module Platform
+  class LoggedExceptionFilter <  Platform::BaseFilter
 
-  def default_order
-    'created_at'
-  end
-
-  def default_criteria_key
-    :exception_class
-  end
-
-  def date_condition
-    date_criteria = definition[:created_at]
-    return date_criteria.container.sql_condition if date_criteria and (date_criteria.validate == nil)
-    nil
-  end
-
-  def default_filters
-    [
-      ["Exceptions Logged Today", "created_today"],
-    ]
-  end
-
-  def default_filter_conditions(key)
-    if (key=="created_today")
-      @order      ='created_at'
-      @order_type ='desc'
-      return [:created_at, :is_on, Date.today]
+    def default_order
+      'created_at'
     end
-  end
-  
-  def default_filter_if_empty
-    "created_today"
-  end
 
-end
+    def default_criteria_key
+      :exception_class
+    end
+
+    def date_condition
+      date_criteria = definition[:created_at]
+      return date_criteria.container.sql_condition if date_criteria and (date_criteria.validate == nil)
+      nil
+    end
+
+    def default_filters
+      [
+        ['Exceptions Logged Today', 'created_today'],
+      ]
+    end
+
+    def default_filter_conditions(key)
+      if key == 'created_today'
+        @order      ='created_at'
+        @order_type ='desc'
+        return [:created_at, :is_on, Date.today]
+      end
+    end
+
+    def default_filter_if_empty
+      'created_today'
+    end
+
+  end # class LoggedExceptionFilter
+end # module Platform

@@ -21,22 +21,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Developer::RegistrationController < Platform::Developer::BaseController
+module Platform
+  module Developer
+    class RegistrationController < BaseController
 
-  skip_filter :validate_developer
+      skip_before_action :validate_developer
 
-  def index
-
-  end
-
-  def proceed
-    if request.post? and verified_request?
-      unless Platform::Config.current_user_is_developer?
-        Platform::Developer.find_or_create(Platform::Config.current_user)
+      def index
       end
-    end
 
-    redirect_to(:controller => "/platform/developer/apps/new")
-  end
+      def proceed
+        if request.post? and verified_request?
+          unless Platform::Config.current_user_is_developer?
+            Platform::Developer.find_or_create(Platform::Config.current_user)
+          end
+        end
 
-end
+        redirect_to(:controller => "/platform/developer/apps/new")
+      end
+
+    end # class RegistrationController
+  end # module Developer
+end # module Platform

@@ -21,69 +21,73 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::OauthToken < ActiveRecord::Base
-  set_table_name :platform_oauth_tokens
+module Platform
+  module Oauth
+    class OauthToken < ApplicationRecord
+      self.table_name = :platform_oauth_tokens
 
-  belongs_to :application, :class_name => "Platform::Application"
-  belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+      belongs_to :application
+      belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
 
-  validates_uniqueness_of :token
-  validates_presence_of   :application
-  validates_presence_of   :token
+      validates_uniqueness_of :token
+      validates_presence_of   :application
+      validates_presence_of   :token
 
-  def valid_token?(requested_scope = nil)
-    return false if invalidated_at != nil
-    return false if valid_to and Time.now > valid_to
-    return false if requested_scope and requested_scope != self.scope
-    true
-  end
+      def valid_token?(requested_scope = nil)
+        return false if invalidated_at != nil
+        return false if valid_to and Time.now > valid_to
+        return false if requested_scope and requested_scope != self.scope
+        true
+      end
 
-  def invalidated?
-    invalidated_at != nil
-  end
+      def invalidated?
+        invalidated_at != nil
+      end
 
-  def invalidate
-    self.invalidated_at = Time.now
-  end
+      def invalidate
+        self.invalidated_at = Time.now
+      end
 
-  def invalidate!
-    invalidate
-    save!
-  end
+      def invalidate!
+        invalidate
+        save!
+      end
 
-  def authorized?
-    authorized_at && !invalidated?
-  end
+      def authorized?
+        authorized_at && !invalidated?
+      end
 
-  def authorize
-    self.authorized_at = Time.now
-  end
+      def authorize
+        self.authorized_at = Time.now
+      end
 
-  def authorize!
-    authorize
-    save!
-  end
+      def authorize!
+        authorize
+        save!
+      end
 
-  def expire_in(interval)
-    return if interval.nil?
-    self.valid_to = (Time.now + interval)
-  end
-  alias expire_in= expire_in
+      def expire_in(interval)
+        return if interval.nil?
+        self.valid_to = (Time.now + interval)
+      end
+      alias expire_in= expire_in
 
-  def expire_in!(interval)
-    expire_in(interval)
-    save!
-  end
+      def expire_in!(interval)
+        expire_in(interval)
+        save!
+      end
 
-  def generate_key
-    self.token = Platform::Helper.generate_key(40)[0,40]
-  end
+      def generate_key
+        self.token = Platform::Helper.generate_key(40)[0,40]
+      end
 
-  def to_json(options={})
-    hash = {
-      :access_token => token,
-      :expires_in   => (valid_to.to_i - Time.now.to_i),
-    }.to_json(options)
-  end
+      def to_json(options={})
+        hash = {
+          :access_token => token,
+          :expires_in   => (valid_to.to_i - Time.now.to_i),
+        }.to_json(options)
+      end
 
-end
+    end # class OauthToken
+  end # module Oauth
+end # module Platform

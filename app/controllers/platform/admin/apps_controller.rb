@@ -21,150 +21,154 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Admin::AppsController < Platform::Admin::BaseController
+module Platform
+  module Admin
+    class AppsController < Admin::BaseController
 
-  def index
-    @apps = Platform::Application.filter(:params => params, :filter => Platform::ApplicationFilter)
-  end
-
-  def view
-    @app = Platform::Application.find(params[:app_id])
-  end
-
-  def tokens
-    @tokens = Platform::Oauth::OauthToken.filter(:params => params, :filter => Platform::Oauth::OauthTokenFilter)
-  end
-
-  def users
-    @users = Platform::ApplicationUser.filter(:params => params, :filter => Platform::ApplicationUserFilter)
-  end
-
-  # def authorizations
-  #   @permissions = Platform::ApplicationPermission.filter(:params => params, :filter => Platform::ApplicationPermissionFilter)
-  # end
-
-  def permissions
-    @permissions = Platform::Permission.filter(:params => params, :filter => Platform::PermissionFilter)
-  end
-
-  def lb_permission
-    @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
-    @permission ||= Platform::Permission.new
-
-    if request.post? and verified_request?
-      if @permission.id.nil?
-        @permission = Platform::Permission.create(params[:permission])
-      else
-        @permission.update_attributes(params[:permission])
+      def index
+        @apps = Platform::Application.filter(:params => params, :filter => Platform::ApplicationFilter)
       end
 
-      @permission.store_icon(params[:new_icon]) unless params[:new_icon].blank?
-
-      return redirect_to_source(:action => :permissions)
-    end
-
-    render :layout => false
-  end
-
-  def delete_permission
-    if request.post? and verified_request?
-      @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
-      @permission.destroy if @permission
-    end
-
-    redirect_to_source(:action => :permissions)
-  end
-
-  def ratings
-    @ratings = Platform::Rating.filter(:params => params, :filter => Platform::RatingFilter)
-  end
-
-  def block
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.block!
-
-      app.children.each do |child|
-        child.block!
-      end
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def unblock
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.unblock!
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def approve
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.children.each do |child|
-        child.deprecate!
+      def view
+        @app = Platform::Application.find(params[:app_id])
       end
 
-      app.approve!
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def reject
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.reject!
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def set_permission
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.set_permission(params[:perm], true)
-      app.save
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def remove_permission
-    app = Platform::Application.find(params[:app_id])
-
-    if request.post? and verified_request?
-      app.set_permission(params[:perm], false)
-      app.save
-    end
-
-    redirect_to(:action => :view, :app_id => app.id)
-  end
-
-  def lb_edit
-    @app = Platform::Application.find_by_id(params[:app_id])
-    render :layout => false
-  end
-
-  def update
-    if request.post? and verified_request?
-      app = Platform::Application.find_by_id(params[:app_id]) if params[:app_id]
-      if app
-        app.update_attributes(params[:app])
-        app.store_icon(params[:new_icon]) unless params[:new_icon].blank?
-        app.store_logo(params[:new_logo]) unless params[:new_logo].blank?
+      def tokens
+        @tokens = Platform::Oauth::OauthToken.filter(:params => params, :filter => Platform::Oauth::OauthTokenFilter)
       end
-    end
 
-    redirect_to_source(:action => :index)
-  end
+      def users
+        @users = Platform::ApplicationUser.filter(:params => params, :filter => Platform::ApplicationUserFilter)
+      end
 
-end
+      # def authorizations
+      #   @permissions = Platform::ApplicationPermission.filter(:params => params, :filter => Platform::ApplicationPermissionFilter)
+      # end
+
+      def permissions
+        @permissions = Platform::Permission.filter(:params => params, :filter => Platform::PermissionFilter)
+      end
+
+      def lb_permission
+        @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
+        @permission ||= Platform::Permission.new
+
+        if request.post? and verified_request?
+          if @permission.id.nil?
+            @permission = Platform::Permission.create(params[:permission])
+          else
+            @permission.update_attributes(params[:permission])
+          end
+
+          @permission.store_icon(params[:new_icon]) unless params[:new_icon].blank?
+
+          return redirect_to_source(:action => :permissions)
+        end
+
+        render :layout => false
+      end
+
+      def delete_permission
+        if request.post? and verified_request?
+          @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
+          @permission.destroy if @permission
+        end
+
+        redirect_to_source(:action => :permissions)
+      end
+
+      def ratings
+        @ratings = Platform::Rating.filter(:params => params, :filter => Platform::RatingFilter)
+      end
+
+      def block
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.block!
+
+          app.children.each do |child|
+            child.block!
+          end
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def unblock
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.unblock!
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def approve
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.children.each do |child|
+            child.deprecate!
+          end
+
+          app.approve!
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def reject
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.reject!
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def set_permission
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.set_permission(params[:perm], true)
+          app.save
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def remove_permission
+        app = Platform::Application.find(params[:app_id])
+
+        if request.post? and verified_request?
+          app.set_permission(params[:perm], false)
+          app.save
+        end
+
+        redirect_to(:action => :view, :app_id => app.id)
+      end
+
+      def lb_edit
+        @app = Platform::Application.find_by_id(params[:app_id])
+        render :layout => false
+      end
+
+      def update
+        if request.post? and verified_request?
+          app = Platform::Application.find_by_id(params[:app_id]) if params[:app_id]
+          if app
+            app.update_attributes(params[:app])
+            app.store_icon(params[:new_icon]) unless params[:new_icon].blank?
+            app.store_logo(params[:new_logo]) unless params[:new_logo].blank?
+          end
+        end
+
+        redirect_to_source(:action => :index)
+      end
+
+    end # class AppsController
+  end # module Admin
+end # module Platform

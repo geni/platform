@@ -21,10 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::RatingFilter < Platform::BaseFilter
+module Platform
+  class RatingFilter < BaseFilter
 
-  def default_filter_if_empty
-    "created_today"
-  end
+    def default_filter_if_empty
+      'created_today'
+    end
 
-end
+  end # class RatingFilter
+end # module Platform

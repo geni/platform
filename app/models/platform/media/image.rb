@@ -21,6 +21,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Media::Image < Platform::Media::Media
-  
-end
+module Platform
+  module Media
+    class Image < Media
+
+    end # class Image
+  end # module Media
+end # module Platform

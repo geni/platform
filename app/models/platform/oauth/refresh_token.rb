@@ -21,21 +21,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Oauth::RefreshToken < Platform::Oauth::OauthToken
+module Platform
+  module Oauth
+    class RefreshToken < Oauth::OauthToken
 
-  def exchange!(params={})
-    if user
-      token = application.create_access_token(user, scope)
-    else
-      token = application.create_client_token(scope)
-    end    
-    
-    invalidate!
-    token
-  end
+      def exchange!(params={})
+        if user
+          token = application.create_access_token(user, scope)
+        else
+          token = application.create_client_token(scope)
+        end
 
-  def redirect_url
-    callback_url
-  end
+        invalidate!
+        token
+      end
 
-end
+      def redirect_url
+        callback_url
+      end
+
+    end # class RefreshToken
+  end # module Oauth
+end # module Platform

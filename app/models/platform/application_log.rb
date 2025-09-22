@@ -21,12 +21,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationLog < ActiveRecord::Base
-  set_table_name :platform_application_logs
+module Platform
+  class ApplicationLog < ApplicationRecord
+    self.table_name = :platform_application_logs
 
-  belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
-  belongs_to :application, :class_name => "Platform::Application"
-  
-  serialize :data
-  
-end
+    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    belongs_to :application
+
+    serialize :data, :type => Object, :coder => YAML
+
+  end # class ApplicationLog
+end # module Platform

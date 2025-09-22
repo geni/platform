@@ -1,2 +1,0 @@
-module Platform::Developers
-end

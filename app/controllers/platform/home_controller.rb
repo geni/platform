@@ -21,41 +21,44 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::HomeController < Platform::BaseController
+module Platform
+  class HomeController < BaseController
 
-  skip_before_filter :validate_guest_user
-  
-  layout Platform::Config.site_info[:platform_layout]
-  
-  def index
-    
-  end
+    skip_before_action :validate_guest_user
 
-  def branding
-    
-  end
+    layout Platform::Config.site_info[:platform_layout]
 
-  def rate_limits
-    
-  end
+    def index
 
-  def tokens
-        
-  end
+    end
 
-  def rules
-        
-  end
-  
-  def license
-    
-  end
-  
-  def docs
-    
-  end
-  
-  def credits
-    
-  end
-end
+    def branding
+
+    end
+
+    def rate_limits
+
+    end
+
+    def tokens
+
+    end
+
+    def rules
+
+    end
+
+    def license
+
+    end
+
+    def docs
+
+    end
+
+    def credits
+
+    end
+
+  end # class HomeController
+end # module Platform

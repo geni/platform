@@ -21,14 +21,16 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationCategory < ActiveRecord::Base
-  set_table_name :platform_application_categories
+module Platform
+  class ApplicationCategory < ApplicationRecord
+    self.table_name = :platform_application_categories
 
-  belongs_to :category, :class_name => "Platform::Category"
-  belongs_to :application, :class_name => "Platform::Application"
-  
-  def self.find_or_create(app, cat)
-    find_by_application_id_and_category_id(app.id, cat.id) || create(:application => app, :category => cat)
-  end
-  
-end
+    belongs_to :category
+    belongs_to :application
+
+    def self.find_or_create(app, cat)
+      find_by_application_id_and_category_id(app.id, cat.id) || create(:application => app, :category => cat)
+    end
+
+  end # class ApplicationCategory
+end # module Platform

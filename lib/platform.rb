@@ -21,6 +21,9 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+require "platform/version"
+require "platform/engine"
+
 module Platform
 
   def self.escape_html(string)
@@ -28,5 +31,3 @@ module Platform
   end
 
 end
-
-ActionController::Base.append_view_path File.dirname(__FILE__) + '/../app/views/platform'
