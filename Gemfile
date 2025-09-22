@@ -24,7 +24,7 @@ group :test do
   gem 'method_source',    :require => false
   gem 'rake'
   gem 'simplecov'
-  gem 'sqlite3'
+  gem 'sqlite3', '1.6.9' # last version that works with Ruby 2.7
   gem 'test-unit', '3.6.2' # >3.6.3 have problems with elapsed_time
 end
 
