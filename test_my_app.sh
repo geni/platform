@@ -12,8 +12,8 @@ bundle config --local clean true
 bundle config --local path vendor/bundle
 bundle config --local without vscode
 
-rm Gemfile.lock
+rm -f Gemfile.lock
 bundle install
 
-rm db/test.sqlite3
+rm -f db/test.sqlite3
 bundle exec rake test
