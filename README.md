@@ -47,7 +47,7 @@ in app/assets/javascripts/platform.
 
 ```sh
 bundle exec annotaterb models -p before
-``
+```
 
 ## Testing
 
