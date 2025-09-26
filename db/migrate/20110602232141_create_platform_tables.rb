@@ -1,4 +1,4 @@
-class CreatePlatformTables < ActiveRecord::Migration
+class CreatePlatformTables < ActiveRecord::Migration[4.2]
   def self.up
     create_table :platform_developers do |t|
       t.integer :user_id, :limit => 8, :null => false
@@ -10,7 +10,7 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_developers, :user_id
-    
+
     create_table :platform_applications do |t|
       t.integer :developer_id
       t.string  :name
@@ -46,16 +46,16 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_applications, :developer_id
-    add_index :platform_applications, :key, :unique    
-    add_index :platform_applications, :parent_id  
-    
+    add_index :platform_applications, :key, :unique => true
+    add_index :platform_applications, :parent_id
+
     create_table :platform_application_logs do |t|
       t.integer     :application_id
       t.integer     :user_id
       t.string      :event
       t.string      :controller
       t.string      :action
-      t.string      :request_method 
+      t.string      :request_method
       t.text        :data
       t.string      :user_agent
       t.integer     :duration
@@ -64,8 +64,8 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.string      :ip
       t.timestamps
     end
-    add_index :platform_application_logs, [:application_id, :created_at]    
-    
+    add_index :platform_application_logs, [:application_id, :created_at], :name => 'idx_platform_application_logs_on_app_and_created_at'
+
     create_table :platform_application_metrics do |t|
       t.string    :type
       t.timestamp :interval
@@ -73,9 +73,9 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.integer   :active_user_count
       t.integer   :new_user_count
       t.timestamps
-    end      
-    add_index :platform_application_metrics, [:application_id, :interval]
-    
+    end
+    add_index :platform_application_metrics, [:application_id, :interval], :name => 'idx_platform_application_metrics_on_app_and_interval'
+
     create_table :platform_application_usage_metrics do |t|
       t.string    :type
       t.timestamp :interval
@@ -85,33 +85,33 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.integer   :avg_response_time
       t.integer   :error_count
       t.timestamps
-    end      
-    add_index :platform_application_usage_metrics, [:application_id, :interval]
+    end
+    add_index :platform_application_usage_metrics, [:application_id, :interval], :name => 'idx_platform_app_usage_metrics_on_app_and_interval'
 
     create_table :platform_rollup_logs do |t|
-      t.timestamp  :interval 
+      t.timestamp  :interval
       t.timestamp  :started_at
       t.timestamp  :finished_at
       t.timestamps
     end
     add_index :platform_rollup_logs, :interval
-    
+
     create_table :platform_media do |t|
       t.string  :type
       t.string  :file_location
       t.string  :content_type
       t.string  :file_name
       t.timestamps
-    end    
-    
+    end
+
     create_table :platform_application_developers do |t|
       t.integer :application_id
       t.integer :developer_id
       t.timestamps
     end
     add_index :platform_application_developers, :application_id
-    add_index :platform_application_developers, :developer_id    
-    
+    add_index :platform_application_developers, :developer_id
+
     create_table :platform_oauth_tokens do |t|
       t.string    :type,            :limit => 20
       t.integer   :user_id,         :limit=>8
@@ -125,10 +125,10 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamp :authorized_at, :invalidated_at
       t.timestamps
     end
-    add_index :platform_oauth_tokens, :token, :unique
-    
+    add_index :platform_oauth_tokens, :token, :unique => true
+
     create_table :platform_ratings do |t|
-      t.integer   :user_id,         :limit => 8, :null => false 
+      t.integer   :user_id,         :limit => 8, :null => false
       t.string    :object_type
       t.integer   :object_id
       t.integer   :value
@@ -136,20 +136,20 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_ratings, :user_id
-    add_index :platform_ratings, [:object_type, :object_id]    
-    
+    add_index :platform_ratings, [:object_type, :object_id]
+
     create_table :platform_categories do |t|
       t.string    :type
       t.string    :name
       t.string    :keyword
-      t.integer   :position 
+      t.integer   :position
       t.date      :enable_on
       t.date      :disable_on
-      t.integer   :parent_id 
+      t.integer   :parent_id
       t.timestamps
     end
-    add_index :platform_categories, :parent_id    
-    
+    add_index :platform_categories, :parent_id
+
     create_table :platform_application_categories do |t|
       t.integer   :category_id,     :null => false
       t.integer   :application_id,  :null => false
@@ -158,8 +158,8 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_application_categories, :category_id
-    add_index :platform_application_categories, [:category_id, :application_id]
-    
+    add_index :platform_application_categories, [:category_id, :application_id], :name => 'idx_platform_app_categories_on_cat_and_app'
+
     create_table :platform_forum_topics do |t|
       t.string  :subject_type
       t.integer :subject_id
@@ -168,8 +168,8 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_forum_topics, [:subject_type, :subject_id]
-    add_index :platform_forum_topics, [:user_id]    
-    
+    add_index :platform_forum_topics, [:user_id]
+
     create_table :platform_forum_messages do |t|
       t.integer :forum_topic_id,  :null => false
       t.integer :user_id,         :null => false
@@ -178,21 +178,21 @@ class CreatePlatformTables < ActiveRecord::Migration
     end
     add_index :platform_forum_messages, [:forum_topic_id]
     add_index :platform_forum_messages, [:user_id]
-    
+
     create_table :platform_permissions do |t|
       t.string  :keyword,         :null => false
       t.text    :description,     :null => false
       t.timestamps
     end
-    add_index :platform_permissions, [:keyword]    
-    
+    add_index :platform_permissions, [:keyword]
+
     create_table :platform_application_permissions do |t|
       t.integer :application_id
       t.integer :permission_id
       t.timestamps
     end
     add_index :platform_application_permissions, :application_id
-    
+
     create_table :platform_application_users do |t|
       t.integer :application_id,  :null => false
       t.integer :user_id,         :null => false
@@ -201,7 +201,7 @@ class CreatePlatformTables < ActiveRecord::Migration
     end
     add_index :platform_application_users, [:application_id]
     add_index :platform_application_users, [:user_id]
-    
+
     create_table :platform_users do |t|
       t.string  :name
       t.string  :gender
@@ -213,15 +213,15 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_users, [:email]
-    add_index :platform_users, [:email, :password]     
-    
+    add_index :platform_users, [:email, :password]
+
     create_table :platform_admins do |t|
       t.integer :user_id
       t.integer :level
       t.timestamps
     end
-    add_index :platform_admins, [:user_id]    
-    
+    add_index :platform_admins, [:user_id]
+
     create_table :platform_logged_exceptions do |t|
       t.column :exception_class, :string
       t.column :controller_name, :string
@@ -233,8 +233,8 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.column :request,         :text
       t.column :session,         :text
       t.column :cause,           :binary
-      t.column :user_id,         :integer  
-      t.column :application_id,  :integer  
+      t.column :user_id,         :integer
+      t.column :application_id,  :integer
       t.timestamps
     end
   end
