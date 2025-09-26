@@ -21,6 +21,22 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_users
+#
+#  id             :integer          not null, primary key
+#  data           :text
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer          not null
+#  user_id        :integer          not null
+#
+# Indexes
+#
+#  index_platform_application_users_on_application_id  (application_id)
+#  index_platform_application_users_on_user_id         (user_id)
+#
 module Platform
   class ApplicationUser < ApplicationRecord
     self.table_name = :platform_application_users

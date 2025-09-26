@@ -21,6 +21,29 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_oauth_tokens
+#
+#  id             :integer          not null, primary key
+#  authorized_at  :datetime
+#  callback_url   :string
+#  invalidated_at :datetime
+#  scope          :string
+#  secret         :string(50)
+#  token          :string(50)
+#  type           :string
+#  valid_to       :datetime
+#  verifier       :string(20)
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer
+#  user_id        :bigint
+#
+# Indexes
+#
+#  index_platform_oauth_tokens_on_token  (token) UNIQUE
+#
 module Platform
   module Oauth
     class OauthToken < ApplicationRecord

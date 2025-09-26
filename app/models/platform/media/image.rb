@@ -21,6 +21,18 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_media
+#
+#  id            :integer          not null, primary key
+#  content_type  :string
+#  file_location :string
+#  file_name     :string
+#  type          :string
+#  created_at    :datetime
+#  updated_at    :datetime
+#
 module Platform
   module Media
     class Image < Media

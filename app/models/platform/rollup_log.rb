@@ -21,6 +21,21 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_rollup_logs
+#
+#  id          :integer          not null, primary key
+#  finished_at :datetime
+#  interval    :datetime
+#  started_at  :datetime
+#  created_at  :datetime
+#  updated_at  :datetime
+#
+# Indexes
+#
+#  index_platform_rollup_logs_on_interval  (interval)
+#
 module Platform
   class RollupLog < ApplicationRecord
     self.table_name = :platform_rollup_logs

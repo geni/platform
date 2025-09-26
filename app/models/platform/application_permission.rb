@@ -21,6 +21,20 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_permissions
+#
+#  id             :integer          not null, primary key
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer
+#  permission_id  :integer
+#
+# Indexes
+#
+#  index_platform_application_permissions_on_application_id  (application_id)
+#
 module Platform
   class ApplicationPermission < ApplicationRecord
     self.table_name = :platform_application_permissions

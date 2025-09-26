@@ -21,6 +21,30 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_logs
+#
+#  id             :integer          not null, primary key
+#  action         :string
+#  controller     :string
+#  country        :string
+#  data           :text
+#  duration       :integer
+#  event          :string
+#  host           :string
+#  ip             :string
+#  request_method :string
+#  user_agent     :string
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer
+#  user_id        :integer
+#
+# Indexes
+#
+#  idx_platform_application_logs_on_app_and_created_at  (application_id,created_at)
+#
 module Platform
   class ApplicationLog < ApplicationRecord
     self.table_name = :platform_application_logs

@@ -21,6 +21,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_categories
+#
+#  id         :integer          not null, primary key
+#  disable_on :date
+#  enable_on  :date
+#  keyword    :string
+#  name       :string
+#  position   :integer
+#  type       :string
+#  created_at :datetime
+#  updated_at :datetime
+#  parent_id  :integer
+#
+# Indexes
+#
+#  index_platform_categories_on_parent_id  (parent_id)
+#
 module Platform
   class Category < ApplicationRecord
     self.table_name = :platform_categories

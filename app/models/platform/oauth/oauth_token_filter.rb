@@ -21,6 +21,23 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: wf_filters
+#
+#  id               :integer          not null, primary key
+#  data             :text
+#  model_class_name :string
+#  name             :string
+#  type             :string
+#  created_at       :datetime
+#  updated_at       :datetime
+#  user_id          :integer
+#
+# Indexes
+#
+#  index_wf_filters_on_user_id  (user_id)
+#
 module Platform
   module Oauth
     class OauthTokenFilter < BaseFilter

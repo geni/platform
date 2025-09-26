@@ -21,6 +21,23 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_categories
+#
+#  id             :integer          not null, primary key
+#  featured       :boolean
+#  position       :integer
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer          not null
+#  category_id    :integer          not null
+#
+# Indexes
+#
+#  idx_platform_app_categories_on_cat_and_app            (category_id,application_id)
+#  index_platform_application_categories_on_category_id  (category_id)
+#
 module Platform
   class ApplicationCategory < ApplicationRecord
     self.table_name = :platform_application_categories

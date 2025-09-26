@@ -21,6 +21,26 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_logged_exceptions
+#
+#  id              :integer          not null, primary key
+#  action_name     :string
+#  backtrace       :text
+#  cause           :binary
+#  controller_name :string
+#  environment     :text
+#  exception_class :string
+#  message         :text
+#  request         :text
+#  server          :string
+#  session         :text
+#  created_at      :datetime
+#  updated_at      :datetime
+#  application_id  :integer
+#  user_id         :integer
+#
 module Platform
   class LoggedException < ApplicationRecord
     self.table_name = :platform_logged_exceptions

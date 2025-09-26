@@ -21,6 +21,24 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_ratings
+#
+#  id          :integer          not null, primary key
+#  comment     :text
+#  object_type :string
+#  value       :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#  object_id   :integer
+#  user_id     :bigint           not null
+#
+# Indexes
+#
+#  index_platform_ratings_on_object_type_and_object_id  (object_type,object_id)
+#  index_platform_ratings_on_user_id                    (user_id)
+#
 module Platform
   class Rating < ApplicationRecord
     self.table_name = :platform_ratings

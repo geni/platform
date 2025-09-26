@@ -21,6 +21,52 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_applications
+#
+#  id                       :integer          not null, primary key
+#  android_key_hash         :string
+#  api_version              :string
+#  auto_login               :boolean
+#  auto_resize              :boolean
+#  auto_signin              :boolean
+#  callback_url             :string
+#  canvas_name              :string
+#  canvas_url               :string
+#  consent_label            :text
+#  contact_email            :string
+#  deauthorize_callback_url :string
+#  description              :text
+#  key                      :string
+#  locale                   :string
+#  mobile_application_type  :string
+#  name                     :string
+#  permissions              :string
+#  privacy_policy_url       :string
+#  rank                     :integer
+#  secret                   :string
+#  site_domain              :string
+#  state                    :string           default("new")
+#  support_url              :string
+#  terms_of_service_url     :string
+#  url                      :string
+#  version                  :string
+#  created_at               :datetime
+#  updated_at               :datetime
+#  developer_id             :integer
+#  icon_id                  :integer
+#  ios_bundle_id            :string
+#  itunes_app_store_id      :string
+#  logo_id                  :integer
+#  parent_id                :integer
+#
+# Indexes
+#
+#  index_platform_applications_on_developer_id  (developer_id)
+#  index_platform_applications_on_key           (key) UNIQUE
+#  index_platform_applications_on_parent_id     (parent_id)
+#
 module Platform
   class Application < ApplicationRecord
     self.table_name = :platform_applications

@@ -21,6 +21,22 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_forum_messages
+#
+#  id             :integer          not null, primary key
+#  message        :text             not null
+#  created_at     :datetime
+#  updated_at     :datetime
+#  forum_topic_id :integer          not null
+#  user_id        :integer          not null
+#
+# Indexes
+#
+#  index_platform_forum_messages_on_forum_topic_id  (forum_topic_id)
+#  index_platform_forum_messages_on_user_id         (user_id)
+#
 module Platform
   class ForumMessage < ApplicationRecord
     self.table_name = :platform_forum_messages

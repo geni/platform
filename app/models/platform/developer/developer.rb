@@ -21,6 +21,24 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_developers
+#
+#  id         :integer          not null, primary key
+#  about      :text
+#  email      :string
+#  name       :string           not null
+#  phone      :string
+#  url        :string
+#  created_at :datetime
+#  updated_at :datetime
+#  user_id    :bigint           not null
+#
+# Indexes
+#
+#  index_platform_developers_on_user_id  (user_id)
+#
 module Platform
   module Developer
     class Developer < ApplicationRecord

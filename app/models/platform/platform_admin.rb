@@ -22,6 +22,20 @@
 #++
 
 # used only in the stand-alone mode
+# == Schema Information
+#
+# Table name: platform_admins
+#
+#  id         :integer          not null, primary key
+#  level      :integer
+#  created_at :datetime
+#  updated_at :datetime
+#  user_id    :integer
+#
+# Indexes
+#
+#  index_platform_admins_on_user_id  (user_id)
+#
 module Platform
   class PlatformAdmin < ApplicationRecord
     self.table_name = :platform_admins

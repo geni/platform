@@ -21,6 +21,21 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_developers
+#
+#  id             :integer          not null, primary key
+#  created_at     :datetime
+#  updated_at     :datetime
+#  application_id :integer
+#  developer_id   :integer
+#
+# Indexes
+#
+#  index_platform_application_developers_on_application_id  (application_id)
+#  index_platform_application_developers_on_developer_id    (developer_id)
+#
 module Platform
   class ApplicationDeveloper < ApplicationRecord
     self.table_name = :platform_application_developers

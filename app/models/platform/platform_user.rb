@@ -22,6 +22,26 @@
 #++
 
 # used only in the stand-alone mode
+# == Schema Information
+#
+# Table name: platform_users
+#
+#  id         :integer          not null, primary key
+#  email      :string
+#  gender     :string
+#  link       :string
+#  locale     :string
+#  mugshot    :string
+#  name       :string
+#  password   :string
+#  created_at :datetime
+#  updated_at :datetime
+#
+# Indexes
+#
+#  index_platform_users_on_email               (email)
+#  index_platform_users_on_email_and_password  (email,password)
+#
 module Platform
   class PlatformUser < ApplicationRecord
     self.table_name = :platform_users

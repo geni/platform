@@ -21,6 +21,25 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+# == Schema Information
+#
+# Table name: platform_application_usage_metrics
+#
+#  id                :integer          not null, primary key
+#  avg_response_time :integer
+#  count             :integer
+#  error_count       :integer
+#  event             :string
+#  interval          :datetime
+#  type              :string
+#  created_at        :datetime
+#  updated_at        :datetime
+#  application_id    :integer
+#
+# Indexes
+#
+#  idx_platform_app_usage_metrics_on_app_and_interval  (application_id,interval)
+#
 module Platform
   class ApplicationUsageMetric < ApplicationRecord
     self.table_name = :platform_application_usage_metrics
