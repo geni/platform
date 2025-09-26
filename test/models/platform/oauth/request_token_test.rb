@@ -1,7 +1,5 @@
-require_relative '../../../../test_helper'
-
 module Platform::Oauth
-  class RequestTokenTest < ActiveRecord::TestCase
+  class RequestTokenTest < ActiveSupport::TestCase
 
     test 'authorize with user' do
       token = RequestToken.create(:application => app, :user => user, :token => 'foo')

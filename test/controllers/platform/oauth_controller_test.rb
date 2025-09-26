@@ -1,5 +1,3 @@
-require_relative '../../../test_helper'
-
 class Platform::OauthControllerTest < ActionController::TestCase
 
   test 'authorize requires login' do

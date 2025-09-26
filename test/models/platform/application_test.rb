@@ -1,7 +1,5 @@
-require_relative '../../../test_helper'
-
 module Platform
-  class ApplicationTest < ActiveRecord::TestCase
+  class ApplicationTest < ActiveSupport::TestCase
 
     test 'rate_limited' do
       assert_equal true, app.rate_limited?, 'Apps should be rate limited by default'

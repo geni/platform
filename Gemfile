@@ -10,6 +10,7 @@ gem 'will_filter',            :git => 'https://github.com/geni/will_filter.git',
 group :development, :test do
   gem 'annotaterb'
   gem 'method_source', :require => false # Used by bin/test
+  gem 'mocha'
   gem 'nokogiri', :force_ruby_platform => true
   gem 'pg', '~>1.5.0' # 1.6 requires GLIBC 2.29 which CentOS 8 Stream doesn't have
   gem 'puma'

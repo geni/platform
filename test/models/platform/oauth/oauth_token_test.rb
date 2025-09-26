@@ -1,7 +1,5 @@
-require_relative '../../../../test_helper'
-
 module Platform::Oauth
-  class OauthTokenTest < ActiveRecord::TestCase
+  class OauthTokenTest < ActiveSupport::TestCase
 
     # Ticket 19802
     test 'valid_to' do
