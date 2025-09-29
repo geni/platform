@@ -4,3 +4,6 @@
 
 //= link tr8n
 //= link will_filter
+
+//= link platform/components.css
+//= link platform/layout.css

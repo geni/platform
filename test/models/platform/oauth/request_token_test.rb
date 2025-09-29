@@ -1,5 +1,5 @@
 module Platform::Oauth
-  class RequestTokenTest < ActiveSupport::TestCase
+  class RequestTokenTest < Platform::TestCase
 
     test 'authorize with user' do
       token = RequestToken.create(:application => app, :user => user, :token => 'foo')

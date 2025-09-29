@@ -41,7 +41,7 @@ module Platform
       def update
         if request.post? and verified_request?
           dev = Platform::Developer.find_by_id(params[:dev_id]) if params[:dev_id]
-          dev.update_attributes(params[:dev]) if dev
+          dev.update(params[:dev]) if dev
         end
 
         redirect_to_source(:action => :index)

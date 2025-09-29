@@ -1,5 +1,5 @@
 module Platform
-  class ApplicationTest < ActiveSupport::TestCase
+  class ApplicationTest < Platform::TestCase
 
     test 'rate_limited' do
       assert_equal true, app.rate_limited?, 'Apps should be rate limited by default'

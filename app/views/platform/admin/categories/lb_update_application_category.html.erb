@@ -3,7 +3,7 @@
 </div>
 
 <div style="margin-top:10px;">
-	<% form_for(:application_category, @app_cat, :url =>  {:action => :update_application_category}, :html => {:method => 'post', :id => 'platform_form'}) do |form| %>
+	<%= form_for(@app_cat, :as => :application_category, :url =>  {:action => :update_application_category}, :html => {:method => 'post', :id => 'platform_form'}) do |form| %>
 	<div class="content">
 	    <%= form.hidden_field :id %>
 	    <table class="admin_table">

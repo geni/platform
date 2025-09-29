@@ -52,7 +52,7 @@ module Platform
       end
 
       def create
-        if request.post? and verified_request?
+        if verified_request?
           if application.save
             application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
@@ -84,24 +84,24 @@ module Platform
         old_app = Platform::Application.find(params[:current_version_id])
 
         if request.post? and verified_request?
-          app = Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
+          app = Platform::Application.create(application_params.merge(:developer => Platform::Config.current_developer))
           if params[:new_icon].blank?
-            app.update_attributes(:icon_id => old_app.icon_id)
+            app.update(:icon_id => old_app.icon_id)
           else
             app.store_icon(params[:new_icon])
           end
 
           if params[:new_logo].blank?
-            app.update_attributes(:logo_id => old_app.logo_id)
+            app.update(:logo_id => old_app.logo_id)
           else
             app.store_logo(params[:new_logo])
           end
 
           old_app.children.each do |child_app|
-            child_app.update_attributes(:parent_id => app.id)
+            child_app.update(:parent_id => app.id)
           end
 
-          old_app.update_attributes(:parent_id => app.id, :version => (old_app.version || 1.0))
+          old_app.update(:parent_id => app.id, :version => (old_app.version || 1.0))
         end
 
         redirect_to(:action => :index, :id => app&.id)
@@ -109,7 +109,7 @@ module Platform
 
       def update
         if (request.put? or request.post?) and verified_request?
-          if application.update_attributes(params[:application])
+          if application.update(application_params)
             application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
@@ -185,11 +185,15 @@ module Platform
           if params.has_key?(:id)
             Platform::Application.find(params[:id])
           elsif params.has_key?(:application)
-            Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
+            Platform::Application.create(application_params.merge(:developer => Platform::Config.current_developer))
           else
             Platform::Application.new(:contact_email => Platform::Config.user_email(Platform::Config.current_user), :version => "1.0")
           end
         end
+      end
+
+      def application_params
+        params.require(:application).permit(:name, :url, :callback_url, :contact_email, :description, :version)
       end
 
       def prepare_form

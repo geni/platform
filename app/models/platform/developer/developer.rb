@@ -49,6 +49,8 @@ module Platform
       has_many :applications
       has_many :application_developers
 
+      before_validation :ensure_name, :on => :create
+
       def self.for(user)
         return nil unless user and user.id
         return nil if Platform::Config.guest_user?(user)
@@ -64,6 +66,12 @@ module Platform
 
       def app_options
         @app_options ||= applications.collect{|app| [app.name, app.id]}
+      end
+
+    private
+
+      def ensure_name
+        self.name ||= user.name
       end
 
     end # class Developer

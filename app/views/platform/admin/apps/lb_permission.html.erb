@@ -6,7 +6,7 @@
         	Update Permission
     </div>
     <div class="bd">
-        <% form_for(:permission, @permission, :url => {:perm_id => @permission.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
+        <%= form_for(@permission, :as => :permission, :url => {:perm_id => @permission.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
 				<%=hidden_field_tag(:source_url, request.env['HTTP_REFERER'])%>
         <table class="admin_table">
 					<tr>

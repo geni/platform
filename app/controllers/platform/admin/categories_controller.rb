@@ -58,7 +58,7 @@ module Platform
         if request.post? and verified_request?
           if params[:category] && params[:category][:id].present?
             @category = Platform::Category.find(params[:category][:id])
-            @category.update_attributes(params[:category])
+            @category.update(params[:category])
           else
             @category = Platform::Category.create(params[:category])
           end
@@ -76,7 +76,7 @@ module Platform
         app_cat = Platform::ApplicationCategory.find(params[:application_category][:id])
 
         if request.post? and verified_request?
-          app_cat.update_attributes(params[:application_category])
+          app_cat.update(params[:application_category])
         end
 
         redirect_to :action => :index, :category_id => app_cat.category.id
@@ -127,7 +127,7 @@ module Platform
         app_cat = Platform::ApplicationCategory.find(params[:app_category_id])
 
         if request.post? and verified_request?
-          app_cat.update_attributes(:featured => params[:checked])
+          app_cat.update(:featured => params[:checked])
         end
 
         render(:partial=>"/platform/admin/apps/categories", :locals => {:app => app_cat.application})

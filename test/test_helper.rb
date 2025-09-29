@@ -15,47 +15,66 @@ end
 
 require_relative "../test/dummy/config/environment"
 
-class ActiveSupport::TestCase
+module Platform
+  module TestMixins
 
-private
+  private
 
-  def app(params={})
-    @app ||= begin
-      params[:callback_url]   ||= 'http://localhost'
-      params[:contact_email]  ||= 'dev@geni.com'
-      params[:developer]      ||= developer(user)
-      params[:name]           ||= 'TestApp'
-      params[:url]            ||= 'http://localhost'
-      Platform::Application.create!(params)
+    def app(params={})
+      @app ||= begin
+        params[:callback_url]   ||= 'http://localhost'
+        params[:contact_email]  ||= 'dev@geni.com'
+        params[:developer]      ||= developer
+        params[:name]           ||= 'TestApp'
+        params[:url]            ||= 'http://localhost'
+        Platform::Application.create!(params)
+      end
     end
-  end
 
-  def user
-    @user ||= Platform::PlatformUser.create!(:name => 'user name')
-  end
-
-  def developer(user=nil)
-    return Platform::Developer.find_or_create(user) unless user.nil?
-
-    @developer ||= begin
-      user = Platform::PlatformUser.create!(:name => 'Developer')
-      Platform::Developer.find_or_create(user)
+    def user
+      @user ||= Platform::PlatformUser.create!(:name => 'user name')
     end
-  end
 
-  def login_as(user)
-    user = user.user if user.is_a?(Platform::Developer)
-    @request.session[:platform_user_id] = user.id
-  end
+    def developer(user=nil)
+      return Platform::Developer::Developer.find_or_create_by(:user => user) unless user.nil?
 
-  def logout
-    @request.session[:platform_user_id] = nil
-  end
+      @developer ||= begin
+        user = Platform::PlatformUser.create!(:name => 'Developer')
+        Platform::Developer::Developer.find_or_create_by(:user => user)
+      end
+    end
 
-  def form_authenticity_token
-    session[:_csrf_token] ||= ActiveSupport::SecureRandom.base64(32)
-  end
-end
+  end # module TestMixins
+
+  class TestCase < ActiveSupport::TestCase
+    include Platform::TestMixins
+  end # class TestCase
+
+  class ControllerTestCase < ActionController::TestCase
+    include Platform::Engine.routes.url_helpers
+    include Platform::TestMixins
+
+    def setup
+      @routes = Platform::Engine.routes
+    end
+
+  private
+
+    def login_as(user)
+      user = user.user if user.is_a?(Platform::Developer::Developer)
+      @request.session[:platform_user_id] = user.id
+    end
+
+    def logout
+      @request.session[:platform_user_id] = nil
+    end
+
+    def form_authenticity_token
+      @controller.send(:form_authenticity_token)
+    end
+
+  end # ControllerTest
+end # module Platform
 
 class Object
 

@@ -1,5 +1,5 @@
 module Platform::Oauth
-  class AccessTokenTest < ActiveSupport::TestCase
+  class AccessTokenTest < Platform::TestCase
 
     test 'user is required' do
       ex = assert_raise ActiveRecord::RecordInvalid do

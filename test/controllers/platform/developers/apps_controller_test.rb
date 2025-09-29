@@ -1,6 +1,8 @@
+require_relative "../../../test_helper"
+
 module Platform
   module Developer
-    class AppsControllerTest < ActionController::TestCase
+    class AppsControllerTest < Platform::ControllerTestCase
 
       test 'apps requires login' do
         get :index
@@ -33,13 +35,13 @@ module Platform
         login_as developer
 
         assert_difference 'Platform::Application.count' do
-          post :create, :application => {:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com'}, :authenticity_token => form_authenticity_token
+          post :create, :params => {:application => {:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com'}, :authenticity_token => form_authenticity_token}
         end
 
-        app = Platform::Application.first(:order => 'id desc')
+        app = Platform::Application.order('id desc').first
         assert_redirected_to :action => :index, :id => app.id
-        assert_match 'registered', @response.flash[:trfn]
-        assert_nil @response.flash[:trfe]
+        assert_match 'registered', flash[:trfn]
+        assert_nil flash[:trfe]
 
         assert_equal 'TestApp', app.name
         assert_not_nil app.key
@@ -50,13 +52,13 @@ module Platform
         login_as developer
 
         assert_no_difference 'Platform::Application.count' do
-          post :create, :application => {:name => 'TestApp', :url => '\0'}, :authenticity_token => form_authenticity_token
+          post :create, :params => {:application => {:name => 'TestApp', :url => '\0'}, :authenticity_token => form_authenticity_token}
           assert_response :success
         end
 
-        assert_template 'new.html.erb'
-        assert_nil @response.flash[:trfn]
-        assert_match 'invalid', @response.flash[:error]
+        assert_match 'Register New Application', response.body
+        assert_nil flash[:trfn]
+        assert_match 'invalid', flash[:error]
       end
 
       test 'edit requires login' do
@@ -67,7 +69,7 @@ module Platform
       test 'edit' do
         login_as developer
         app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
-        get :edit, :id => app.id
+        get :edit, :params => {:id => app.id}
         assert_response :success
       end
 
@@ -80,7 +82,7 @@ module Platform
         login_as developer
         app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
 
-        put :update, :id => app.id, :application => {:name => 'Updated'}, :authenticity_token => form_authenticity_token
+        put :update, :params => {:id => app.id, :application => {:name => 'Updated'}, :authenticity_token => form_authenticity_token}
         assert_redirected_to :controller => 'platform/developer/apps', :action => :index, :id => app.id
 
         app.reload
@@ -97,7 +99,7 @@ module Platform
         app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
 
         assert_difference 'Platform::Application.count', -1 do
-          delete :delete, :id => app.id, :authenticity_token => form_authenticity_token
+          delete :delete, :params => {:id => app.id, :authenticity_token => form_authenticity_token}
           assert_redirected_to :controller => 'platform/developer/apps', :action => :index
         end
       end

@@ -49,7 +49,7 @@ module Platform
         session[:platform_dashboard_apps] = @selected_app_ids
 
     #   persist in the database
-    #    platform_current_developer.update_attributes(params[:developer])
+    #    platform_current_developer.update(params[:developer])
     #    platform_current_developer.reload
 
         render(:partial => params[:section], :locals => {:mode => :view})

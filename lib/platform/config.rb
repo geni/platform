@@ -25,7 +25,7 @@ class Platform::Config
 
   def self.init(site_current_user, current_application = nil)
     Thread.current[:platform_current_user] = site_current_user
-    Thread.current[:platform_current_developer] = Platform::Developer.for(site_current_user)
+    Thread.current[:platform_current_developer] = Platform::Developer::Developer.for(site_current_user)
     Thread.current[:platform_current_application] = current_application
   end
 
@@ -113,7 +113,7 @@ class Platform::Config
 
     default_permissions.each do |keyword, data|
       p = Platform::Permission.find_or_create(keyword)
-      p.update_attributes(data)
+      p.update(data)
     end
   end
 
@@ -151,15 +151,15 @@ class Platform::Config
   end
 
   def self.default_applications
-    @default_applications ||= load_yml("/config/platform/data/default_applications.yml")
+    @default_applications ||= load_yml("config/platform/data/default_applications.yml")
   end
 
   def self.default_permissions
-    @default_permissions ||= load_yml("/config/platform/data/default_permissions.yml")
+    @default_permissions ||= load_yml("config/platform/data/default_permissions.yml")
   end
 
   def self.default_categories
-    @default_categories ||= load_yml("/config/platform/data/default_categories.yml")
+    @default_categories ||= load_yml("config/platform/data/default_categories.yml")
   end
 
   def self.root
@@ -657,7 +657,7 @@ class Platform::Config
 
   def self.features
     @features ||= begin
-      defs = load_yml("/config/platform/site/features.yml")
+      defs = load_yml("config/platform/site/features.yml")
       feats = []
       defs[:enabled_features].each do |key|
         defs[key][:key] = key

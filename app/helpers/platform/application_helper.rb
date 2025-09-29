@@ -1,6 +1,7 @@
 module Platform
   module ApplicationHelper
     include Tr8n::HelperMethods
+    include WillFilter::HelperMethods # for link_to_function
 
     def will_filter(results)
       render(:partial => "/will_filter/filter/container", :locals => {:wf_filter => results.wf_filter})

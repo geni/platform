@@ -57,7 +57,7 @@ module Platform
           if @permission.id.nil?
             @permission = Platform::Permission.create(params[:permission])
           else
-            @permission.update_attributes(params[:permission])
+            @permission.update(params[:permission])
           end
 
           @permission.store_icon(params[:new_icon]) unless params[:new_icon].blank?
@@ -160,7 +160,7 @@ module Platform
         if request.post? and verified_request?
           app = Platform::Application.find_by_id(params[:app_id]) if params[:app_id]
           if app
-            app.update_attributes(params[:app])
+            app.update(params[:app])
             app.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             app.store_logo(params[:new_logo]) unless params[:new_logo].blank?
           end

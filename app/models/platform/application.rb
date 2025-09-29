@@ -76,23 +76,23 @@ module Platform
 
     acts_as_tree :order => 'version'
 
-    belongs_to :developer
+    belongs_to :developer, :class_name => 'Platform::Developer::Developer'
     has_many :application_developers, :dependent => :destroy
     has_many :application_metrics, :dependent => :destroy
     has_many :application_users, :dependent => :destroy
     has_many :application_logs, :dependent => :destroy
 
-    has_many :tokens,           :class_name => "Platform::Oauth::OauthToken", :dependent => :destroy
-    has_many :access_tokens,    :class_name => "Platform::Oauth::AccessToken", :dependent => :destroy
-    has_many :refresh_tokens,   :class_name => "Platform::Oauth::RefreshToken", :dependent => :destroy
+    has_many :tokens,           :class_name => 'Platform::Oauth::OauthToken', :dependent => :destroy
+    has_many :access_tokens,    :class_name => 'Platform::Oauth::AccessToken', :dependent => :destroy
+    has_many :refresh_tokens,   :class_name => 'Platform::Oauth::RefreshToken', :dependent => :destroy
 
     has_many :application_categories, :dependent => :destroy
     has_many :categories, :through => :application_categories
 
     has_many :application_permissions, :dependent => :destroy
 
-    belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => "icon_id"
-    belongs_to :logo, :class_name => Platform::Config.site_media_class, :foreign_key => "logo_id"
+    belongs_to :icon, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
+    belongs_to :logo, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
 
     validates_presence_of :name, :key, :secret
     validates_uniqueness_of :key
@@ -324,7 +324,7 @@ module Platform
     end
 
     def invalidate_all_access_tokens(user)
-      tokens = Platform::Oauth::AccessToken.find(:all, :conditions => ["application_id = ? and user_id = ?", self.id, user.id])
+      tokens = Platform::Oauth::AccessToken.where(["application_id = ? and user_id = ?", self.id, user.id])
       tokens.each do |token|
         token.invalidate!
       end
@@ -342,7 +342,7 @@ module Platform
     end
 
     def find_or_create_access_token(user, scope = 'basic', interval = Platform::Config.api_token_lifetime)
-      tokens = Platform::Oauth::AccessToken.find(:all, :conditions => ["application_id = ? and user_id = ?", self.id, user.id])
+      tokens = Platform::Oauth::AccessToken.where(["application_id = ? and user_id = ?", self.id, user.id])
       valid_token = nil
       tokens.each do |token|
         if token.valid_token?(scope) and valid_token.nil?
@@ -387,7 +387,7 @@ module Platform
 
     def store_icon(file)
       if Platform::Config.site_media_enabled?
-        update_attributes(:icon => Platform::Config.create_media(file))
+        update(:icon => Platform::Config.create_media(file))
       else
         self.icon = Platform::Media::Image.create
         self.icon.write(file, :size => 16)
@@ -406,7 +406,7 @@ module Platform
 
     def store_logo(file)
       if Platform::Config.site_media_enabled?
-        update_attributes(:logo => Platform::Config.create_media(file))
+        update(:logo => Platform::Config.create_media(file))
       else
         self.logo = Platform::Media::Image.create
         self.logo.write(file, :size => 75)
@@ -431,7 +431,7 @@ module Platform
 
     def update_rank!
       total_rank = (rating_count == 0) ? 0 : (rating_sum/rating_count)
-      self.update_attributes(:rank => total_rank)
+      update(:rank => total_rank)
       total_rank
     end
 
@@ -448,7 +448,7 @@ module Platform
     end
 
     def reset_secret!
-      update_attributes(:secret => Platform::Helper.generate_key(40)[0,40])
+      update(:secret => Platform::Helper.generate_key(40)[0,40])
     end
 
     def authorize_user(user = Platform::Config.current_user)
@@ -456,7 +456,7 @@ module Platform
     end
 
     def authorized_user?(user = Platform::Config.current_user)
-      not Platform::ApplicationUser.find(:first, :conditions => ["application_id = ? and user_id = ?", self.id, user.id]).nil?
+      not Platform::ApplicationUser.where(["application_id = ? and user_id = ?", self.id, user.id]).first.nil?
     end
 
     def deauthorize_user(user = Platform::Config.current_user)
@@ -473,21 +473,20 @@ module Platform
     end
 
     def last_monthly_metric
-      @last_monthly_metric ||= Platform::MonthlyApplicationMetric.find(:first, :conditions => ["application_id = ?", id], :order => "interval desc")
+      @last_monthly_metric ||= Platform::MonthlyApplicationMetric.where(["application_id = ?", id]).order('interval desc').first
     end
 
     def last_total_metric
-      @last_total_metric ||= Platform::TotalApplicationMetric.find(:first, :conditions => ["application_id = ?", id], :order => "interval desc")
+      @last_total_metric ||= Platform::TotalApplicationMetric.where(["application_id = ?", id]).order('interval desc').first
     end
 
     def recently_updated_reviews
-      @recently_updated_reviews ||= Platform::Rating.find(:all, :conditions => ["object_type = ? and object_id = ?", 'Platform::Application', self.id], :order => "updated_at desc", :limit => 5)
+      @recently_updated_reviews ||= Platform::Rating.where(["object_type = ? and object_id = ?", 'Platform::Application', self.id]).order("updated_at desc").limit(5)
     end
 
     def recently_updated_discussions
-      @recently_updated_discussions ||= Platform::ForumTopic.find(:all, :conditions => ["subject_type = ? and subject_id = ?", 'Platform::Application', self.id], :order => "updated_at desc", :limit => 5)
+      @recently_updated_discussions ||= Platform::ForumTopic.where(["subject_type = ? and subject_id = ?", 'Platform::Application', self.id]).order("updated_at desc").limit(5)
     end
-
 
     ############################################################################
     #### Category Management Methods
@@ -549,7 +548,7 @@ module Platform
       "#{protocol}://#{Platform::Config.site_base_url}/platform/oauth/authorize?client_id=#{key}&response_type=token&display=web&redirect_url=#{CGI.escape(callback_url || '')}"
     end
 
-  protected
+  private
 
     def generate_keys
       self.key = Platform::Helper.generate_key(40)[0,40] if key.nil?

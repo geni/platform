@@ -450,7 +450,7 @@ module Platform
       redirect_uri = URI.parse(redirect_url)
       redirect_uri.path = (redirect_uri.path.blank? ? "/" : redirect_uri.path) unless mobile? # mobile apps will not have path
       redirect_uri.query = redirect_uri.query.blank? ? response_query : redirect_uri.query + "&#{response_query}"
-      redirect_to(redirect_uri.to_s)
+      redirect_to(redirect_uri.to_s, :allow_other_host => true)
     end
 
     # used by the request token process

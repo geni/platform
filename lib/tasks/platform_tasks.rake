@@ -104,7 +104,7 @@ private
       Platform::ApplicationUsageMetric.calculate_metric(app, interval)
     end
 
-    rollup_log.update_attributes(:finished_at => Time.now)
+    rollup_log.update(:finished_at => Time.now)
 
     now = Time.now
     if now >= interval_start && now < interval_end

@@ -6,7 +6,7 @@
         	Update Application
     </div>
     <div class="bd">
-        <% form_for(:app, @app, :url => {:action => :update, :app_id => @app.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
+        <%= form_for(@app, :as => :app, :url => {:action => :update, :app_id => @app.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
 				<%=hidden_field_tag(:source_url, request.env['HTTP_REFERER'])%>
         <table class="admin_table">
           <tr>

@@ -27,7 +27,7 @@ module Platform
             def to_xml(opts={})
               api_proxy(opts[:api_version]).to_xml(opts)
             end
-            
+
             def to_api_hash(opts={})
               api_proxy(opts[:api_version]).to_api_hash(opts)
             end
@@ -38,11 +38,8 @@ module Platform
           @instance = instance
         end
 
-        def update_attributes!(attrs)
-          attrs.each do |key, value|
-            instance.send("#{key}=", value)
-          end
-          instance.save!
+        def update!(attrs)
+          instance.update!(attrs)
         end
 
         def to_json(options={})
