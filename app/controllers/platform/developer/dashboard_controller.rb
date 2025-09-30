@@ -29,10 +29,10 @@ module Platform
       def index
         selected_app_ids = session[:platform_dashboard_apps] || []
         if selected_app_ids.empty?
-          @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc", :limit => 5)
+          @apps = Platform::Application.where(["developer_id = ? and parent_id is null", platform_current_developer.id]).order("created_at desc").limit(5)
           session[:platform_dashboard_apps] = @apps.collect{|app| app.id}
         else
-          @apps = Platform::Application.find(:all, :conditions => ["id in (?) and developer_id = ?", selected_app_ids, platform_current_developer.id], :order => "created_at desc")
+          @apps = Platform::Application.where(["id in (?) and developer_id = ?", selected_app_ids, platform_current_developer.id]).order("created_at desc")
         end
       end
 
@@ -59,7 +59,7 @@ module Platform
 
       def prepare_apps
         @selected_app_ids = session[:platform_dashboard_apps] || []
-        @apps = Platform::Application.find(:all, :conditions => ["developer_id = ? and parent_id is null", platform_current_developer.id], :order => "created_at desc")
+        @apps = Platform::Application.where(["developer_id = ? and parent_id is null", platform_current_developer.id]).order("created_at desc")
       end
 
     end # class DashboardController
