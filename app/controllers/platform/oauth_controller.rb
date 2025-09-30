@@ -47,7 +47,7 @@ module Platform
       save_oauth_login_redirect_params
 
       if Platform::Config.current_user_is_guest?
-        return redirect_to(:controller => Platform::Config.login_url, :client_id => request_param(:client_id), :display => display)
+        return redirect_to Platform::Config.login_url(:client_id => request_param(:client_id), :display => display)
       end
 
       if redirect_url_required? and redirect_url.blank?

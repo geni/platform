@@ -16,6 +16,8 @@ end
 require_relative "../test/dummy/config/environment"
 
 module Platform
+  # Including this in an ActionDispatch::IntegrationTest won't work
+  # because ActionDispatch::IntegrationTest has an app method.
   module TestMixins
 
   private
@@ -32,14 +34,14 @@ module Platform
     end
 
     def user
-      @user ||= Platform::PlatformUser.create!(:name => 'user name')
+      @user ||= ::User.create!(:name => 'user name')
     end
 
     def developer(user=nil)
       return Platform::Developer::Developer.find_or_create_by(:user => user) unless user.nil?
 
       @developer ||= begin
-        user = Platform::PlatformUser.create!(:name => 'Developer')
+        user = ::User.create!(:name => 'Developer')
         Platform::Developer::Developer.find_or_create_by(:user => user)
       end
     end
@@ -62,11 +64,11 @@ module Platform
 
     def login_as(user)
       user = user.user if user.is_a?(Platform::Developer::Developer)
-      @request.session[:platform_user_id] = user.id
+      @request.session[:user_id] = user.id
     end
 
     def logout
-      @request.session[:platform_user_id] = nil
+      @request.session[:user_id] = nil
     end
 
     def form_authenticity_token

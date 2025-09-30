@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || 'Platform Engine Dummy App' %></title>
+    <title><%= content_for(:title) || "Dummy" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= tr8n_scripts_tag %>
 
     <%= yield :head %>
 
@@ -17,11 +18,11 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%#= stylesheet_link_tag :app %>
+    <%= stylesheet_link_tag 'application' %>
   </head>
 
   <body>
+    <%= render :partial => 'layouts/header' %>
     <%= yield %>
   </body>
 </html>

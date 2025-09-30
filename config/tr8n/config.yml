@@ -121,7 +121,7 @@ defaults: &defaults
     after_actions:            []                                # actions from application controller
     user_info:
       enabled:                true                              # if disabled, will fallback onto translators
-      class_name:             "Platform::PlatformUser"          # class name for the User object type
+      class_name:             "::User"                          # class name for the User object type
       current_user_method:    current_user                      # returns current user object
       methods:                                                  # User object methods mapping
         id:                   "id"

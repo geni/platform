@@ -7,8 +7,8 @@
       "request": "launch",
       "useBundler": true,
       "cwd": "${workspaceRoot}",
-      "script": "bin/test",
-      "args": ["${file}:${lineNumber}"],
+      "script": "bin/rails",
+      "args": ["test", "${file}:${lineNumber}"],
       "askParameters": false
     },{
       "name": "Start rails server",
@@ -16,7 +16,7 @@
       "request": "launch",
       "useBundler": true,
       "cwd": "${workspaceRoot}",
-      "script": "script/server",
+      "script": "bin/rails",
       "args": ["server", "-b", "0.0.0.0"],
       "askParameters": false
     },

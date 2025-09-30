@@ -1,5 +1,5 @@
 Platform::Engine.routes.draw do
-  # also mounts WillFilter engine at /will_filter
+  # also mounts WillFilter::Engine at /will_filter
   mount Tr8n::Engine => '/tr8n'
 
   namespace :admin do

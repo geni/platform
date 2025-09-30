@@ -1,3 +1,5 @@
+require 'test_helper'
+
 class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   test 'authorize requires client_id' do

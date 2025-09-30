@@ -86,8 +86,8 @@ module Platform
       site_current_user = nil
       begin
         site_current_user = eval(Platform::Config.current_user_method)
-        site_current_user = nil if site_current_user.class.name != Platform::Config.user_class_name
-      rescue Exception => ex
+        site_current_user = nil unless site_current_user.is_a?(Platform::Config.user_class)
+      rescue StandardError => ex
         raise Platform::Exception.new("Platform cannot be initialized because #{Platform::Config.current_user_method} failed with: #{ex.message}")
       end
 

@@ -6,12 +6,23 @@ module Platform
     isolate_namespace Platform
     config.autoload_paths << root.join('lib')
 
-    def self.mount_point
+    def self.mount_point(route_set=nil)
       return nil unless defined?(Rails) && Rails.application
       @mount_point ||=  begin
-        route = Rails.application.routes.routes.find {|ii| ii.app.respond_to?(:app) && ii.app.app == self}
-        path = route.path.spec.to_s
-        path.gsub(/\([^)]*\)/, '').chomp('/')
+        route_set ||= Rails.application.routes
+        path        = nil
+
+        route_set.routes.each do |route|
+          break if path
+          next unless route.app.app.is_a?(Class) && route.app.app < Rails::Engine
+          if route.app.app == self
+            path = route.path.spec.to_s
+          elsif route.app.app.respond_to?(:routes)
+            path = mount_point(route.app.app.routes)
+          end
+        end
+
+        path.gsub(/\([^)]*\)/, '').chomp('/') if path
       end
     end
 

@@ -1,0 +1,22 @@
+<%= render :partial => '/tr8n/common/flashes' %>
+
+<% if flash[:notice] %>
+   <div class="flash_notice" id="flash_notice">
+   	<%= flash[:notice] %>
+  </div>
+   <% flash[:notice] = nil %>
+<% end %>
+
+<% if flash[:error] %>
+   <div class="flash_error" id="flash_error">
+   	<%= flash[:error] %>
+	</div>
+	<% flash[:error] = nil %>
+<% end %>
+
+<% if flash[:warning] %>
+   <div class="flash_warning" id="flash_warning">
+   	<%= flash[:warning] %>
+	</div>
+	<% flash[:warning] = nil %>
+<% end %>

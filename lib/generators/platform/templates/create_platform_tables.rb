@@ -225,26 +225,6 @@ class CreatePlatformTables < ActiveRecord::Migration[4.2]
     add_index :platform_application_users, [:application_id]
     add_index :platform_application_users, [:user_id]
 
-    create_table :platform_users do |t|
-      t.string  :name
-      t.string  :gender
-      t.string  :email
-      t.string  :password
-      t.string  :mugshot
-      t.string  :link
-      t.string  :locale
-      t.timestamps
-    end
-    add_index :platform_users, [:email]
-    add_index :platform_users, [:email, :password]
-
-    create_table :platform_admins do |t|
-      t.integer :user_id
-      t.integer :level
-      t.timestamps
-    end
-    add_index :platform_admins, [:user_id]
-
     create_table :platform_logged_exceptions do |t|
       t.column :exception_class, :string
       t.column :controller_name, :string
@@ -278,8 +258,6 @@ class CreatePlatformTables < ActiveRecord::Migration[4.2]
     drop_table :platform_permissions
     drop_table :platform_application_permissions
     drop_table :platform_application_users
-    drop_table :platform_users
-    drop_table :platform_admins
     drop_table :platform_logged_exceptions
   end
 end

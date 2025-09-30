@@ -63,7 +63,7 @@ defaults: &defaults
       enabled:                true
       current_user_method:    "current_user"
       logout_method:          "logout!"
-      class_name:             "Platform::PlatformUser"
+      class_name:             "::User"
       methods:
         id:                   "id"
         name:                 "name"

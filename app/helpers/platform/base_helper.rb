@@ -75,7 +75,7 @@ module Platform
       rank ||= app.rank || 0
       rank = rank * 100 / 5
 
-      html = "<span dir='ltr'>"
+      html = "<span dir='ltr'>".dup
       1.upto(5) do |i|
         if rank > i * 20 - 10  and rank < i * 20
           html << image_tag("/tr8n/images/rating_star05.png")

@@ -73,10 +73,6 @@ class Platform::Config
           Platform::LoggedException
       ]
 
-      if user_class_name == "Platform::PlatformUser" # used for stand-alone deployment only
-        mdls << [Platform::PlatformUser, Platform::PlatformAdmin]
-      end
-
       mdls.flatten
     end
   end
@@ -95,13 +91,8 @@ class Platform::Config
   end
 
   def self.system_user
-    if user_class_name == "Platform::PlatformUser"
-      @system_user ||= Platform::PlatformUser.first || Platform::PlatformUser.create(:name => "System User")
-      return @system_user
-    end
-
     return nil unless site_info[:system_user_id]
-    @system_user ||= user_class_name.constantize.find_by_id(site_info[:system_user_id])
+    @system_user ||= user_class_name.constantize.find(site_info[:system_user_id])
   end
 
   def self.system_developer
@@ -358,8 +349,8 @@ class Platform::Config
     site_user_info[:logout_method]
   end
 
-  def self.login_url
-    site_info[:login_url]
+  def self.login_url(params=nil)
+    "#{site_info[:login_url]}#{params ? "?#{params.to_query}" : ''}"
   end
 
   def self.site_user_info_enabled?
@@ -372,11 +363,11 @@ class Platform::Config
 
   def self.user_class_name
     return site_user_info[:class_name] if site_user_info_enabled?
-    "Platform::PlatformUser"
+    '::User'
   end
 
   def self.user_class
-    user_class_name.constantize
+    @user_class ||= user_class_name.constantize
   end
 
   def self.user_id(user = current_user)

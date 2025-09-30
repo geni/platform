@@ -137,11 +137,7 @@ module Platform
 
       # should be overloaded by the extending class
       def authenticate_via_cookie
-        if Platform::Config.site_user_info_enabled?
-          user = Platform::Config.user_class.find_by_user_id(session[:user_id])
-        else
-          user = Platform::PlatformUser.find_by_user_id(session[:user_id])
-        end
+        user = Platform::Config.user_class.find_by_user_id(session[:user_id])
         Platform::Config.init(user) if user
       end
 
@@ -421,7 +417,7 @@ module Platform
       end
 
       def redirect_to_login
-        redirect_to(:controller => Platform::Config.login_url)
+        redirect_to Platform::Config.login_url
       end
 
       def log_api_call

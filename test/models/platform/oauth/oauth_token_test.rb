@@ -1,3 +1,5 @@
+require 'test_helper'
+
 module Platform::Oauth
   class OauthTokenTest < Platform::TestCase
 
