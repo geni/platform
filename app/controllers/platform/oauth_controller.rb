@@ -250,8 +250,8 @@ module Platform
         return render_response(:error_description => "Code must be provided", :error => :invalid_request)
       end
 
-      request_token = Platform::Oauth::RequestToken.find(:first, :conditions => ["application_id = ? and token = ? and valid_to > ? and invalidated_at is null",
-                                                              client_application.id, request_param(:code), Time.now])
+      request_token = Platform::Oauth::RequestToken.where(["application_id = ? and token = ? and valid_to > ? and invalidated_at is null",
+                                                              client_application.id, request_param(:code), Time.now]).first
       unless request_token
         return render_response(:error_description => "Invalid authorization code", :error => :invalid_request)
       end
@@ -320,7 +320,7 @@ module Platform
         return render_response(:error_description => "Refresh token must be provided", :error => :invalid_request)
       end
 
-      refresh_token = Platform::Oauth::RefreshToken.find(:first, :conditions => ["application_id = ? and token = ?", client_application.id, request_param(:refresh_token)])
+      refresh_token = Platform::Oauth::RefreshToken.where(["application_id = ? and token = ?", client_application.id, request_param(:refresh_token)]).first
       unless refresh_token
         return render_response(:error_description => "Invalid refresh token", :error => :invalid_request)
       end
