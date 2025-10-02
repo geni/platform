@@ -70,7 +70,6 @@ class Platform::Config
           Platform::ApplicationMetric, Platform::DailyApplicationMetric,
           Platform::WeeklyApplicationMetric, Platform::MonthlyApplicationMetric,
           Platform::TotalApplicationMetric, Platform::ApplicationUsageMetric,
-          Platform::LoggedException
       ]
 
       mdls.flatten

@@ -88,7 +88,7 @@ module Platform
         site_current_user = eval(Platform::Config.current_user_method)
         site_current_user = nil unless site_current_user.is_a?(Platform::Config.user_class)
       rescue StandardError => ex
-        raise Platform::Exception.new("Platform cannot be initialized because #{Platform::Config.current_user_method} failed with: #{ex.message}")
+        raise "Platform cannot be initialized because #{Platform::Config.current_user_method} failed with: #{ex.message}"
       end
 
       # initialize request thread variables

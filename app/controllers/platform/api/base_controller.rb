@@ -66,20 +66,11 @@ module Platform
         UnauthorizedError
       ]
 
-      rescue_from StandardError do |e|
-        log_exception(e) if should_log_error?(e)
-        render_exception(e)
-      end
-
     protected
 
       def ssl_required?
         return false if client_app.nil?
         ! (Rails.env.development? || Rails.env.test?)
-      end
-
-      def log_exception(e)
-        Platform::LoggedException.create_from_exception(self, e, nil)
       end
 
     private
@@ -445,29 +436,6 @@ module Platform
         not PLATFORM_NON_LOGGED_EXCEPTIONS.include?(ex.class)
       end
 
-      def render_exception(ex)
-        error = {
-          'type'    => 'ApiException'
-        }
-        case ex
-          when ActiveRecord::RecordNotFound
-            status           = :not_found
-            error['message'] = 'Not Found'
-          when ActiveRecord::StatementInvalid
-            status           = :bad_request
-            error['message'] = 'Bad Request'
-          when ApiError
-            error['type']    = 'OAuthException' if ex.is_a?(UnauthorizedError)
-            error['message'] = ex.message
-            status           = ex.status
-          else
-            error['message'] = ex.message
-            status           = :internal_server_error
-        end
-        params[:only_list] = nil
-        render_response({'error' => error}, :status => status)
-      end
-
       ############################################################################
       #### Response Validation
       ############################################################################
@@ -483,11 +451,6 @@ module Platform
         ref[parts.first][:actions][parts.last]
       end
 
-      def handle_document_structure_error(msg)
-        pp msg
-        log_exception(ResponseStructureError.new(msg))
-      end
-
       def validate_response_structure(json)
         return unless Platform::Config.enable_api_verification?
 
@@ -500,10 +463,10 @@ module Platform
     #    pp hash
 
         ref = Platform::Config.api_reference(api_version)
-        return handle_document_structure_error("Unsupported API version: #{api_version}") if ref.nil?
+        raise ResponseStructureError.new("Unsupported API version: #{api_version}") if ref.nil?
 
         ref = api_reference_for_path(ref, path)
-        return handle_document_structure_error("Unsupported API path: #{path}") if ref.nil?
+        raise ResponseStructureError.new("Unsupported API path: #{path}") if ref.nil?
 
         fields = ref[:fields]
     #    pp fields
@@ -515,7 +478,7 @@ module Platform
           end
         end
 
-        handle_document_structure_error("Unsupported or undocumented fields for API version #{api_version}, path #{path}: #{undocumented_fields.join(', ')}") if undocumented_fields.any?
+        raise ResponseStructureError.new("Unsupported or undocumented fields for API version #{api_version}, path #{path}: #{undocumented_fields.join(', ')}") if undocumented_fields.any?
       end
 
       # If this is a preflight OPTIONS request, then short-circuit the

@@ -125,7 +125,7 @@ module Platform
         begin
           eval(Platform::Config.logout_method)
         rescue Exception => ex
-          raise Platform::Exception.new("Failed to execute #{Platform::Config.logout_method} with exception: #{ex.message}")
+          raise "Failed to execute #{Platform::Config.logout_method} with exception: #{ex.message}"
         end
       else
         # handle default logout strategy

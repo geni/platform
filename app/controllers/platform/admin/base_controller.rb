@@ -46,7 +46,6 @@ module Platform
             {"title" => "Categories", "description" => "Admin tab", "controller" => "categories"},
             {"title" => "Forum", "description" => "Admin tab", "controller" => "forum"},
             {"title" => "Metrics", "description" => "Admin tab", "controller" => "metrics"},
-            {"title" => "Exceptions", "description" => "Admin tab", "controller" => "exceptions"},
         ]
       end
       helper_method :platform_admin_tabs
