@@ -38,6 +38,5 @@
 #
 module Platform
   class RollupLog < ApplicationRecord
-    self.table_name = :platform_rollup_logs
   end # class RollupLog
 end # module Platform

@@ -36,7 +36,6 @@
 module Platform
   module Media
     class Media < ApplicationRecord
-      self.table_name = :platform_media
 
       def local_dir
         @local_dir ||= [Platform::Config.media_path, file_location].join("/")

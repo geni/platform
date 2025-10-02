@@ -37,7 +37,6 @@
 #
 module Platform
   class ApplicationPermission < ApplicationRecord
-    self.table_name = :platform_application_permissions
 
     belongs_to :application
     belongs_to :permission

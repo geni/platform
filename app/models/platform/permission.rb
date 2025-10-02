@@ -37,7 +37,6 @@
 #
 module Platform
   class Permission < ApplicationRecord
-    self.table_name = :platform_permissions
 
     has_many :application_permissions
     belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => 'icon_id'

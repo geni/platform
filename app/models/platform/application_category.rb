@@ -40,7 +40,6 @@
 #
 module Platform
   class ApplicationCategory < ApplicationRecord
-    self.table_name = :platform_application_categories
 
     belongs_to :category
     belongs_to :application

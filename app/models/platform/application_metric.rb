@@ -40,7 +40,6 @@
 #
 module Platform
   class ApplicationMetric < ApplicationRecord
-    self.table_name = :platform_application_metrics
 
     belongs_to :application
 

@@ -47,7 +47,6 @@
 module Platform
   module Oauth
     class OauthToken < ApplicationRecord
-      self.table_name = :platform_oauth_tokens
 
       belongs_to :application
       belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id

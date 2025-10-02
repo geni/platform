@@ -38,7 +38,6 @@
 #
 module Platform
   class ApplicationDeveloper < ApplicationRecord
-    self.table_name = :platform_application_developers
 
     belongs_to :developer
     belongs_to :application

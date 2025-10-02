@@ -69,7 +69,6 @@
 #
 module Platform
   class Application < ApplicationRecord
-    self.table_name = :platform_applications
 
     # useful methods - should be public
     include Platform::SimpleStringPermissions

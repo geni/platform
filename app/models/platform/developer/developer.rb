@@ -42,7 +42,6 @@
 module Platform
   module Developer
     class Developer < ApplicationRecord
-      self.table_name = :platform_developers
 
       belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
 

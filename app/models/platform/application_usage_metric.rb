@@ -42,7 +42,6 @@
 #
 module Platform
   class ApplicationUsageMetric < ApplicationRecord
-    self.table_name = :platform_application_usage_metrics
 
     belongs_to :application
 

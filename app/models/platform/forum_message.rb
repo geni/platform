@@ -39,7 +39,6 @@
 #
 module Platform
   class ForumMessage < ApplicationRecord
-    self.table_name = :platform_forum_messages
 
     belongs_to :user, :class_name => Platform::Config.user_class_name
     belongs_to :topic

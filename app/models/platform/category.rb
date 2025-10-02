@@ -42,7 +42,6 @@
 #
 module Platform
   class Category < ApplicationRecord
-    self.table_name = :platform_categories
 
     acts_as_tree :order => 'position, name'
     has_many :application_categories, -> { order('position') }
