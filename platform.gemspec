@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'acts_as_tree'
   spec.add_dependency "rails", ">= 8.0.1"
   spec.add_dependency 'rmagick'
+  spec.add_dependency 'sorted_set'
   spec.add_dependency 'sprockets-rails'
   spec.add_dependency 'tr8n'
   spec.add_dependency 'will_filter'
