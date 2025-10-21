@@ -22,7 +22,7 @@
 .section_link a {
 	text-decoration:none;
 }
-	
+
 .section_link a:hover {
   text-decoration:none;
 }
@@ -61,32 +61,32 @@
   <div style="padding-left:15px;" class="section_link <%="selected" if @controller.action_name == 'oauth_app_login' %>"><%=link_to(tr("App Login"), :action => :oauth_app_login, :version => @version)%></div>
 
   <div class="section_link <%="selected" if @controller.action_name == 'oauth_extensions' %>"><%=link_to(tr("{site_title} Applications", "", :site_title => Platform::Config.site_title), :action => :oauth_extensions, :version => @version)%></div>
-  
+
   <div class="navigation_header"><%=tr("SDKs & Tools")%></div>
   <div class="section_link <%="selected" if @controller.action_name == 'sdk_js' %>"><%=link_to(tr("JavaScript SDK"), :action => :sdk_js, :version => @version)%></div>
   <div class="section_link <%="selected" if @controller.action_name == 'sdk_ios' %>"><%=link_to(tr("iOS SDK"), :action => :sdk_ios, :version => @version)%></div>
 
-  <div class="navigation_header" style="white-space:nowrap;"><%=tr("API Reference")%> &nbsp; 
-	 <span style="font-size:8px;">v</span> <%=select_tag("version", options_for_select(Platform::Config.api_supported_versions, @version), :style=>"height:15px;padding:0px;font-size:10px;", :onChange=>"Platform.element('version_form').submit();")%>
+  <div class="navigation_header" style="white-space:nowrap;"><%=tr("API Reference")%> &nbsp;
+	 <span style="font-size:8px;">v</span> <%=select_tag("version", options_for_select(Platform::Config.api_supported_versions, @version), :style=>"height:15px;padding:0px;font-size:10px;", :onChange=>"Platform.submit('version_form');")%>
 	</div>
 
 	<div style="margin-bottom:5px;" class="section_link <%="selected" if @controller.action_name == 'reference' %>"><%=link_to(tr("Introduction"), :action => :reference, :version => @version)%></div>
-	
+
 	<% ref = Platform::Config.api_reference(@version) %>
 	<% @api ||= {} %>
-  <% path_parts = (@api[:path] || "").split("/") %> 
-	
+  <% path_parts = (@api[:path] || "").split("/") %>
+
 	<% ref.keys.sort.each do |api_key| %>
 	  <% api = ref[api_key] %>
 	  <% next if api[:type]=='struct' %>
     <div class="section_link <%="selected" if @api[:path]==api[:path] %>" style="vertical-align:middle;">
-    	 <% expanded = (path_parts.first == api[:path]) %>	
+    	 <% expanded = (path_parts.first == api[:path]) %>
     	<%=platform_toggler_tag("#{api_key}_api_actions", "", expanded, {:style => "text-align:center; vertical-align:top; width:10px;"})%>
 			<%=link_to(api_key.titleize, {:action => :api, :path => api[:path], :version => @version})%>
 			<%=platform_documentation_api_decorators_tag(api) %>
 		</div>
 		<% if api[:actions] %>
-		 <div id="<%=api_key%>_api_actions" style="margin-bottom:5px;<%='display:none' unless expanded%>"> 
+		 <div id="<%=api_key%>_api_actions" style="margin-bottom:5px;<%='display:none' unless expanded%>">
 		 <% api[:actions].keys.sort.each do |api_action_key| %>
 		    <% next if api_action_key == api[:default_action] %>
 		    <% api_action = api[:actions][api_action_key] %>
@@ -97,7 +97,7 @@
 		 <% end %>
 		 </div>
 		<% end %>
-		
+
 	<% end %>
 </div>
 <% end %>
