@@ -34,6 +34,9 @@ var Platform = Platform || {
   },
   value:function(element_id) {
     return Platform.element(element_id).value;
+  },
+  submit(element_id) {
+    Platform.element(element_id).submit();
   }
 };
 
