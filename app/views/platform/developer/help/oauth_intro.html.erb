@@ -192,7 +192,7 @@
   </p>
   <h3><%=tr("Example") %></h3>
   <div class="code_snippet">
-      https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&redirect_uri=YOUR_URL
+      https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_KEY</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>&response_type=code&scope=read_profile,write_profile
   </div>	
 	
   <h3><%=tr("Returned Fields") %></h3>
@@ -204,7 +204,7 @@
 
   <h2><%=tr("Request Token API")%></h2>
   <p>
-    <%=tr("Request token API is used to exchange athorization code or a refresh token for a valid access token.")%>
+    <%=tr("Request token API is used to exchange an authorization code or a refresh token for a valid access token.")%>
 		<%=tr("Depending on the flow you chose, you will have different options for calling this API.")%>
 		<%=tr("This API will always return results encoded in JSON format.")%>
   </p>
@@ -285,15 +285,29 @@
     <%=tr("See the flow you are interested in from the list above.")%>
   </p>  
 
-  <h2><%=tr("Validate Token API")%></h2>
+  <h2><%=tr("Authorized API Calls")%></h2>
+  <p>
+    <%=tr("Once you have obtained an access token, you can make API calls on behalf of the user who authorized your application (or on behalf of your application, in the case of the App Login flow).")%>
+    <%=tr("The access token should be passed with each API call you make, either as a query parameter or in the Authorization HTTP header.")%>
+    <%=tr("The HTTP header is recommended to avoid exposure to proxies and logs, and should be formatted as follows:")%>
+    <div class="code_snippet">
+        Authorization: Bearer <span class="code_snippet_value">ACCESS_TOKEN</span>
+    </div>
+  </p>
+
+  <p>
+    <%=tr("In addition to the calls detailed in the API REFERENCE section to the left, there are several OAuth-specific APIs you can use to manage tokens:")%>
+  </p>
+
+  <h3><%=tr("Validate Token API")%></h3>
   <p>
     <%=tr("Verifies whether the token is valid.")%>
   </p>
-  <h3><%=tr("End Point") %></h3>
+  <h4><%=tr("End Point") %></h4>
   <div class="code_snippet">
       https://<%=Platform::Config.site_base_url %>/platform/oauth/validate_token
   </div>
-  <h3><%=tr("Parameters") %></h3>
+  <h4><%=tr("Parameters") %></h4>
   <p>
       <table class="documentation_table">
           <tr>
@@ -315,26 +329,26 @@
                   <%=tr("Access token to be validated.") %>
               </td>
               <td>
-                  true
+                  <%=tr("true (parameter or HTTP Authorization header)")%>
               </td>
           </tr>
       </table>
 	</p>
-  <h3><%=tr("Returned Fields") %></h3>
+  <h4><%=tr("Returned Fields") %></h4>
   <p>
     <%=tr("Returns a flag that indicates whether the token is valid or not.")%>
   </p>  
 
 
-  <h2><%=tr("Invalidate Token API")%></h2>
+  <h3><%=tr("Invalidate Token API")%></h3>
   <p>
     <%=tr("Invalidates the token.")%>
   </p>
-  <h3><%=tr("End Point") %></h3>
+  <h4><%=tr("End Point") %></h4>
   <div class="code_snippet">
       https://<%=Platform::Config.site_base_url %>/platform/oauth/invalidate_token
   </div>
-  <h3><%=tr("Parameters") %></h3>
+  <h4><%=tr("Parameters") %></h4>
   <p>
       <table class="documentation_table">
           <tr>
@@ -356,12 +370,12 @@
                   <%=tr("Access token to be invalidated.") %>
               </td>
               <td>
-                  true
+                  <%=tr("true (parameter or HTTP Authorization header)")%>
               </td>
           </tr>
       </table>
   </p>
-  <h3><%=tr("Returned Fields") %></h3>
+  <h4><%=tr("Returned Fields") %></h4>
   <p>
     <%=tr("Returns a flag that indicates whether the token was invalidated.")%>
   </p>  

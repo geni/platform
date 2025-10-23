@@ -101,7 +101,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&redirect_uri=YOUR_URL
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_KEY</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>
     </div>
     <p>
         <%=tr("If the user is already logged in, we validate the login cookie that we have stored on the user's browser and authenticate the user.") %>
@@ -160,7 +160,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        http://YOUR_URL?status=unauthorized&message=user+canceled
+        http://<span class="code_snippet_value">YOUR_URL</span>?status=unauthorized&message=user+canceled
     </div>
     <p>
         <%=tr("If the user presses Allow, your app is authorized.") %>
@@ -228,7 +228,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        http://YOUR_URL?code=A_CODE_GENERATED_BY_SERVER&expires_in=SECONDS_UNTIL_THE_CODE_IS_EXPIRED
+        http://<span class="code_snippet_value">YOUR_URL</span>?code=<span class="code_snippet_value">A_CODE_GENERATED_BY_SERVER</span>&expires_in=<span class="code_snippet_value">SECONDS_UNTIL_THE_CODE_IS_EXPIRED</span>
     </div>
     <p>
         <%=tr("With this code in hand, you can proceed to the next step, app authentication, to gain the access token you need to make API calls.") %>
@@ -314,7 +314,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/request_token?client_id=YOUR_APP_ID&redirect_uri=YOUR_URL&client_secret=YOUR_APP_SECRET&code=THE_CODE_FROM_ABOVE
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/request_token?client_id=<span class="code_snippet_value">YOUR_APP_ID</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>&client_secret=<span class="code_snippet_value">YOUR_APP_SECRET</span>&code=<span class="code_snippet_value">THE_CODE_FROM_ABOVE</span>
     </div>
     <p>
         <%=tr("If your app is successfully authenticated and the authorization code from the user is valid, the authorization server will return the access token in a JSON format:") %>
@@ -428,9 +428,9 @@
     <pre class="code_snippet">
 &lt;?php 
 
-   $app_id = "YOUR_APP_KEY";
-   $app_secret = "YOUR_APP_SECRET";
-   $my_url = "YOUR_URL";
+   $app_id = "<span class="code_snippet_value">YOUR_APP_KEY</span>";
+   $app_secret = "<span class="code_snippet_value">YOUR_APP_SECRET</span>";
+   $my_url = "<span class="code_snippet_value">YOUR_URL</span>";
 
    session_start();
    $access_code = $_REQUEST["code"];
@@ -543,8 +543,8 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/request_token?client_id=YOUR_APP_ID&redirect_uri=YOUR_URL
-&client_secret=YOUR_APP_SECRET&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/request_token?client_id=<span class="code_snippet_value">YOUR_APP_ID</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>
+&client_secret=<span class="code_snippet_value">YOUR_APP_SECRET</span>&grant_type=refresh_token&refresh_token=<span class="code_snippet_value">REFRESH_TOKEN</span> 
     </div>
     <h3><%=tr("Returned Fields") %></h3>
     <p>

@@ -92,7 +92,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_ID&redirect_uri=YOUR_APP_URL&response_type=token&display=mobile
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_ID</span>&redirect_uri=<span class="code_snippet_value">YOUR_APP_URL</span>&response_type=token&display=mobile
     </div>
     <p>
     	<%=tr("By setting the display parameter to \"mobile\", you ensure that the login and the authorization screens will use a mobile layout.")%>
@@ -118,7 +118,7 @@
       &lt;string>&lt;/string>
       &lt;key>CFBundleURLSchemes&lt;/key>
       &lt;array>
-        &lt;string>YOUR_APP_ID&lt;/string>
+        &lt;string><span class="code_snippet_value">YOUR_APP_ID</span>&lt;/string>
       &lt;/array>
     &lt;/dict>
   &lt;/array>
@@ -133,10 +133,10 @@
     <pre class="code_snippet">
 NSString *geniOauthBaseURL = @"https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize";
 
-NSString *yourAppURL = [NSString stringWithFormat: @"%@/authorize", YOUR_APP_ID];
+NSString *yourAppURL = [NSString stringWithFormat: @"%@/authorize", <span class="code_snippet_value">YOUR_APP_ID</span>];
 
 NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_uri=%@&response_type=token&display=mobile", 
-                                                    geniOauthBaseURL, YOUR_APP_ID, yourAppURL];
+                                                    geniOauthBaseURL, <span class="code_snippet_value">YOUR_APP_ID</span>, yourAppURL];
                          
 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:geniOauthURL]];
 </pre>
@@ -161,7 +161,7 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
 	NSLog(@"Did come back from other application");
 	
 	// If the URL's structure doesn't match the structure used for Geni authorization, abort.
-	if (![[url absoluteString] hasPrefix:[NSString stringWithFormat:@"%@://authorize", YOUR_APP_ID]]) {
+	if (![[url absoluteString] hasPrefix:[NSString stringWithFormat:@"%@://authorize", <span class="code_snippet_value">YOUR_APP_ID</span>]]) {
 	    return NO;
 	}
 	
@@ -235,7 +235,7 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        YOUR_APP_ID://authorize?status=unauthorized&message=user+canceled
+        <span class="code_snippet_value">YOUR_APP_ID</span>://authorize?status=unauthorized&message=user+canceled
     </div>
     <p>
         <%=tr("If the user presses Allow, your app is authorized.") %>
@@ -281,7 +281,7 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        YOUR_APP_ID://authorize?access_token=ACCESS_TOKEN_GENERATED_BY_SERVER&expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
+        <span class="code_snippet_value">YOUR_APP_ID</span>://authorize?access_token=<span class="code_snippet_value">ACCESS_TOKEN_GENERATED_BY_SERVER</span>&expires_in=<span class="code_snippet_value">SECONDS_UNTIL_IT_IS_EXPIRED</span>
     </div>
     <h3><%=tr("Geni iOS Client SDK")%></h3>
     <p>

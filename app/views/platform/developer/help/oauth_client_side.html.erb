@@ -90,7 +90,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&redirect_uri=YOUR_URL&response_type=token
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_KEY</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>&response_type=<span class="code_snippet_value">token</span>
     </div>
     <p>
         <%=tr("If the user is already logged in, we validate the login cookie that we have stored on the user's browser and authenticate the user.") %><%=tr("If the user is not logged in, they are prompted to enter their credentials:") %>
@@ -147,7 +147,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        http://YOUR_URL#status=unauthorized&message=user+canceled
+        http://<span class="code_snippet_value">YOUR_URL</span>#status=unauthorized&message=user+canceled
     </div>
     <p>
         <%=tr("If the user presses Allow, your app is authorized.") %><%=tr("The user will be redirected (via HTTP 302) to the URL you passed in the redirect_uri parameter with an authorization code:") %>
@@ -192,7 +192,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        http://YOUR_URL#access_token=ACCESS_TOKEN_GENERATED_BY_SERVER&expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
+        http://<span class="code_snippet_value">YOUR_URL</span>#access_token=<span class="code_snippet_value">ACCESS_TOKEN_GENERATED_BY_SERVER</span>&expires_in=<span class="code_snippet_value">SECONDS_UNTIL_IT_IS_EXPIRED</span>
     </div>
     <h2><%=tr("Cross Domain API Calls")%></h2>
     <p>
@@ -202,7 +202,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <pre class="code_snippet">
-var Geni = {callbacks:{}, client_id:"YOUR_APP_KEY", access_token:""};
+var Geni = {callbacks:{}, client_id:"<span class="code_snippet_value">YOUR_APP_KEY</span>", access_token:""};
 
 function jsonp(url, params, callback) {
   var script  = document.createElement('script');

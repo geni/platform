@@ -80,7 +80,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&response_type=token&display=desktop
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_KEY</span>&response_type=token&display=desktop
     </div>
     <p>
         <%=tr("If the user is already logged in, we validate the login cookie that we have stored on the user's browser and authenticate the user.") %><%=tr("If the user is not logged in, they are prompted to enter their credentials:") %>
@@ -184,8 +184,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/auth_success#access_token=ACCESS_TOKEN_GENERATED_BY_SERVER
-&expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/auth_success#access_token=<span class="code_snippet_value">ACCESS_TOKEN_GENERATED_BY_SERVER</span>&expires_in=<span class="code_snippet_value">SECONDS_UNTIL_IT_IS_EXPIRED</span>
     </div>
 </div>
 <%= render :partial => "footer" %>

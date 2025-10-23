@@ -246,7 +246,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&redirect_uri=YOUR_URL&response_type=token
+        https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=<span class="code_snippet_value">YOUR_APP_KEY</span>&redirect_uri=<span class="code_snippet_value">YOUR_URL</span>&response_type=token
     </div>
     <p style="text-align:center">
        <%=image_tag("/platform/images/help/auth_iframe.png", :style=>"width:600px;", :class => "screenshot") %>
@@ -294,7 +294,7 @@
     </p>
     <h3><%=tr("Example") %></h3>
     <div class="code_snippet">
-        http://YOUR_URL#status=unauthorized&message=user+canceled
+        http://<span class="code_snippet_value">YOUR_URL</span>#status=unauthorized&message=user+canceled
     </div>
     <p>
         <%=tr("If the user presses Allow, your app is authorized.") %><%=tr("The user will be redirected (via HTTP 302) to the URL you passed in the redirect_uri parameter with an authorization code:") %>
@@ -339,7 +339,7 @@
     </p>
     <h3><%=tr("Example")%></h3>
     <div class="code_snippet">
-        http://YOUR_URL#access_token=ACCESS_TOKEN_GENERATED_BY_SERVER&expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
+        http://<span class="code_snippet_value">YOUR_URL</span>#access_token=<span class="code_snippet_value">ACCESS_TOKEN_GENERATED_BY_SERVER</span>&expires_in=<span class="code_snippet_value">SECONDS_UNTIL_IT_IS_EXPIRED</span>
     </div>		
 </div>
 <%= render :partial => "footer" %>
