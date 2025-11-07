@@ -8,22 +8,22 @@
   <p>
 	 <%= tr(@api[:description], "API description") %>
 	</p>
-	
+
 	<% if @api[:sample] %>
 		<h2><%=tr("Usage")%></h2>
 		<p>
 			<% if @api[:method] == 'POST' %>
 			 <p><%=tr("Requires POST.")%></p>
 			<% end %>
-			
+
 			<%= link_to(@api[:sample], @api[:sample]) %>
 		</p>
   <% end %>
-	
+
 	<% if @api[:params] %>
-	  <% 
+	  <%
       api_params = @api[:params]
-      unless @api[:params].is_a?(Hash) 
+      unless @api[:params].is_a?(Hash)
         api_params = {}
         root = @api[:parent]
         selected_keys = []
@@ -31,7 +31,7 @@
         if @api[:params].is_a?(String)
 	        if @api[:params] == "*"
 	          selected_keys = root[:fields].keys
-	        else 
+	        else
 	          selected_keys = root[:param_groups][@api[:params]]
 	        end
         elsif @api[:params].is_a?(Array)
@@ -48,7 +48,7 @@
           api_params = selected_keys
         end
       end
-    %> 
+    %>
 	  <h2><%=tr("Parameters") %></h2>
 		<p>
 		<table class="documentation_table">
@@ -62,18 +62,18 @@
 		   <tr>
 		   	 <td><%=key%></td>
          <td><%=documentation_field_type_tag(api_params[key])%></td>
-	       <td><%=tr(api_params[key][:description], "API field description")%></td>
+	       <td><%=tr(api_params[key][:description], "API field description", api_params[key][:params] || {})%></td>
 	       <td><%=api_params[key][:required]%></td>
 		   </tr>
 	  <% end %>
 		</table>
 		</p>
 	<% end %>
-	
+
   <% if @api[:fields] %>
-    <% 
+    <%
       api_fields = @api[:fields]
-      unless @api[:fields].is_a?(Hash) 
+      unless @api[:fields].is_a?(Hash)
         api_fields = {}
         root = @api[:parent]
         selected_keys = []
@@ -81,7 +81,7 @@
         if @api[:fields].is_a?(String)
           if @api[:fields] == "*"
             selected_keys = root[:fields].keys
-          else 
+          else
             selected_keys = root[:field_groups][@api[:fields]]
           end
         elsif @api[:fields].is_a?(Array)
@@ -96,7 +96,7 @@
           api_fields = selected_keys
         end
       end
-    %> 
+    %>
     <h2><%=tr("Returned Fields") %></h2>
     <p>
     <table class="documentation_table">
@@ -109,7 +109,7 @@
        <tr>
          <td><%=key%> <%=platform_documentation_field_decorators_tag(api_fields[key]) %></td>
          <td><%=documentation_field_type_tag(api_fields[key])%></td>
-         <td><%=tr(api_fields[key][:description], "API field description")%></td>
+         <td><%=tr(api_fields[key][:description], 'API field description', api_fields[key][:params] || {})%></td>
        </tr>
     <% end %>
     </table>
