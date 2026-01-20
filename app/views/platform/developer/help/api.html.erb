@@ -62,7 +62,7 @@
 		   <tr>
 		   	 <td><%=key%></td>
          <td><%=documentation_field_type_tag(api_params[key])%></td>
-	       <td><%=tr(api_params[key][:description], "API field description", api_params[key][:params] || {})%></td>
+	       <td><%=tr(api_params[key][:description], "API field description", api_params[key][:tr8n_params] || {})%></td>
 	       <td><%=api_params[key][:required]%></td>
 		   </tr>
 	  <% end %>
@@ -109,7 +109,7 @@
        <tr>
          <td><%=key%> <%=platform_documentation_field_decorators_tag(api_fields[key]) %></td>
          <td><%=documentation_field_type_tag(api_fields[key])%></td>
-         <td><%=tr(api_fields[key][:description], 'API field description', api_fields[key][:params] || {})%></td>
+         <td><%=tr(api_fields[key][:description], 'API field description', api_fields[key][:tr8n_params] || {})%></td>
        </tr>
     <% end %>
     </table>
