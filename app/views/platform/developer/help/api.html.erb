@@ -5,9 +5,7 @@
 </div>
 
 <div class="documentation_section">
-  <p>
-	 <%= tr(@api[:description], "API description") %>
-	</p>
+  <p><%= tr(@api[:description], "API description", @api[:tr8n_params] || {}) %></p>
 
 	<% if @api[:sample] %>
 		<h2><%=tr("Usage")%></h2>
