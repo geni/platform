@@ -62,7 +62,7 @@ class Platform::Config
           Platform::ApplicationCategory, Platform::Category,
           Platform::ForumMessage, Platform::ForumTopic,
           Platform::Permission, Platform::Rating,
-          Platform::Developer, Platform::Application,
+          Platform::Developer::Developer, Platform::Application,
           Platform::Oauth::OauthToken, Platform::Oauth::AccessToken,
           Platform::Oauth::RequestToken, Platform::Oauth::RefreshToken,
           Platform::Media::Media, Platform::Media::Image,
