@@ -4,6 +4,7 @@ bundle
 coverage
 db/*.sqlite3
 Gemfile.lock
+Gemfile.next.lock
 log/*.log
 *.swp
 tmp/
