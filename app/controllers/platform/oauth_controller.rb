@@ -410,6 +410,7 @@ private
 
   # used by the authorization process
   def redirect_with_response(response_params, opts = {})
+    return if performed? # Rails 3.0: prevent double render
     response_params = HashWithIndifferentAccess.new(response_params)
 
     # preserve state

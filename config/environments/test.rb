@@ -1,29 +1,57 @@
 # Settings specified here will take precedence over those in config/environment.rb
 
-# The test environment is used exclusively to run your application's
-# test suite.  You never need to work with it otherwise.  Remember that
-# your test database is "scratch space" for the test suite and is wiped
-# and recreated between test runs.  Don't rely on the data there!
-config.cache_classes = true
+# Rails 3.0+ wraps configuration in PlatformGem::Application.configure block
+if defined?(PlatformGem::Application)
+  PlatformGem::Application.configure do
+    # The test environment is used exclusively to run your application's
+    # test suite.  You never need to work with it otherwise.  Remember that
+    # your test database is "scratch space" for the test suite and is wiped
+    # and recreated between test runs.  Don't rely on the data there!
+    config.cache_classes = true
 
-# Log error messages when you accidentally call methods on nil.
-config.whiny_nils = true
+    # Configure static asset server for tests with Cache-Control for performance
+    config.serve_static_assets = true
+    config.static_cache_control = "public, max-age=3600"
 
-# Show full error reports and disable caching
-config.action_controller.consider_all_requests_local = true
-config.action_controller.perform_caching             = false
-config.action_view.cache_template_loading            = true
+    # Log error messages when you accidentally call methods on nil.
+    config.whiny_nils = true
 
-# Disable request forgery protection in test environment
-config.action_controller.allow_forgery_protection    = false
+    # Show full error reports and disable caching
+    config.consider_all_requests_local       = true
+    config.action_controller.perform_caching = false
 
-# Tell Action Mailer not to deliver emails to the real world.
-# The :test delivery method accumulates sent emails in the
-# ActionMailer::Base.deliveries array.
-config.action_mailer.delivery_method = :test
+    # Raise exceptions instead of rendering exception templates
+    config.action_dispatch.show_exceptions = false
 
-# Use SQL instead of Active Record's schema dumper when creating the test database.
-# This is necessary if your schema can't be completely dumped by the schema dumper,
-# like if you have constraints or database-specific column types
-# config.active_record.schema_format = :sql
+    # Disable request forgery protection in test environment
+    config.action_controller.allow_forgery_protection    = false
 
+    # Tell Action Mailer not to deliver emails to the real world.
+    # The :test delivery method accumulates sent emails in the
+    # ActionMailer::Base.deliveries array.
+    config.action_mailer.delivery_method = :test
+
+    # Use SQL instead of Active Record's schema dumper when creating the test database.
+    # This is necessary if your schema can't be completely dumped by the schema dumper,
+    # like if you have constraints or database-specific column types
+    # config.active_record.schema_format = :sql
+
+    # Print deprecation notices to the stderr
+    config.active_support.deprecation = :stderr
+
+    # Set asset host to empty string to avoid nil errors in asset helpers
+    config.action_controller.asset_host = ""
+
+    # Set relative_url_root to empty string to avoid nil errors in asset helpers
+    config.action_controller.relative_url_root = ""
+  end
+else
+  # Rails 2.3 style - these are evaluated inside a config block in environment.rb
+  config.cache_classes = true
+  config.whiny_nils = true
+  config.action_controller.consider_all_requests_local = true
+  config.action_controller.perform_caching             = false
+  config.action_view.cache_template_loading            = true
+  config.action_controller.allow_forgery_protection    = false
+  config.action_mailer.delivery_method = :test
+end

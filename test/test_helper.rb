@@ -20,8 +20,55 @@ rescue LoadError
   # don't load SimpleCov
 end
 
+# Prevent bundler/setup from being required again for Rails 3.0
+# (we're already running under bundle exec)
+if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
+  $LOADED_FEATURES << 'bundler/setup.rb' unless $LOADED_FEATURES.include?('bundler/setup.rb')
+end
+
+# Apply Ruby 2.7 BigDecimal patch BEFORE loading Rails (for Rails 3.0)
+if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
+  require 'bigdecimal'
+  BigDecimal.singleton_class.class_eval do
+    unless respond_to?(:yaml_as)
+      define_method(:yaml_as) do |tag|
+        # No-op for Ruby 2.7+ where yaml_as was removed
+      end
+    end
+  end
+end
+
+# Load Rails environment - use config/environment for both versions
 require_relative '../config/environment'
-require 'test_help'
+
+# Load appropriate test helpers
+if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
+  # Rails 3.0 - manually load Rails components before platform code
+  require 'action_controller'
+  require 'action_view'
+  require 'active_record'
+
+  # Now load the platform gem
+  require File.expand_path('../../lib/platform', __FILE__)
+
+  # Load all platform lib files
+  Dir[File.expand_path('../../lib/platform/**/*.rb', __FILE__)].each { |f| require f }
+
+  # Set up autoload paths for models, controllers, helpers
+  app_path = File.expand_path('../..', __FILE__)
+  ActiveSupport::Dependencies.autoload_paths += [
+    File.join(app_path, 'app', 'models'),
+    File.join(app_path, 'app', 'controllers'),
+    File.join(app_path, 'app', 'helpers')
+  ]
+
+  require 'test/unit'
+  require 'active_support/test_case'
+else
+  # Rails 2.3
+  require 'test_help'
+end
+
 require 'pp'
 
 class ActiveSupport::TestCase
@@ -41,20 +88,30 @@ class ActiveSupport::TestCase
   # The only drawback to using transactional fixtures is when you actually
   # need to test transactions.  Since your test is bracketed by a transaction,
   # any transactions started in your code will be automatically rolled back.
-  self.use_transactional_fixtures = true
+  # Rails 3.0+ uses use_transactional_tests instead
+  if respond_to?(:use_transactional_fixtures=)
+    self.use_transactional_fixtures = true
+  elsif respond_to?(:use_transactional_tests=)
+    self.use_transactional_tests = true
+  end
 
   # Instantiated fixtures are slow, but give you @david where otherwise you
   # would need people(:david).  If you don't want to migrate your existing
   # test cases which use the @david style and don't mind the speed hit (each
   # instantiated fixtures translates to a database query per test method),
   # then set this back to true.
-  self.use_instantiated_fixtures  = false
+  if respond_to?(:use_instantiated_fixtures=)
+    self.use_instantiated_fixtures  = false
+  end
 
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
   #
   # Note: You'll currently still have to declare fixtures explicitly in integration tests
   # -- they do not yet inherit this setting
-  fixtures :all
+  # Skip for Rails 3.0 if fixtures directory doesn't exist
+  if respond_to?(:fixtures) && File.directory?(File.expand_path('../../test/fixtures', __FILE__))
+    fixtures :all
+  end
 
   # Add more helper methods to be used by all tests here...
 
@@ -108,4 +165,16 @@ class Object
 
 end # class Object
 
-Tr8n::Config.config[:enable_tr8n] = false
+# Rails 3.0 ActionController::TestCase needs @routes setup
+if defined?(PlatformGem::Application) && defined?(ActionController::TestCase)
+  class ActionController::TestCase
+    setup do
+      @routes = PlatformGem::Application.routes
+    end
+  end
+end
+
+# Configure Tr8n if available
+if defined?(Tr8n)
+  Tr8n::Config.config[:enable_tr8n] = false
+end

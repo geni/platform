@@ -6,6 +6,25 @@
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+# Rails 3.0+ needs application.rb and compatibility shim
+if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
+  require File.expand_path('../application', __FILE__)
+
+  # Define compatibility shim for Rails 2.3's Initializer.run syntax
+  require 'ostruct'
+  module Rails
+    module Initializer
+      def self.run
+        # No-op for Rails 3.0 - configuration is handled in application.rb
+        yield(OpenStruct.new) if block_given?
+      end
+    end
+  end
+
+  # Initialize the Rails application
+  PlatformGem::Application.initialize!
+end
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers

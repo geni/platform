@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(:version => 20160404122117) do
     t.datetime "updated_at"
   end
 
+  add_index "platform_application_categories", ["category_id", "application_id"], :name => "pa_categories"
   add_index "platform_application_categories", ["category_id"], :name => "index_platform_application_categories_on_category_id"
 
   create_table "platform_application_developers", :force => true do |t|
@@ -70,6 +71,8 @@ ActiveRecord::Schema.define(:version => 20160404122117) do
     t.datetime "updated_at"
   end
 
+  add_index "platform_application_metrics", ["application_id", "interval"], :name => "pa_metrics_appid_interval"
+
   create_table "platform_application_permissions", :force => true do |t|
     t.integer  "application_id"
     t.integer  "permission_id"
@@ -90,6 +93,8 @@ ActiveRecord::Schema.define(:version => 20160404122117) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "platform_application_usage_metrics", ["application_id", "interval"], :name => "pa_usage_metrics"
 
   create_table "platform_application_users", :force => true do |t|
     t.integer  "application_id", :null => false

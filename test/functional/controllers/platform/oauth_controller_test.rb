@@ -74,7 +74,7 @@ class Platform::OauthControllerTest < ActionController::TestCase
 
   # Ticket 19177
   test 'validate_token valid token' do
-    access_token = Platform::Oauth::AccessToken.create!(:user => user, :application => app, :token => 'foo')
+    access_token = Platform::Oauth::AccessToken.create!(:user => user, :application => app, :token => "foo_#{Time.now.to_f}")
     get :validate_token, :access_token => access_token.token
     assert_response :success
 
@@ -83,7 +83,7 @@ class Platform::OauthControllerTest < ActionController::TestCase
 
   # Ticket 16124
   test 'invalidate_token' do
-    access_token = Platform::Oauth::AccessToken.create(:user => user, :application => app, :token => 'foo')
+    access_token = Platform::Oauth::AccessToken.create(:user => user, :application => app, :token => "foo_#{Time.now.to_f}")
     get :invalidate_token, :access_token => access_token.token
     assert_response :success
     assert_equal 'OK', JSON.parse(@response.body)['result'] # Ticket 19267

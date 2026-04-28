@@ -54,7 +54,12 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
       assert_response :success
     end
 
-    assert_template 'new.html.erb'
+    # Rails 2.3 uses 'new.html.erb', Rails 3.0 uses 'platform/developer/apps/new'
+    if defined?(PlatformGem::Application)
+      assert_template 'platform/developer/apps/new'
+    else
+      assert_template 'new.html.erb'
+    end
     assert_nil @response.flash[:trfn]
     assert_match 'invalid', @response.flash[:error]
   end
