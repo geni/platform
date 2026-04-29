@@ -1,38 +1,41 @@
-ActionController::Routing::Routes.draw do |map|
+# Rails 2.3 routes (only for Rails 2.3, skipped for Rails 3.0+)
+if defined?(ActionController::Routing::Routes)
+  ActionController::Routing::Routes.draw do |map|
 
-  map.connect '/platform/developer/apps/:id',
-              :controller => 'platform/developer/apps', :action => 'delete',
-              :conditions => {:method => :delete}
+    map.connect '/platform/developer/apps/:id',
+                :controller => 'platform/developer/apps', :action => 'delete',
+                :conditions => {:method => :delete}
 
-  map.connect '/platform/developer/apps/:id',
-              :controller => 'platform/developer/apps', :action => 'update',
-              :conditions => {:method => :put}
+    map.connect '/platform/developer/apps/:id',
+                :controller => 'platform/developer/apps', :action => 'update',
+                :conditions => {:method => :put}
 
-  [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-    map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
-  end
-
-  [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-    map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
-  end
-
-  [:apps, :categories, :developers].each do |ctrl|
-    map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
-  end
-
-  map.namespace :platform do |subdomain|
-    subdomain.root :controller => 'home', :action => 'index'
-    subdomain.namespace :developer do |subsubdomain|
-      subsubdomain.root :controller => 'dashboard', :action => 'index'
+    [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
+      map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
     end
-    subdomain.namespace :admin do |subsubdomain|
-      subsubdomain.root :controller => 'apps', :action => 'index'
-    end
-  end
 
+    [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
+      map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
+    end
+
+    [:apps, :categories, :developers].each do |ctrl|
+      map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
+    end
+
+    map.namespace :platform do |subdomain|
+      subdomain.root :controller => 'home', :action => 'index'
+      subdomain.namespace :developer do |subsubdomain|
+        subsubdomain.root :controller => 'dashboard', :action => 'index'
+      end
+      subdomain.namespace :admin do |subsubdomain|
+        subsubdomain.root :controller => 'apps', :action => 'index'
+      end
+    end
+
+  end
 end
 
-# Rails 3.0 routes (only loaded when Rails 3.0 is active)
+# Rails 3.0+ routes
 if defined?(PlatformGem::Application)
   PlatformGem::Application.routes.draw do
     # Stub tr8n routes for Rails 3.0 compatibility
@@ -45,11 +48,17 @@ if defined?(PlatformGem::Application)
     put '/platform/developer/apps/:id' => 'platform/developer/apps#update'
 
     [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-      match "/platform/#{ctrl}/:action" => "platform/#{ctrl}#:action", :via => [:get, :post]
+      # Rails 3.1: Use explicit controller scope for proper action routing in tests
+      controller "platform/#{ctrl}" do
+        match "/platform/#{ctrl}(/:action)", :via => [:get, :post]
+      end
     end
 
     [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-      match "/platform/developer/#{ctrl}/:action" => "platform/developer/#{ctrl}#:action", :via => [:get, :post]
+      # Rails 3.1: Use explicit controller scope for proper action routing in tests
+      controller "platform/developer/#{ctrl}" do
+        match "/platform/developer/#{ctrl}(/:action(/:id))", :via => [:get, :post, :put, :delete]
+      end
     end
 
     [:apps, :categories, :developers].each do |ctrl|

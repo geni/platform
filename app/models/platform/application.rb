@@ -50,7 +50,7 @@ class Platform::Application < ActiveRecord::Base
 
   validates_presence_of :name, :key, :secret
   validates_uniqueness_of :key
-  before_validation_on_create :generate_keys
+  before_validation :generate_keys, :on => :create
 
   URL_REGEX = /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i
   validates_format_of :url,                   :with => URL_REGEX, :allow_blank=>true

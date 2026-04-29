@@ -1,28 +1,31 @@
 # Don't change this file!
 # Configure your app in config/environment.rb and config/environments/*.rb
 
-# For Rails 3.0+ with Bundler, skip the custom boot process but load Rails
-if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  RAILS_ROOT = "#{File.dirname(__FILE__)}/.." unless defined?(RAILS_ROOT)
+# For Rails 3.0+ with Bundler, skip the custom boot process
+# Rails 3.0+ loads through application.rb via Bundler
+RAILS_ROOT = "#{File.dirname(__FILE__)}/.." unless defined?(RAILS_ROOT)
 
-  # Patch Rails 3.0 for Ruby 2.7+ BEFORE loading Rails
-  require 'rubygems'
+# Check if we're running Rails 3.0+
+require 'rubygems'
+require 'bundler/setup' if File.exist?("#{RAILS_ROOT}/Gemfile")
 
-  # Fix BigDecimal.yaml_as (removed in Ruby 2.7+)
-  require 'bigdecimal'
-  BigDecimal.singleton_class.class_eval do
-    unless respond_to?(:yaml_as)
-      define_method(:yaml_as) do |tag|
-        # No-op for Ruby 2.7+ where yaml_as was removed
-      end
+# Apply Ruby 2.7 compatibility patches for Rails 3.0-3.1 BEFORE loading Rails
+# Fix BigDecimal.yaml_as (removed in Ruby 2.7+)
+require 'bigdecimal'
+BigDecimal.singleton_class.class_eval do
+  unless respond_to?(:yaml_as)
+    define_method(:yaml_as) do |tag|
+      # No-op for Ruby 2.7+ where yaml_as was removed
     end
   end
+end
 
-  # Fix TimeZone#parse circular argument reference
-  gem_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'activesupport' && spec.version.to_s.start_with?('3.0.') }
+# Fix TimeZone#parse circular argument reference in Rails 3.0-3.1
+if defined?(Gem)
+  gem_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'activesupport' && spec.version.to_s =~ /^3\.[01]\./ }
   if gem_spec
     timezone_file = File.join(gem_spec.full_gem_path, 'lib/active_support/values/time_zone.rb')
-    if File.exist?(timezone_file)
+    if File.exist?(timezone_file) && File.writable?(timezone_file)
       content = File.read(timezone_file)
       if content.include?('def parse(str, now=now)')
         content.gsub!(/def parse\(str, now=now\)/, "def parse(str, now=nil)\n      now ||= self.now")
@@ -31,186 +34,96 @@ if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
     end
   end
 
-  # Skip boot process for Rails 3.0 - it's handled by application.rb
-  return
-end
-
-RAILS_ROOT = "#{File.dirname(__FILE__)}/.." unless defined?(RAILS_ROOT)
-
-module Rails
-  class << self
-    def boot!
-      unless booted?
-        preinitialize
-        pick_boot.run
+  # Fix asset_tag_helper nil relative_url_root issue in Rails 3.0
+  actionpack_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'actionpack' && spec.version.to_s =~ /^3\.0\./ }
+  if actionpack_spec
+    asset_helper_file = File.join(actionpack_spec.full_gem_path, 'lib/action_view/helpers/asset_tag_helper.rb')
+    if File.exist?(asset_helper_file) && File.writable?(asset_helper_file)
+      content = File.read(asset_helper_file)
+      # Patch compute_public_path to handle nil relative_url_root
+      if content.include?('!source.start_with?(controller.config.relative_url_root)') && !content.include?('# PATCHED FOR NIL')
+        content.gsub!(
+          '!source.start_with?(controller.config.relative_url_root)',
+          '!source.start_with?(controller.config.relative_url_root || "") # PATCHED FOR NIL'
+        )
+        File.write(asset_helper_file, content)
       end
-    end
-
-    def booted?
-      defined? Rails::Initializer
-    end
-
-    def pick_boot
-      (vendor_rails? ? VendorBoot : GemBoot).new
-    end
-
-    def vendor_rails?
-      File.exist?("#{RAILS_ROOT}/vendor/rails")
-    end
-
-    def preinitialize
-      load(preinitializer_path) if File.exist?(preinitializer_path)
-    end
-
-    def preinitializer_path
-      "#{RAILS_ROOT}/config/preinitializer.rb"
     end
   end
 
-  class Boot
-    def run
-      load_initializer
-    end
-  end
-
-  class VendorBoot < Boot
-    def load_initializer
-      require "#{RAILS_ROOT}/vendor/rails/railties/lib/initializer"
-      Rails::Initializer.run(:install_gem_spec_stubs)
-      Rails::GemDependency.add_frozen_gem_path
-    end
-  end
-
-  class GemBoot < Boot
-    def load_initializer
-      self.class.load_rubygems
-      load_rails_gem
-
-      # Apply Ruby 2.7 compatibility patches BEFORE loading Rails
-      patch_bigdecimal_for_ruby_27
-      patch_rails_30_for_ruby_27
-
-      # Rails 3.0 uses 'rails', Rails 2.3 uses 'initializer'
-      begin
-        require 'rails'
-      rescue LoadError
-        require 'initializer'
+  # Fix Rails 3.1 route_set frozen string issue (Ruby 2.7+)
+  actionpack_31_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'actionpack' && spec.version.to_s =~ /^3\.1\./ }
+  if actionpack_31_spec
+    route_set_file = File.join(actionpack_31_spec.full_gem_path, 'lib/action_dispatch/routing/route_set.rb')
+    if File.exist?(route_set_file) && File.writable?(route_set_file)
+      content = File.read(route_set_file)
+      # Patch to ensure path is not frozen
+      if content.include?('path = (script_name.blank? ? _generate_prefix(options) : script_name.chomp(\'/\')).to_s') && !content.include?('# PATCHED FOR FROZEN')
+        content.gsub!(
+          'path = (script_name.blank? ? _generate_prefix(options) : script_name.chomp(\'/\')).to_s',
+          'path = (script_name.blank? ? _generate_prefix(options) : script_name.chomp(\'/\')).to_s.dup # PATCHED FOR FROZEN'
+        )
+        File.write(route_set_file, content)
       end
-
-      # Load additional Ruby 2.7 compatibility patches for Rails 3.0 after rails loads
-      rails_30_compat = File.expand_path('../../lib/core_ext/rails_30_ruby_27_compat', __FILE__)
-      require rails_30_compat if File.exist?("#{rails_30_compat}.rb")
-    end
-
-    def patch_bigdecimal_for_ruby_27
-      # Fix BigDecimal.yaml_as doesn't exist in newer Psych (Ruby 2.7+)
-      # This MUST be done before requiring rails/activesupport
-      require 'bigdecimal'
-      BigDecimal.singleton_class.class_eval do
-        unless respond_to?(:yaml_as)
-          define_method(:yaml_as) do |tag|
-            # No-op for Ruby 2.7+ where yaml_as was removed
-          end
-        end
-      end
-    end
-
-    def patch_rails_30_for_ruby_27
-      # Find Rails 3.0 activesupport gem
-      if defined?(Gem)
-        gem_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'activesupport' && spec.version.to_s.start_with?('3.0.') }
-        return unless gem_spec
-
-        timezone_file = File.join(gem_spec.full_gem_path, 'lib/active_support/values/time_zone.rb')
-        return unless File.exist?(timezone_file)
-
-        content = File.read(timezone_file)
-
-        # Fix: def parse(str, now=now) - circular argument reference (syntax error in Ruby 2.7+)
-        if content.include?('def parse(str, now=now)')
-          content.gsub!(/def parse\(str, now=now\)/, "def parse(str, now=nil)\n      now ||= self.now")
-          File.write(timezone_file, content)
-        end
-      end
-    end
-
-    def load_rails_gem
-      # Skip gem activation for Rails 3.0+ when using Bundler - it's already set up
-      # Only needed for Rails 2.3 without Bundler
-      return if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-
-      if version = self.class.gem_version
-        gem 'rails', version
-      else
-        gem 'rails'
-      end
-    rescue Gem::LoadError => load_error
-      if load_error.message =~ /Could not find RubyGem rails/
-        STDERR.puts %(Missing the Rails #{version} gem. Please `gem install -v=#{version} rails`, update your RAILS_GEM_VERSION setting in config/environment.rb for the Rails version you do have installed, or comment out RAILS_GEM_VERSION to use the latest version installed.)
-        exit 1
-      else
-        raise
-      end
-    end
-
-    class << self
-      def rubygems_version
-        Gem::RubyGemsVersion rescue nil
-      end
-
-      def gem_version
-        if defined? RAILS_GEM_VERSION
-          RAILS_GEM_VERSION
-        elsif ENV.include?('RAILS_GEM_VERSION')
-          ENV['RAILS_GEM_VERSION']
-        else
-          parse_gem_version(read_environment_rb)
-        end
-      end
-
-      def load_rubygems
-        min_version = '1.3.2'
-        require 'rubygems'
-        unless rubygems_version >= min_version
-          $stderr.puts %Q(Rails requires RubyGems >= #{min_version} (you have #{rubygems_version}). Please `gem update --system` and try again.)
-          exit 1
-        end
-
-      rescue LoadError
-        $stderr.puts %Q(Rails requires RubyGems >= #{min_version}. Please install RubyGems and try again: http://rubygems.rubyforge.org)
-        exit 1
-      end
-
-      def parse_gem_version(text)
-        $1 if text =~ /^[^#]*RAILS_GEM_VERSION\s*=\s*["']([!~<>=]*\s*[\d.]+)["']/
-      end
-
-      private
-        def read_environment_rb
-          File.read("#{RAILS_ROOT}/config/environment.rb")
-        end
     end
   end
 end
 
-# Override Rails::Boot#run for Rails 2.3 Bundler integration
-# Rails 3.0+ has built-in Bundler support, so only apply this for Rails 2.3
-unless ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  class Rails::Boot
-    def run
-      load_initializer
-
-      Rails::Initializer.class_eval do
-        def load_gems
-          @bundler_loaded ||= Bundler.require :default, Rails.env
+# Fix ActiveRecord 3.1 has_many_association circular argument reference
+if defined?(Gem)
+  # Try vendored gem first, then system gem
+  ar_spec = Gem.loaded_specs.values.select { |spec| spec.name == 'activerecord' && spec.version.to_s =~ /^3\.1\./ }
+                              .sort_by { |spec| spec.full_gem_path.include?('vendor/bundle') ? 0 : 1 }
+                              .first
+  if ar_spec
+    has_many_file = File.join(ar_spec.full_gem_path, 'lib/active_record/associations/has_many_association.rb')
+    if File.exist?(has_many_file) && File.writable?(has_many_file)
+      content = File.read(has_many_file)
+      if content.include?('reflection = reflection') && !content.include?('# PATCHED FOR CIRCULAR')
+        # Fix circular argument reference for all methods
+        content.gsub!(/def (has_cached_counter\?|cached_counter_attribute_name|inverse_updates_counter_cache\?)\(reflection = reflection\)/) do |match|
+          "def #{$1}(reflection = nil) # PATCHED FOR CIRCULAR\n        reflection ||= self.reflection"
         end
+        # Fix update_counter which has an additional parameter
+        content.gsub!(/def update_counter\(difference, reflection = reflection\)/) do |match|
+          "def update_counter(difference, reflection = nil) # PATCHED FOR CIRCULAR\n        reflection ||= self.reflection"
+        end
+        File.write(has_many_file, content)
       end
-
-      Rails::Initializer.run(:set_load_path)
     end
   end
 end
 
+# Fix test-unit 3.5.7-3.6.x local_name bug with nested test suites
+# The testrunner tries to call local_name on TestSuite objects but the method doesn't exist
+if defined?(Gem)
+  test_unit_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'test-unit' && spec.version.to_s =~ /^3\.[56]\./ }
+  if test_unit_spec
+    testsuite_file = File.join(test_unit_spec.full_gem_path, 'lib/test/unit/testsuite.rb')
+    if File.exist?(testsuite_file) && File.writable?(testsuite_file)
+      content = File.read(testsuite_file)
+      # Add local_name method to TestSuite class if not already patched
+      if !content.include?('# PATCHED: local_name method') && content.include?('class TestSuite')
+        # Find the private keyword or the end of the class, and insert before it
+        # Look for "private" keyword first
+        insertion_point = content.index(/^      private$/m)
+        if insertion_point
+          method_code = <<-RUBY
+      # PATCHED: local_name method for test-unit 3.5.7-3.6.x compatibility
+      # Returns the suite name for reporting purposes
+      def local_name
+        @name || name.to_s
+      end
 
-# All that for this:
-Rails.boot!
+RUBY
+          content.insert(insertion_point, method_code)
+          File.write(testsuite_file, content)
+        end
+      end
+    end
+  end
+end
+
+# Skip the rest of boot process for Rails 3.0+ - it's handled by application.rb
+return if defined?(Bundler)
+

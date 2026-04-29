@@ -6,17 +6,17 @@ require(File.join(File.dirname(__FILE__), 'config', 'boot'))
 require 'rake'
 require 'rake/testtask'
 
-# Rails 2.3 uses tasks/rails
+# Rails 2.3 used tasks/rails, Rails 3.0+ uses bundler and environment
 begin
   require 'tasks/rails'
 rescue LoadError
   # Rails 3.0+ - load environment which sets everything up via bundler
   require File.expand_path('../config/environment', __FILE__)
 
-  # Load ActiveRecord for Rails 3.0
+  # Load ActiveRecord for Rails 3.0+
   require 'active_record'
 
-  # Database tasks for Rails 3.0
+  # Database tasks for Rails 3.0+
   namespace :db do
     task :migrate do
       # Ensure clean database
@@ -34,7 +34,7 @@ rescue LoadError
     end
   end
 
-  # Test task for Rails 3.0
+  # Test task for Rails 3.0+
   Rake::TestTask.new(:test => 'db:migrate') do |t|
     t.libs << 'lib'
     t.libs << 'test'

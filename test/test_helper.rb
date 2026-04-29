@@ -20,54 +20,34 @@ rescue LoadError
   # don't load SimpleCov
 end
 
-# Prevent bundler/setup from being required again for Rails 3.0
+# Prevent bundler/setup from being required again for Rails 3.0+
 # (we're already running under bundle exec)
-if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  $LOADED_FEATURES << 'bundler/setup.rb' unless $LOADED_FEATURES.include?('bundler/setup.rb')
-end
+$LOADED_FEATURES << 'bundler/setup.rb' unless $LOADED_FEATURES.include?('bundler/setup.rb')
 
-# Apply Ruby 2.7 BigDecimal patch BEFORE loading Rails (for Rails 3.0)
-if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  require 'bigdecimal'
-  BigDecimal.singleton_class.class_eval do
-    unless respond_to?(:yaml_as)
-      define_method(:yaml_as) do |tag|
-        # No-op for Ruby 2.7+ where yaml_as was removed
-      end
-    end
-  end
-end
-
-# Load Rails environment - use config/environment for both versions
+# Load Rails environment
 require_relative '../config/environment'
 
-# Load appropriate test helpers
-if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  # Rails 3.0 - manually load Rails components before platform code
-  require 'action_controller'
-  require 'action_view'
-  require 'active_record'
+# Rails 3.0+ - manually load Rails components before platform code
+require 'action_controller'
+require 'action_view'
+require 'active_record'
 
-  # Now load the platform gem
-  require File.expand_path('../../lib/platform', __FILE__)
+# Now load the platform gem
+require File.expand_path('../../lib/platform', __FILE__)
 
-  # Load all platform lib files
-  Dir[File.expand_path('../../lib/platform/**/*.rb', __FILE__)].each { |f| require f }
+# Load all platform lib files
+Dir[File.expand_path('../../lib/platform/**/*.rb', __FILE__)].each { |f| require f }
 
-  # Set up autoload paths for models, controllers, helpers
-  app_path = File.expand_path('../..', __FILE__)
-  ActiveSupport::Dependencies.autoload_paths += [
-    File.join(app_path, 'app', 'models'),
-    File.join(app_path, 'app', 'controllers'),
-    File.join(app_path, 'app', 'helpers')
-  ]
+# Set up autoload paths for models, controllers, helpers
+app_path = File.expand_path('../..', __FILE__)
+ActiveSupport::Dependencies.autoload_paths += [
+  File.join(app_path, 'app', 'models'),
+  File.join(app_path, 'app', 'controllers'),
+  File.join(app_path, 'app', 'helpers')
+]
 
-  require 'test/unit'
-  require 'active_support/test_case'
-else
-  # Rails 2.3
-  require 'test_help'
-end
+require 'test/unit'
+require 'active_support/test_case'
 
 require 'pp'
 

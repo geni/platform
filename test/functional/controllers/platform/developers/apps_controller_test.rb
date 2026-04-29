@@ -38,8 +38,10 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
 
     app = Platform::Application.first(:order => 'id desc')
     assert_redirected_to :action => :index, :id => app.id
-    assert_match 'registered', @response.flash[:trfn]
-    assert_nil @response.flash[:trfe]
+    # Rails 3.0 uses @response.flash, Rails 3.1+ uses flash
+    flash_accessor = defined?(Rails::VERSION) && Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR >= 1 ? flash : @response.flash
+    assert_match 'registered', flash_accessor[:trfn]
+    assert_nil flash_accessor[:trfe]
 
     assert_equal 'TestApp', app.name
     assert_not_nil app.key
@@ -60,8 +62,10 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     else
       assert_template 'new.html.erb'
     end
-    assert_nil @response.flash[:trfn]
-    assert_match 'invalid', @response.flash[:error]
+    # Rails 3.0 uses @response.flash, Rails 3.1+ uses flash
+    flash_accessor = defined?(Rails::VERSION) && Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR >= 1 ? flash : @response.flash
+    assert_nil flash_accessor[:trfn]
+    assert_match 'invalid', flash_accessor[:error]
   end
 
   test 'edit requires login' do

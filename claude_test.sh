@@ -16,8 +16,9 @@ bundle config --local without vscode
 
 
 # Show which tests are being run and their results
+# Note: --verbose causes test-unit 3.5.7/3.6.x to crash with local_name error on nested test suites
 #export TEST_OPTS="--verbose --no-show-detail-immediately"
-export TEST_OPTS="--verbose --no-show-detail-immediately --stop-on-failure"
+export TEST_OPTS="--no-show-detail-immediately --stop-on-failure"
 
 # In case claude made changes to gems
 rm -rf vendor/bundle
@@ -32,13 +33,13 @@ do
 
   # Reinstall gems before each test run to ensure correct versions
   if [ "$run" = "next" ]; then
-#    export BUNDLE_GEMFILE=Gemfile.next
-    next bundle _1.17.3_ install
-    bx="next bundle _1.17.3_ exec"
+    export BUNDLE_GEMFILE=Gemfile.next
+    bundle _1.17.3_ install
+    bx="bundle _1.17.3_ exec"
   else
-#    unset BUNDLE_GEMFILE
-    bundle install
-    bx="bundle exec"
+    unset BUNDLE_GEMFILE
+    bundle _1.17.3_ install
+    bx="bundle _1.17.3_ exec"
   fi
 
   # Undike for rails 6.1+

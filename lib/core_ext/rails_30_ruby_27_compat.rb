@@ -1,7 +1,7 @@
-# Monkey patches for Rails 3.0.x compatibility with Ruby 2.7+
+# Monkey patches for Rails 3.0-3.1.x compatibility with Ruby 2.7+
 # TODO: Remove this file when upgrading to Rails 3.2+
 
-if defined?(ActiveSupport::VERSION) && ActiveSupport::VERSION::STRING =~ /^3\.0\./
+if defined?(ActiveSupport::VERSION) && ActiveSupport::VERSION::STRING =~ /^3\.[01]\./
 
   # Fix 1: TimeZone#parse - already fixed by gem file patching in boot.rb
   # The syntax error (def parse(str, now=now)) is fixed at load time

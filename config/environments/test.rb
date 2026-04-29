@@ -40,10 +40,13 @@ if defined?(PlatformGem::Application)
     config.active_support.deprecation = :stderr
 
     # Set asset host to empty string to avoid nil errors in asset helpers
-    config.action_controller.asset_host = ""
+    config.action_controller.asset_host = "".dup
 
-    # Set relative_url_root to empty string to avoid nil errors in asset helpers
-    config.action_controller.relative_url_root = ""
+    # Set relative_url_root to empty string to avoid nil errors in asset helpers (Rails 3.0 only)
+    # Rails 3.1+ removed this configuration option
+    if defined?(Rails::VERSION) && Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR == 0
+      config.action_controller.relative_url_root = ""
+    end
   end
 else
   # Rails 2.3 style - these are evaluated inside a config block in environment.rb

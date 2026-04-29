@@ -2,14 +2,20 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
+# Load Rails 3.0-3.1 compatibility patches early (before application initialization)
+require File.expand_path('../../lib/core_ext/arel_visitor_compat', __FILE__)
+require File.expand_path('../../lib/core_ext/rails_30_form_helper_compat', __FILE__)
+
+module PlatformGem
+  class Application < Rails::Application
+    # Define root before requiring gems (some gems like tr8n need it)
+    config.root = File.expand_path('../../', __FILE__)
+  end
+end
+
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
-
-# Load Rails 3.0 compatibility patches early (before application initialization)
-require File.expand_path('../../lib/core_ext/arel_visitor_compat', __FILE__)
-require File.expand_path('../../lib/core_ext/rails_30_asset_helper_compat', __FILE__)
-require File.expand_path('../../lib/core_ext/rails_30_form_helper_compat', __FILE__)
 
 module PlatformGem
   class Application < Rails::Application
@@ -41,7 +47,12 @@ module PlatformGem
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
-    # Set relative_url_root to empty string to avoid nil errors in asset helpers
-    config.action_controller.relative_url_root = ""
+    # Set relative_url_root to empty string to avoid nil errors in asset helpers (Rails 3.0 only)
+    # Rails 3.1+ doesn't need this setting
   end
+end
+
+# Rails 3.0 specific configuration that must run after Action Controller is loaded
+if defined?(ActionController::Base) && ActionController::Base.respond_to?(:relative_url_root=)
+  ActionController::Base.relative_url_root = ""
 end
