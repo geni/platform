@@ -9,7 +9,7 @@ RAILS_ROOT = "#{File.dirname(__FILE__)}/.." unless defined?(RAILS_ROOT)
 require 'rubygems'
 require 'bundler/setup' if File.exist?("#{RAILS_ROOT}/Gemfile")
 
-# Apply Ruby 2.7 compatibility patches for Rails 3.0-3.2 BEFORE loading Rails
+# Apply Ruby 2.7 compatibility patches for Rails 3.2 BEFORE loading Rails
 # Fix BigDecimal.yaml_as (removed in Ruby 2.7+)
 require 'bigdecimal'
 BigDecimal.singleton_class.class_eval do
