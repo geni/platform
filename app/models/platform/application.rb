@@ -503,7 +503,7 @@ class Platform::Application < ActiveRecord::Base
     "#{protocol}://#{Platform::Config.site_base_url}/platform/oauth/authorize?client_id=#{key}&response_type=token&display=web&redirect_url=#{CGI.escape(callback_url || '')}"
   end
 
-protected
+private
 
   def generate_keys
     self.key = Platform::Helper.generate_key(40)[0,40] if key.nil?

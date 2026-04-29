@@ -29,4 +29,9 @@ module Platform
 
 end
 
+# Require core Platform classes to avoid eager loading issues
+require 'platform/config'
+require 'platform/exception'
+require 'platform/helper'
+
 ActionController::Base.append_view_path File.dirname(__FILE__) + '/../app/views/platform'

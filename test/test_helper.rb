@@ -132,7 +132,12 @@ private
   end
 
   def form_authenticity_token
-    session[:_csrf_token] ||= ActiveSupport::SecureRandom.base64(32)
+    # Rails 3.0-3.1 use ActiveSupport::SecureRandom, Rails 3.2+ use SecureRandom
+    if NextRails.next?
+      session[:_csrf_token] ||= SecureRandom.base64(32)
+    else
+      session[:_csrf_token] ||= ActiveSupport::SecureRandom.base64(32)
+    end
   end
 end
 
