@@ -55,8 +55,8 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
         application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
         application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-        trfn('{app_name} registered', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
-        redirect_to(:action => :index, :id => application.id)
+        trfn('{app_name} registered', 'Client application controller notice', :app_name => Platform.escape_html(application.name) || '')
+        redirect_to "/developer/apps/index/#{application.id}"
       else
         flash[:error] = application.errors.full_messages.join(', ')
         prepare_form
@@ -102,7 +102,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
       old_app.update_attributes(:parent_id => app.id, :version => (old_app.version || 1.0))
     end
 
-    redirect_to(:action => :index, :id => app&.id)
+    redirect_to(app&.id ? "/developer/apps/index/#{app.id}" : "/developer/apps")
   end
 
   def update
@@ -122,7 +122,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
         end
 
         trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => Platform.escape_html(application.name))
-        redirect_to(:action => :index, :id => application.id)
+        redirect_to "/developer/apps/index/#{application.id}"
       else
         flash[:error] = application.errors.full_messages.join(', ')
         prepare_form
@@ -140,7 +140,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
       trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
     end
 
-    redirect_to :action => :index
+    redirect_to "/developer/apps"
   end
 
   def reset_secret
@@ -149,7 +149,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
       trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
     end
 
-    redirect_to :action => :index, :id => application.id
+    redirect_to "/developer/apps/index/#{application.id}"
   end
 
   def submit
@@ -158,7 +158,7 @@ class Platform::Developer::AppsController < Platform::Developer::BaseController
       application.submit!
     end
 
-    redirect_to :action => :index, :id => application.id
+    redirect_to "/developer/apps/index/#{application.id}"
   end
 
   def lb_permissions
@@ -174,7 +174,7 @@ private
 
     unless application.developed_by?(Platform::Config.current_developer)
       trfe("You are not authorized to access this application")
-      redirect_to(:action => :index)
+      redirect_to "/developer/apps"
     end
   end
 
@@ -183,7 +183,7 @@ private
       if params.has_key?(:id)
         Platform::Application.find(params[:id])
       elsif params.has_key?(:application)
-        Platform::Application.create(params[:application].merge(:developer => Platform::Config.current_developer))
+        Platform::Application.new(params[:application].merge(:developer => Platform::Config.current_developer))
       else
         Platform::Application.new(:contact_email => Platform::Config.user_email(Platform::Config.current_user), :version => "1.0")
       end

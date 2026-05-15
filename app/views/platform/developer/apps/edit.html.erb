@@ -10,7 +10,7 @@
 
 	  <div style="text-align:center; padding:15px;">
 	    <%= submit_tag trl('Save', 'Client application action label'), :class=>'button super blue large' %>
-	    <%=tr("or")%> <%=link_to(tr("Cancel"), :action => :index, :id => @app.id)%>
+	    <%=tr("or")%> <%=link_to(tr("Cancel"), "/developer/apps/index/#{@app.id}")%>
 	  </div>
 	<% end %>
 </div>

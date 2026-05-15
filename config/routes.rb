@@ -1,78 +1,36 @@
-# Rails 2.3 routes (only for Rails 2.3, skipped for Rails 3.0+)
-if defined?(ActionController::Routing::Routes)
-  ActionController::Routing::Routes.draw do |map|
-
-    map.connect '/platform/developer/apps/:id',
-                :controller => 'platform/developer/apps', :action => 'delete',
-                :conditions => {:method => :delete}
-
-    map.connect '/platform/developer/apps/:id',
-                :controller => 'platform/developer/apps', :action => 'update',
-                :conditions => {:method => :put}
-
-    [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-      map.connect "/platform/#{ctrl}/:action", :controller => "platform/#{ctrl}"
-    end
-
-    [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-      map.connect "/platform/developer/#{ctrl}/:action", :controller => "platform/developer/#{ctrl}"
-    end
-
-    [:apps, :categories, :developers].each do |ctrl|
-      map.connect "/platform/admin/#{ctrl}/:action", :controller => "platform/admin/#{ctrl}"
-    end
-
-    map.namespace :platform do |subdomain|
-      subdomain.root :controller => 'home', :action => 'index'
-      subdomain.namespace :developer do |subsubdomain|
-        subsubdomain.root :controller => 'dashboard', :action => 'index'
-      end
-      subdomain.namespace :admin do |subsubdomain|
-        subsubdomain.root :controller => 'apps', :action => 'index'
-      end
-    end
-
+Platform::Engine.routes.draw do
+  # Stub tr8n routes for compatibility
+  namespace :tr8n do
+    match 'home' => 'home#index', :via => [:get, :post]
   end
-end
 
-# Rails 3.0+ routes
-if defined?(PlatformGem::Application)
-  PlatformGem::Application.routes.draw do
-    # Stub tr8n routes for Rails 3.0 compatibility
-    namespace :tr8n do
-      match 'home' => 'home#index', :via => [:get, :post]
-    end
+  # Platform routes
+  delete '/developer/apps/:id' => 'developer/apps#delete'
+  put '/developer/apps/:id' => 'developer/apps#update'
 
-    # Platform routes
-    delete '/platform/developer/apps/:id' => 'platform/developer/apps#delete'
-    put '/platform/developer/apps/:id' => 'platform/developer/apps#update'
-
-    [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
-      # Rails 3.1: Use explicit controller scope for proper action routing in tests
-      controller "platform/#{ctrl}" do
-        match "/platform/#{ctrl}(/:action)", :via => [:get, :post]
-      end
-    end
-
-    [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
-      # Rails 3.1: Use explicit controller scope for proper action routing in tests
-      controller "platform/developer/#{ctrl}" do
-        match "/platform/developer/#{ctrl}(/:action(/:id))", :via => [:get, :post, :put, :delete]
-      end
-    end
-
-    [:apps, :categories, :developers].each do |ctrl|
-      match "/platform/admin/#{ctrl}/:action" => "platform/admin/#{ctrl}#:action", :via => [:get, :post]
-    end
-
-    namespace :platform do
-      root :to => 'home#index'
-      namespace :developer do
-        root :to => 'dashboard#index'
-      end
-      namespace :admin do
-        root :to => 'apps#index'
-      end
+  [:apps, :home, :login, :oauth, :forum, :ratings].each do |ctrl|
+    controller "platform/#{ctrl}" do
+      match "/#{ctrl}(/:action)", :via => [:get, :post]
     end
   end
+
+  [:apps, :blog, :dashboard, :forum, :help, :issues, :registration, :resources].each do |ctrl|
+    controller "platform/developer/#{ctrl}" do
+      match "/developer/#{ctrl}(/:action(/:id))", :via => [:get, :post, :put, :delete]
+    end
+  end
+
+  [:apps, :categories, :developers].each do |ctrl|
+    match "/admin/#{ctrl}/:action" => "platform/admin/#{ctrl}#:action", :via => [:get, :post]
+  end
+
+  namespace :developer do
+    root :to => 'dashboard#index'
+  end
+
+  namespace :admin do
+    root :to => 'apps#index'
+  end
+
+  root :to => 'home#index'
 end

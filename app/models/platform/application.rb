@@ -22,7 +22,7 @@
 #++
 
 class Platform::Application < ActiveRecord::Base
-  set_table_name :platform_applications
+  self.table_name = "platform_applications"
 
   # useful methods - should be public
   include Platform::SimpleStringPermissions
@@ -60,6 +60,13 @@ class Platform::Application < ActiveRecord::Base
   validates_format_of :canvas_url,            :with => URL_REGEX, :allow_blank=>true
 
   attr_accessor :token_callback_url
+
+  attr_accessible :developer, :name, :description, :version, :api_version, :locale,
+                  :contact_email, :support_url, :mobile_application_type, :url,
+                  :site_domain, :canvas_url, :canvas_name, :auto_resize, :auto_signin,
+                  :ios_bundle_id, :itunes_app_store_id, :android_key_hash, :callback_url,
+                  :deauthorize_callback_url, :privacy_policy_url, :terms_of_service_url,
+                  :icon, :icon_id, :logo, :logo_id, :parent_id
 
   acts_as_state_machine :initial => :new
   state :new

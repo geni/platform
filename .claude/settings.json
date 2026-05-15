@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-* -name \"language.rb\" -path \"*/models/*\")",
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-*/app/models/tr8n -name \"*.rb\")",
+      "Bash(xargs basename -a)",
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-* -name \"data_token.rb\" -o -name \"*token*.rb\" -path \"*/lib/tr8n/*\")",
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-* -name \"*helper*\" -path \"*/app/helpers/*\")",
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-*/lib -name \"engine.rb\" -o -name \"railtie.rb\")",
+      "Bash(find /home/mike.stangel/projects/gem-platform/vendor/bundle/ruby/2.7.0/bundler/gems/tr8n-*/app -name \"*controller*\" -path \"*/concerns/*\")",
+      "Bash(git add *)"
+    ]
+  }
+}

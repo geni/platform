@@ -23,9 +23,11 @@
 
 # used only in the stand-alone mode
 class Platform::PlatformUser < ActiveRecord::Base
-  set_table_name :platform_users
-
+  self.table_name = "platform_users"
+  
   has_one :admin, :class_name => "Platform::PlatformAdmin", :foreign_key => "user_id", :dependent => :destroy
+  
+  attr_accessible :name, :email, :password, :gender, :mugshot, :link
 
   def guest?
     id.blank?

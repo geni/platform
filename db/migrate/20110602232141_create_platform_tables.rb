@@ -74,7 +74,7 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.integer   :new_user_count
       t.timestamps
     end      
-    add_index :platform_application_metrics, [:application_id, :interval]
+    add_index :platform_application_metrics, [:application_id, :interval], :name => 'idx_plat_app_metrics_app_id_interval'
     
     create_table :platform_application_usage_metrics do |t|
       t.string    :type
@@ -86,7 +86,7 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.integer   :error_count
       t.timestamps
     end      
-    add_index :platform_application_usage_metrics, [:application_id, :interval]
+    add_index :platform_application_usage_metrics, [:application_id, :interval], :name => 'idx_plat_app_usage_metrics_app_id_interval'
 
     create_table :platform_rollup_logs do |t|
       t.timestamp  :interval 
@@ -122,7 +122,8 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.string    :callback_url
       t.string    :scope
       t.timestamp :valid_to
-      t.timestamp :authorized_at, :invalidated_at
+      t.timestamp :authorized_at
+      t.timestamp :invalidated_at
       t.timestamps
     end
     add_index :platform_oauth_tokens, :token, :unique
@@ -158,7 +159,7 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.timestamps
     end
     add_index :platform_application_categories, :category_id
-    add_index :platform_application_categories, [:category_id, :application_id]
+    add_index :platform_application_categories, [:category_id, :application_id], :name => 'idx_plat_app_cats_cat_id_app_id'
     
     create_table :platform_forum_topics do |t|
       t.string  :subject_type

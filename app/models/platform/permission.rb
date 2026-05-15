@@ -22,7 +22,7 @@
 #++
 
 class Platform::Permission < ActiveRecord::Base
-  set_table_name :platform_permissions
+  self.table_name = "platform_permissions"
 
   has_many :application_permissions, :class_name => "Platform::ApplicationPermission"
   belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => "icon_id"

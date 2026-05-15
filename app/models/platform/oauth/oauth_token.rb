@@ -22,7 +22,7 @@
 #++
 
 class Platform::Oauth::OauthToken < ActiveRecord::Base
-  set_table_name :platform_oauth_tokens
+  self.table_name = "platform_oauth_tokens"
 
   belongs_to :application, :class_name => "Platform::Application"
   belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
@@ -30,6 +30,8 @@ class Platform::Oauth::OauthToken < ActiveRecord::Base
   validates_uniqueness_of :token
   validates_presence_of   :application
   validates_presence_of   :token
+
+  attr_accessible :application, :application_id, :user, :user_id, :token, :scope, :callback_url, :expire_in
 
   def valid_token?(requested_scope = nil)
     return false if invalidated_at != nil

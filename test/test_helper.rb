@@ -20,31 +20,12 @@ rescue LoadError
   # don't load SimpleCov
 end
 
-# Prevent bundler/setup from being required again for Rails 3.0+
-# (we're already running under bundle exec)
-$LOADED_FEATURES << 'bundler/setup.rb' unless $LOADED_FEATURES.include?('bundler/setup.rb')
-
-# Load Rails environment
-require_relative '../config/environment'
-
-# Rails 3.0+ - manually load Rails components before platform code
-require 'action_controller'
-require 'action_view'
-require 'active_record'
-
-# Now load the platform gem
-require File.expand_path('../../lib/platform', __FILE__)
+# Load the dummy Rails application
+ENV['RAILS_ENV'] = 'test'
+require_relative 'dummy/config/environment'
 
 # Load all platform lib files
 Dir[File.expand_path('../../lib/platform/**/*.rb', __FILE__)].each { |f| require f }
-
-# Set up autoload paths for models, controllers, helpers
-app_path = File.expand_path('../..', __FILE__)
-ActiveSupport::Dependencies.autoload_paths += [
-  File.join(app_path, 'app', 'models'),
-  File.join(app_path, 'app', 'controllers'),
-  File.join(app_path, 'app', 'helpers')
-]
 
 require 'test/unit'
 require 'active_support/test_case'
@@ -146,11 +127,11 @@ class Object
 
 end # class Object
 
-# Rails 3.0 ActionController::TestCase needs @routes setup
-if defined?(PlatformGem::Application) && defined?(ActionController::TestCase)
+# Rails 3.0+ ActionController::TestCase needs @routes setup
+if defined?(Dummy::Application) && defined?(ActionController::TestCase)
   class ActionController::TestCase
     setup do
-      @routes = PlatformGem::Application.routes
+      @routes = Dummy::Application.routes
     end
   end
 end

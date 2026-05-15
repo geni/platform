@@ -10,4 +10,7 @@ Gem::Specification.new do |s|
   s.summary     = "Application Developer platform for extanding Rails applications by 3rd party developers."
   s.description = "This gem provides all necessary tools to make a Rails application into a platform with third party applications."
   s.require_paths = ['lib']
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
+
+  s.add_dependency "rails", "~> 3.2.0"
 end

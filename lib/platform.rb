@@ -21,6 +21,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
+require 'platform/engine'
+
 module Platform
 
   def self.escape_html(string)
@@ -33,5 +35,7 @@ end
 require 'platform/config'
 require 'platform/exception'
 require 'platform/helper'
-
-ActionController::Base.append_view_path File.dirname(__FILE__) + '/../app/views/platform'
+require 'platform/simple_string_permissions'
+require 'platform/logger'
+require 'platform/cache'
+require 'platform/random_password_generator'

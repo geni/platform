@@ -22,12 +22,14 @@
 #++
 
 class Platform::Developer < ActiveRecord::Base
-  set_table_name :platform_developers
+  self.table_name = "platform_developers"
 
   belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
-  
+
   has_many :applications, :class_name => "Platform::Application"
   has_many :application_developers, :class_name => "Platform::ApplicationDeveloper"
+
+  attr_accessible :user, :name, :about, :url, :email, :phone
   
   def self.for(user)
     return nil unless user and user.id 

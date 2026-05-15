@@ -19,7 +19,9 @@ module Platform::Oauth
 
     # Ticket 19802
     test 'invalidate! sets invalidated_at' do
-      token = OauthToken.create!(:application => app, :token => "foo_#{Time.now.to_f}", :valid_to => Time.now - 5.minutes)
+      token = OauthToken.create!(:application => app, :token => "foo_#{Time.now.to_f}")
+      token.valid_to = Time.now - 5.minutes  # not in create (not safe to mass-assign)
+      token.save!
       assert  token.invalidated_at.nil?
       assert  token.invalidate!
       assert !token.invalidated_at.nil?

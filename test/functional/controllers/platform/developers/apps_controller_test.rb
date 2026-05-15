@@ -2,6 +2,10 @@ require_relative '../../../../test_helper'
 
 class Platform::Developer::AppsControllerTest < ActionController::TestCase
 
+  setup do
+    @routes = Platform::Engine.routes
+  end
+
   test 'apps requires login' do
     get :index
     assert_redirected_to Platform::Config.default_url
@@ -37,7 +41,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     end
 
     app = Platform::Application.first(:order => 'id desc')
-    assert_redirected_to :action => :index, :id => app.id
+    assert_redirected_to "/developer/apps/index/#{app.id}"
     # Rails 3.0 uses @response.flash, Rails 3.1+ uses flash
     flash_accessor = defined?(Rails::VERSION) && Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR >= 1 ? flash : @response.flash
     assert_match 'registered', flash_accessor[:trfn]
@@ -56,8 +60,8 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
       assert_response :success
     end
 
-    # Rails 2.3 uses 'new.html.erb', Rails 3.0 uses 'platform/developer/apps/new'
-    if defined?(PlatformGem::Application)
+    # Rails 2.3 uses 'new.html.erb', Rails 3.0+ uses 'platform/developer/apps/new'
+    if defined?(Rails::VERSION) && Rails::VERSION::MAJOR >= 3
       assert_template 'platform/developer/apps/new'
     else
       assert_template 'new.html.erb'
@@ -69,7 +73,8 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
   end
 
   test 'edit requires login' do
-    get :edit
+    test_app = app
+    get :edit, :id => test_app.id
     assert_redirected_to Platform::Config.default_url
   end
 
@@ -81,7 +86,8 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
   end
 
   test 'update requires login' do
-    put :update
+    test_app = app
+    put :update, :id => test_app.id
     assert_redirected_to Platform::Config.default_url
   end
 
@@ -90,14 +96,15 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
     app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
 
     put :update, :id => app.id, :application => {:name => 'Updated'}, :authenticity_token => form_authenticity_token
-    assert_redirected_to :controller => 'platform/developer/apps', :action => :index, :id => app.id
+    assert_redirected_to "/developer/apps/index/#{app.id}"
 
     app.reload
     assert_equal 'Updated', app.name, 'Name should have changed'
   end
 
   test 'delete requires login' do
-    delete :delete
+    test_app = app
+    delete :delete, :id => test_app.id
     assert_redirected_to Platform::Config.default_url
   end
 
@@ -107,7 +114,7 @@ class Platform::Developer::AppsControllerTest < ActionController::TestCase
 
     assert_difference 'Platform::Application.count', -1 do
       delete :delete, :id => app.id, :authenticity_token => form_authenticity_token
-      assert_redirected_to :controller => 'platform/developer/apps', :action => :index
+      assert_redirected_to "/developer/apps"
     end
   end
 

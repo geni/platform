@@ -2,6 +2,10 @@ require_relative '../../../test_helper'
 
 class Platform::OauthControllerTest < ActionController::TestCase
 
+  setup do
+    @routes = Platform::Engine.routes
+  end
+
   test 'authorize requires login' do
     get :authorize
     assert_template 'authorize_failure'
