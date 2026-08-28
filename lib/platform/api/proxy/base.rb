@@ -24,6 +24,10 @@ module Platform
               api_proxy(opts[:api_version]).to_json(opts)
             end
 
+            def as_json(opts = {})
+              api_proxy(opts[:api_version]).to_api_hash(opts)
+            end
+
             def to_xml(opts={})
               api_proxy(opts[:api_version]).to_xml(opts)
             end
