@@ -149,8 +149,8 @@ module Platform
     end
 
     def self.find_access_token(token_key)
-      token   = Platform::Oauth::AccessToken.find_by_token(token_key, :include => :application)
-      token ||= Platform::Oauth::ClientToken.find_by_token(token_key, :include => :application)
+      token   = Platform::Oauth::AccessToken.find_by_token(token_key)
+      token ||= Platform::Oauth::ClientToken.find_by_token(token_key)
 
       if token && token.valid_token?
         token
