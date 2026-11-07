@@ -311,15 +311,23 @@ module Platform
       end
 
       def end_time
-        parse_time(params[:until], Date.tomorrow.to_s(:db))
+        parse_time(params[:until], Date.tomorrow.to_s)
       end
 
+      # Rails 7 removed the format argument from #to_s, so every one of these was an ArgumentError
+      # and so was every API call that filters by time through #time_clause.
+      #
+      # `to_fs(:db)` is **not** the swap for the Time one: it renders UTC where 2.3's `to_s(:db)`
+      # rendered the local zone, and these strings are interpolated straight into SQL against
+      # `:local` timestamp columns, so the window would be off by the zone offset.  strftime answers
+      # the same string on both Rails versions.  `Date#to_s` already *is* the :db format, so the two
+      # Date calls just drop the argument.
       def parse_time(string, default)
         case string
           when nil          then default
-          when /today/i     then Date.today.to_s(:db)
-          when /yesterday/i then Date.yesterday.to_s(:db)
-          else                   Time.parse(string).to_s(:db)
+          when /today/i     then Date.today.to_s
+          when /yesterday/i then Date.yesterday.to_s
+          else                   Time.parse(string).strftime('%Y-%m-%d %H:%M:%S')
         end
       end
 
@@ -373,12 +381,17 @@ module Platform
       ############################################################################
       #### Navigation Params
       ############################################################################
+      # params is ActionController::Parameters on Rails 5+, not a Hash: #merge answers Parameters and
+      # url_for then calls #to_h on it, which raises ActionController::UnfilteredParameters -- so any
+      # paginated API response that carried a next_page or previous_page link was a 500.
+      # to_unsafe_h is right here because these are the caller's own query params being echoed back
+      # into a url, not attributes going anywhere near mass assignment.
       def prev_page_url
-        url_for(params.merge(navigation_params(page - 1)))
+        url_for(params.to_unsafe_h.merge(navigation_params(page - 1)))
       end
 
       def next_page_url
-        url_for(params.merge(navigation_params(page + 1)))
+        url_for(params.to_unsafe_h.merge(navigation_params(page + 1)))
       end
 
       def navigation_params(page)
@@ -431,9 +444,40 @@ module Platform
       #### Exceptions
       ############################################################################
 
-      def should_log_error?(ex)
-        return true if Rails.env.development?
-        not PLATFORM_NON_LOGGED_EXCEPTIONS.include?(ex.class)
+      # Restored from rails-2.3.x.  a6f7aa5 ("remove exception logging") removed it along with
+      # Platform::LoggedException and #should_log_error?, but this method is how the API *renders* an
+      # error, not how it logs one: it is the error envelope and the only place a client's status
+      # comes from.  With it gone an API exception escaped to whatever the host app's catch-all is,
+      # and on a Rails 8 host that renders HTML -- so every documented API error became
+      # `ActionView::MissingTemplate ... formats: [:json]`, a 500 with an HTML body and no status or
+      # message a client could read.
+      #
+      # Deciding *whether* to log, and doing it, is the host app's: it owns the `rescue_from` that
+      # calls this. PLATFORM_NON_LOGGED_EXCEPTIONS above is left as the declaration of which of this
+      # gem's errors are routine, for a host that wants it.
+      def render_exception(ex)
+        error = {
+          'type' => 'ApiException'
+        }
+
+        case ex
+        when ActiveRecord::RecordNotFound
+          status           = :not_found
+          error['message'] = 'Not Found'
+        when ActiveRecord::StatementInvalid
+          status           = :bad_request
+          error['message'] = 'Bad Request'
+        when ApiError
+          error['type']    = 'OAuthException' if ex.is_a?(UnauthorizedError)
+          error['message'] = ex.message
+          status           = ex.status
+        else
+          error['message'] = ex.message
+          status           = :internal_server_error
+        end
+
+        params[:only_list] = nil
+        render_response({'error' => error}, status: status)
       end
 
       ############################################################################
