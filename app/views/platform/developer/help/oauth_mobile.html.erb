@@ -288,5 +288,18 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
     	<%=tr("{site_title} comes with a [link: full featured iOS library] that allows you to build dynamic iOS applications using the site data.", "", :site_title => Platform::Config.site_title, :link => ["/platform/developer/help/ios_sdk"])%>
       <%=tr("It supports authentication, autherization and API calls to get the site data.")%>
     </p>
+
+    <h2><%=tr("Security requirements")%></h2>
+    <ul>
+      <li>
+        <%=tr("[bold: Do not ship a client_secret in a mobile application.] It can be extracted from the binary, so it authenticates nothing. Ask us to register your application as a public client: it will then be exempt from client_secret and will use PKCE instead.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Use PKCE.] Generate a random code_verifier per authorization, send its SHA-256 digest as code_challenge (with code_challenge_method=S256) on the authorization request, and send the code_verifier when you exchange the code. Only S256 is accepted.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Register the callback you actually use, including a custom scheme.] Sending display=mobile used to switch the redirect_uri check off entirely; it no longer does. Your redirect_uri must match your registered Callback URL on scheme, host, port and path -- and a custom scheme such as yourapp://callback is matched the same way, so register it exactly as you send it.")%>
+      </li>
+    </ul>
 </div>
 <%= render :partial => "footer" %>

@@ -258,11 +258,18 @@ class Platform::Config
   #
   # The checks, and what turning each one on starts rejecting:
   #
-  #   client_secret   - a token request on the authorization_code, refresh_token or password
-  #                     grant that does not authenticate the client.  All three are *documented*
-  #                     as sending client_secret (see developer/help/oauth_server_side), so this
-  #                     is enforcing the published contract -- it should be the first one you
-  #                     flip.  RFC 6749 section 4.1.3.
+  #   client_secret   - an authorization_code or refresh_token exchange that does not
+  #                     authenticate the client.  Both are *documented* as sending client_secret
+  #                     (developer/help/oauth_server_side shows it in the request), so this is
+  #                     enforcing the published contract -- it should be the first one you flip.
+  #                     RFC 6749 section 4.1.3.
+  #   client_secret_password
+  #                   - the same requirement on the password grant, kept separate because its
+  #                     risk is not the same.  developer/help/oauth_trusted_client documents that
+  #                     grant with client_id, username and password and never mentions
+  #                     client_secret, so unlike the two above there are probably clients in the
+  #                     field that have never sent one.  Flipping this will break them; find them
+  #                     in the OAUTH_WOULD_REJECT logs and give them notice first.
   #   pkce            - an authorization_code exchange by an app flagged public_client that does
   #                     not present a code_verifier matching the code_challenge it authorized
   #                     with.  Only meaningful once public clients are actually sending PKCE.
@@ -275,7 +282,8 @@ class Platform::Config
   #                     registered for, and an access token that relies on "basic" meaning
   #                     unrestricted.  See Platform::Application#granted_scope.
   #########################################################
-  OAUTH_CHECKS = [:client_secret, :pkce, :redirect_uri, :revocation_auth, :scope].freeze
+  OAUTH_CHECKS = [:client_secret, :client_secret_password, :pkce, :redirect_uri,
+                  :revocation_auth, :scope].freeze
 
   def self.oauth
     config[:oauth] || HashWithIndifferentAccess.new
