@@ -24,7 +24,7 @@
 class Platform::Oauth::ClientToken < Platform::Oauth::OauthToken
 
   def code
-    token
+    client_token
   end
 
 end
