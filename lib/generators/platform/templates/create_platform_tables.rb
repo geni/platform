@@ -144,8 +144,11 @@ class CreatePlatformTables < ActiveRecord::Migration
       t.string    :verifier,        :limit => 20
       t.string    :callback_url
       t.string    :scope
+      t.string    :code_challenge,  :limit => 128   # PKCE, RFC 7636
+      t.string    :code_challenge_method, :limit => 10
       t.timestamp :valid_to
       t.timestamp :authorized_at, :invalidated_at
+      t.timestamp :exchanged_at                     # refresh token replay detection
       t.timestamps
     end
     add_index :platform_oauth_tokens, :token, :unique

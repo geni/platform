@@ -41,6 +41,34 @@ defaults: &defaults
     version:                  1 # you can change the version to invalidate the cache
       
   #############################################################################
+  # OAuth hardening switches.  See Platform::Config.oauth_enforce? for what each
+  # check rejects once it is on, and why they all ship off.
+  #
+  # The host application can override any of these -- Geni routes them through
+  # Registry.oauth so they can be flipped without a deploy.
+  #############################################################################
+  oauth:
+    enforce:
+      client_secret:            false
+      pkce:                     false
+      redirect_uri:             false
+      revocation_auth:          false
+      scope:                    false
+
+    # request and refresh tokens are always freshly minted and handed straight back to the
+    # caller, so digesting them at rest costs nothing.  access and client tokens are not in this
+    # list because Platform::Application#find_or_create_access_token *reuses* a stored access
+    # token, which a digest cannot reproduce -- see OauthToken.store_digest?.
+    hashed_token_types:
+      - Platform::Oauth::RequestToken
+      - Platform::Oauth::RefreshToken
+
+    allow_cleartext_token_lookup: true
+
+    refresh_token_lifetime:     7776000   # 90 days -- was unlimited
+    request_token_lifetime:     600       # 10 minutes
+
+  #############################################################################
   # By default, Platform will use its own logger. If you set it to false,
   # it will use default Rails logger.
   #############################################################################

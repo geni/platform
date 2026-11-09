@@ -4,10 +4,36 @@
     <title>XD</title>
   </head>
   <body>
+    <%#
+      This page hands the OAuth response to the page that opened the popup or framed the hidden
+      iframe.  Two things here used to be wrong, and both mattered:
+
+        * the target origin was "*", so the message went to whatever had opened the window.
+          Because redirect_url_valid? waves through any request with display=popup or
+          display=hidden, that was enough for any site to open the authorize endpoint and
+          collect a logged-in user's access and refresh tokens.  It is now the application's own
+          registered origin -- see Platform::OauthHardening#xd_target_origin -- so the browser
+          refuses to deliver the message to anyone else.
+
+        * the payload was the entire params hash, so anything the request carried came back out
+          in a message the receiving page dispatches on.  It is now only the response
+          parameters -- see #xd_response_payload.
+
+      The payload stays a query string, not an object: Platform.Request.onMessage in jsdk.js only
+      parses event.data when it is a string, and third parties host their own copies of that
+      file, so the wire format cannot change without breaking integrations we cannot update.
+      The receiving half of the origin check lives in that same function.
+    -%>
     <% javascript_tag do %>
-			function sendFragment() {
-				(window.opener || window.parent || window.top).postMessage("<%= params.to_query -%>", "*");
-			}
+      var PLATFORM_XD_PAYLOAD       = <%= @xd_payload_query.to_json %>;
+      var PLATFORM_XD_TARGET_ORIGIN = <%= @xd_post_target.to_json %>;
+
+      function sendFragment() {
+        var target = (window.opener || window.parent || window.top);
+        if (!target || target === window) return;
+
+        target.postMessage(PLATFORM_XD_PAYLOAD, PLATFORM_XD_TARGET_ORIGIN);
+      }
 
       document.addEventListener("DOMContentLoaded", sendFragment);
     <% end %>
