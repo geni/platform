@@ -50,6 +50,7 @@ defaults: &defaults
   oauth:
     enforce:
       client_secret:            false
+      client_secret_password:   false
       pkce:                     false
       redirect_uri:             false
       revocation_auth:          false
