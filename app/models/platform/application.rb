@@ -149,8 +149,8 @@ module Platform
     end
 
     def self.find_access_token(token_key)
-      token   = Platform::Oauth::AccessToken.find_by_token(token_key)
-      token ||= Platform::Oauth::ClientToken.find_by_token(token_key)
+      token   = Platform::Oauth::AccessToken.find_by_presented_token(token_key)
+      token ||= Platform::Oauth::ClientToken.find_by_presented_token(token_key)
 
       if token && token.valid_token?
         token
@@ -176,6 +176,33 @@ module Platform
       permission_keywords.include?(key.to_s)
     end
 
+    # The scope to actually record on a token, given what the request asked for.
+    #
+    # The requested scope used to be stored verbatim and echoed back in the response, so the
+    # value the client chose was the value it got -- there was never a step that narrowed it to
+    # what the application is registered for.
+    #
+    # Narrowing only has teeth once applications carry registered permissions:
+    # #permission_keywords returns [] while Platform::Config.enable_permissions? is off, and
+    # intersecting with [] would reject everything.  So with nothing registered this returns the
+    # request unchanged, which is the behaviour that has always been in place, and the caller logs
+    # that it could not narrow.  Mapping scopes onto API resources is the part that still has to
+    # be designed.
+    def granted_scope(requested)
+      requested = requested.to_s.strip
+      return 'basic' if requested.empty?
+
+      allowed = permission_keywords
+      return requested if allowed.empty?
+
+      (requested.split(',').map { |sc| sc.strip } & allowed).join(',')
+    end
+
+    # Can this application's scope request actually be checked against a registration?
+    def scope_registration_known?
+      not permission_keywords.empty?
+    end
+
     def rate_limited(value=true)
       set_permission(:no_rate_limit, !value)
     end
@@ -189,8 +216,13 @@ module Platform
       ! has_permission?(:no_rate_limit)
     end
 
+    # Note the missing "!": #rate_limited above negates because the permission it writes is
+    # itself a negation (:no_rate_limit), and that negation was copied here where the permission
+    # is not.  The effect was that #trusted! marked an application *un*trusted and
+    # #trusted!(false) marked it trusted, while #trusted? read the flag straight.  Worth fixing
+    # even though nothing calls the writer today: #trusted? is what skips the consent screen.
     def trusted(value=true)
-      set_permission(:trusted, !value)
+      set_permission(:trusted, value)
     end
 
     def trusted!(value=true)
@@ -200,6 +232,23 @@ module Platform
 
     def trusted?
       has_permission?(:trusted)
+    end
+
+    # A client that cannot keep a secret: a desktop, mobile or in-browser app whose "secret"
+    # ships inside something the user can read.  Such a client is exempt from client_secret
+    # authentication on the token endpoint, and is required to use PKCE instead.  RFC 6749
+    # section 2.1.
+    def public_client(value=true)
+      set_permission(:public_client, value)
+    end
+
+    def public_client!(value=true)
+      public_client(value)
+      save!
+    end
+
+    def public_client?
+      has_permission?(:public_client)
     end
 
     # Ticket 19135
@@ -289,19 +338,153 @@ module Platform
       result
     end
 
-    def create_request_token(user, callback_url, scope = 'basic', interval = 10.minutes)
+    ############################################################################
+    #### Registered callbacks and origins
+    ####
+    #### Everything an authorize request is allowed to send the user back to, or postMessage a
+    #### token to, is derived from what the developer registered on the application.  Nothing
+    #### here consults the request.
+    ############################################################################
+
+    # The callbacks an authorize request may name in redirect_uri / redirect_url.
+    #
+    # #url is deliberately *not* in here even though the old host-only check fell back to it.  A
+    # marketing homepage is not a redirect target, and treating it as one let an app with a blank
+    # callback_url accept any redirect_uri on that host.
+    def registered_redirect_uris
+      [callback_url].reject { |u| u.nil? || u.to_s.strip.empty? }
+    end
+
+    # Does +candidate+ match a registered callback?
+    #
+    # Matches on scheme, host, port and path; the query string is free.  RFC 6749 section 3.1.2
+    # asks for an exact string match, and the query string is the one piece of that we cannot
+    # insist on: the FTDNA connector's callback carries a profile_id the host app rewrites per
+    # request, and clients that append their own parameters are common.  Scheme, host, port and
+    # path is what actually closes the holes -- a registered https callback can no longer be
+    # downgraded to http, and no other path on the host is reachable.
+    #
+    # Comparing the parsed components rather than strings also means a candidate cannot smuggle a
+    # different target past us through encoding tricks, userinfo
+    # ("https://app.example.com@evil.com" parses with host evil.com) or a default port written
+    # out in full.
+    def redirect_uri_allowed?(candidate)
+      candidate = Platform::Application.parse_uri(candidate)
+      return false if candidate.nil?
+
+      registered_redirect_uris.any? do |registered|
+        registered = Platform::Application.parse_uri(registered)
+        next false if registered.nil?
+
+        candidate.scheme == registered.scheme &&
+          candidate.host  == registered.host  &&
+          candidate.port  == registered.port  &&
+          Platform::Application.normalize_path(candidate.path) == Platform::Application.normalize_path(registered.path)
+      end
+    end
+
+    # The check that was in force before #redirect_uri_allowed? existed: hosts only, with #url as
+    # a fallback, and "no registered callback at all" meaning "anything goes".
+    #
+    # Kept so that staged enforcement can tell a redirect_uri that was *already* being rejected
+    # from one that only the stricter check rejects.  The first has to keep being rejected --
+    # staging a check must not loosen anything -- and only the second gets the grace period.  See
+    # Platform::OauthController#redirect_url_valid?.
+    def redirect_uri_legacy_allowed?(candidate)
+      legacy_url = [callback_url, url].detect { |u| !(u.nil? || u.to_s.strip.empty?) }
+      return true if legacy_url.nil?   # nothing registered: the old check allowed everything
+
+      candidate  = Platform::Application.parse_uri(candidate)
+      registered = Platform::Application.parse_uri(legacy_url)
+      return false if candidate.nil? || registered.nil?
+
+      candidate.host == registered.host
+    end
+
+    # The origins this application is allowed to receive an xd postMessage on.
+    #
+    # callback_url and url carry an explicit scheme and are taken as-is.  site_domain is stored
+    # as a bare hostname, so a scheme has to be assumed, and in production that assumption is
+    # https only: granting http would hand the tokens to anyone who can answer for that host on a
+    # downgraded connection, which is the hole this check exists to close.  Dev and test
+    # registrations are still routinely http, so they get both.
+    def registered_origins
+      origins = []
+
+      [callback_url, url].each do |u|
+        next if u.nil? || u.to_s.strip.empty?
+        origin = Platform::Helper.origin_of(u)
+        origins << origin if origin
+      end
+
+      unless site_domain.nil? || site_domain.to_s.strip.empty?
+        host = site_domain.to_s.strip.sub(%r{\Ahttps?://}, '').sub(%r{/.*\z}, '')
+        origins << "https://#{host}"
+        origins << "http://#{host}" if %w[development test].include?(Platform::Config.env.to_s)
+      end
+
+      origins.uniq
+    end
+
+    def origin_allowed?(candidate)
+      candidate = Platform::Helper.origin_of(candidate)
+      return false if candidate.nil?
+
+      registered_origins.include?(candidate)
+    end
+
+    # The origin to postMessage to when the request did not name a usable one.  Prefers the
+    # registered callback, because that is the page the flow was going to land on anyway.
+    def default_origin
+      registered_origins.first
+    end
+
+    def self.parse_uri(url)
+      uri = URI.parse(url.to_s)
+      return nil if uri.scheme.nil? || uri.host.nil?
+      return nil unless uri.userinfo.nil?  # https://registered.example.com@evil.com
+
+      uri
+    rescue URI::InvalidURIError, ArgumentError
+      nil
+    end
+
+    # "" and "/" are the same resource; a trailing slash is not a different callback.
+    def self.normalize_path(path)
+      path = path.to_s
+      path = "/#{path}" unless path.start_with?('/')
+      path = path.chomp('/')
+      path.empty? ? '/' : path
+    end
+
+    # +pkce+ is the {:code_challenge, :code_challenge_method} the authorize request asked to have
+    # bound to this code, or nil.  Binding it here is what lets the token endpoint prove that the
+    # client redeeming the code is the one that requested it, without a shared secret.
+    def create_request_token(user, callback_url, scope = 'basic',
+                             interval = Platform::Config.oauth_request_token_lifetime, pkce = nil)
       token = Platform::Oauth::RequestToken.new
       token.application = self
       token.user = user
       token.callback_url = callback_url
       token.scope = scope
+
+      if pkce
+        token.code_challenge        = pkce[:code_challenge]
+        token.code_challenge_method = pkce[:code_challenge_method]
+      end
+
       token.generate_key
       token.expire_in(interval)
       token.save!
       token
     end
 
-    def create_refresh_token(user = nil, scope = 'basic', interval = nil)
+    # interval defaults to a real lifetime now.  It defaulted to nil, and #expire_in returns
+    # immediately on nil, so valid_to was left NULL and #valid_token? -- which only treats a
+    # non-NULL valid_to as an expiry -- never expired one.  Every refresh token ever handed out
+    # was a permanent credential.  RFC 9700 section 4.14 wants either an expiry or rotation with
+    # replay detection; this gem now does both.
+    def create_refresh_token(user = nil, scope = 'basic', interval = Platform::Config.oauth_refresh_token_lifetime)
       token = Platform::Oauth::RefreshToken.new
       token.application = self
       token.user = user
@@ -372,7 +555,8 @@ module Platform
 
     # deprecated
     def self.permissions
-      [:no_rate_limit, :grant_type_password, :unlimited_models, :add_without_premium, :trusted, :tos_required]
+      [:no_rate_limit, :grant_type_password, :unlimited_models, :add_without_premium, :trusted,
+       :tos_required, :public_client]
     end
 
     def icon_url

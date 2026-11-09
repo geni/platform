@@ -7,6 +7,10 @@
   <%= hidden_field_tag "origin", params[:origin]%>
   <%= hidden_field_tag "callback", params[:callback]%>
   <%= hidden_field_tag "display", @display%>
+  <%# PKCE: the challenge arrives on the GET and has to survive the consent POST, because the
+      authorization code is only created once the user has clicked Allow. -%>
+  <%= hidden_field_tag "code_challenge", params[:code_challenge] %>
+  <%= hidden_field_tag "code_challenge_method", params[:code_challenge_method] %>
   <%= hidden_field_tag 'authorize', 1 %>
 <% end %>
 

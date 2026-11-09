@@ -239,6 +239,70 @@ class Platform::Config
   def self.api
     config[:API]
   end
+
+  #########################################################
+  # OAuth hardening
+  #
+  # Every check that can reject a request a third-party client used to get away with is gated
+  # here, and ships *off*.  With the switch off the check still runs and still logs what it would
+  # have rejected (Platform::OauthController#oauth_enforce!), it just does not reject it, so you
+  # can read the logs for legitimate clients that would break and chase them down before turning
+  # the check on.  Same shape as the host app's warn_from_forgery.
+  #
+  # The checks, and what turning each one on starts rejecting:
+  #
+  #   client_secret   - a token request on the authorization_code, refresh_token or password
+  #                     grant that does not authenticate the client.  All three are *documented*
+  #                     as sending client_secret (see developer/help/oauth_server_side), so this
+  #                     is enforcing the published contract -- it should be the first one you
+  #                     flip.  RFC 6749 section 4.1.3.
+  #   pkce            - an authorization_code exchange by an app flagged public_client that does
+  #                     not present a code_verifier matching the code_challenge it authorized
+  #                     with.  Only meaningful once public clients are actually sending PKCE.
+  #                     OAuth 2.1 / RFC 9700 section 2.1.1.
+  #   redirect_uri    - an authorize request whose redirect_uri does not match a registered
+  #                     callback on scheme, host, port and path.  RFC 6749 section 3.1.2.
+  #   revocation_auth - a validate_token / invalidate_token / revoke call that does not
+  #                     authenticate the client, or that arrives over GET.  RFC 7009 section 2.1.
+  #   scope           - an authorize request asking for a scope the application is not
+  #                     registered for, and an access token that relies on "basic" meaning
+  #                     unrestricted.  See Platform::Application#granted_scope.
+  #########################################################
+  OAUTH_CHECKS = [:client_secret, :pkce, :redirect_uri, :revocation_auth, :scope].freeze
+
+  def self.oauth
+    config[:oauth] || HashWithIndifferentAccess.new
+  end
+
+  def self.oauth_enforce?(check)
+    raise ArgumentError, "unknown oauth check #{check.inspect}" unless OAUTH_CHECKS.include?(check.to_sym)
+
+    (oauth[:enforce] || {})[check] ? true : false
+  end
+
+  # Which token types are stored as a digest rather than in the clear.  See
+  # Platform::Oauth::OauthToken.store_digest? for why access and client tokens are not in the
+  # default list.
+  def self.oauth_hashed_token_types
+    (oauth[:hashed_token_types] || []).map(&:to_s)
+  end
+
+  # Whether a token presented by a client may still be looked up by its cleartext value.  Needed
+  # while rows written before hashing was turned on are still in play; each successful cleartext
+  # lookup rewrites that row as a digest, so this can be turned off once the tail has aged out
+  # past the longest token lifetime.
+  def self.oauth_allow_cleartext_token_lookup?
+    oauth[:allow_cleartext_token_lookup] ? true : false
+  end
+
+  def self.oauth_refresh_token_lifetime
+    (oauth[:refresh_token_lifetime] || 90.days).to_i
+  end
+
+  def self.oauth_request_token_lifetime
+    (oauth[:request_token_lifetime] || 10.minutes).to_i
+  end
+
   #########################################################
 
   #########################################################

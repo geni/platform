@@ -141,11 +141,32 @@ module Platform
               @access_token = Platform::Application.find_access_token(parts.last)
             end
           elsif access_token_param
+            warn_access_token_in_query_string
             @access_token = Platform::Application.find_access_token(access_token_param)
           end
         end
 
         @access_token
+      end
+
+      # A bearer token in the query string ends up in access logs, in Referer headers on anything
+      # the response links to, and in browser history.  RFC 6750 section 2.3 deprecated the URI
+      # query parameter and RFC 9700 section 4.3.2 says not to use it; the Authorization header
+      # above is the supported way in.
+      #
+      # Not removed, because it is how the API is documented and clients are using it.  Logged
+      # once per token per process instead -- enough to see who still needs migrating without a
+      # line on every API call.
+      def warn_access_token_in_query_string
+        @@warned_token_in_query_string ||= {}
+        key = access_token_param.to_s[0, 8]
+        return if @@warned_token_in_query_string[key]
+
+        @@warned_token_in_query_string[key] = true
+        Platform::Logger.info(
+          "OAUTH_TOKEN_IN_QUERY_STRING path=#{request.path} " \
+          "- deprecated, use an Authorization: Bearer header (RFC 6750 section 2.3)"
+        )
       end
 
       def access_token_header

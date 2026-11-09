@@ -7,7 +7,57 @@
 <div class="documentation_section">
 	<p>
 		<%=tr("{site_title} Platform uses the [link: OAuth 2.0 protocol] for authentication and authorization.", "", :site_title => Tr8n::Config.site_title, :link => ["http://tools.ietf.org/html/draft-ietf-oauth-v2-20"]) %>
-		<%=tr("The Platform supports a number of different flows that you can use within your website, desktop and mobile applications.")%>  
+		<%=tr("The Platform supports a number of different flows that you can use within your website, desktop and mobile applications.")%>
+  </p>
+
+  <h2><%=tr("Requirements you should check your application against")%></h2>
+  <p>
+    <%=tr("Several requirements that the documentation below has always described are now actually checked. If your application already follows the documented flows there is nothing to do, but it is worth confirming each of these.")%>
+  </p>
+  <p>
+    <table class="documentation_table">
+      <tr>
+        <th style="width:180px;"><%=tr("Requirement")%></th>
+        <th><%=tr("What to check")%></th>
+      </tr>
+      <tr>
+        <td><%=tr("Send your client_secret")%></td>
+        <td>
+          <%=tr("The token endpoint now verifies client_secret on the authorization_code, refresh_token and password grants. Send it as a parameter, as the examples show, or as HTTP Basic credentials (client_id as the username, client_secret as the password), which is preferred.")%>
+          <%=tr("Applications that cannot keep a secret -- desktop, mobile and in-browser apps -- should be registered as public clients and use PKCE instead.")%>
+        </td>
+      </tr>
+      <tr>
+        <td><%=tr("Register your exact callback")%></td>
+        <td>
+          <%=tr("A redirect_uri must match your registered callback URL on scheme, host, port and path. Extra query parameters are allowed, so you can still append your own. An https callback can no longer be used over http, and no other path on your domain will be accepted -- check that the callback URL on your application record is the one you actually redirect to.")%>
+        </td>
+      </tr>
+      <tr>
+        <td><%=tr("Use PKCE for public clients")%></td>
+        <td>
+          <%=tr("Send a code_challenge (and code_challenge_method=S256) with the authorization request and the matching code_verifier when you exchange the code. This is how a public client proves it owns the code it is redeeming. Only S256 is supported; the plain method is not accepted.")%>
+        </td>
+      </tr>
+      <tr>
+        <td><%=tr("Refresh tokens now expire")%></td>
+        <td>
+          <%=tr("A refresh token is valid for 90 days and is rotated every time you use it -- each exchange returns a new refresh token and invalidates the one you sent. Store the new one. Presenting an already-exchanged refresh token is treated as a sign that it leaked, and revokes every token your application holds for that user.")%>
+        </td>
+      </tr>
+      <tr>
+        <td><%=tr("Send tokens in a header")%></td>
+        <td>
+          <%=tr("Pass your access token in an Authorization: Bearer header rather than in the access_token query parameter. A token in a URL ends up in server logs, Referer headers and browser history. The query parameter still works but is deprecated.")%>
+        </td>
+      </tr>
+      <tr>
+        <td><%=tr("Authenticate token revocation")%></td>
+        <td>
+          <%=tr("The validate_token, invalidate_token and revoke endpoints require your client credentials and a POST, and only act on tokens issued to your own application.")%>
+        </td>
+      </tr>
+    </table>
   </p>
 
   <h2><%=tr("Authenticaton/Authorization Flows")%></h2>

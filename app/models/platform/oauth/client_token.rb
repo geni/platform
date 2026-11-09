@@ -49,7 +49,7 @@ module Platform
     class ClientToken < Oauth::OauthToken
 
       def code
-        token
+        client_token
       end
 
     end # class ClientToken

@@ -276,16 +276,31 @@
 		},
 	
 		// handles message events sent via postMessage, and fires the appropriate callback
+		//
+		// The origin check is the receiving half of the cross-domain flow.  Without it this
+		// listener accepts a message from any window or frame that can reach the page, which
+		// means anyone could hand the host application a forged OAuth response -- an error, a
+		// "status: authorized", or an access token of the attacker's choosing -- and it would be
+		// dispatched to the callback as though the authorization server had sent it.
+		//
+		// window.postMessage sets event.origin to the serialized origin of the sender and the
+		// browser does not let script forge it, so comparing it against where we sent the
+		// request is sufficient.
 		onMessage:function(e) {
+			if(!Platform.Request.isTrustedOrigin(e.origin)) {
+				Platform.log('ignoring postMessage from unexpected origin', e.origin);
+				return;
+			}
+
 			var data = {};
 			if (e.data && typeof e.data == 'string') {
 				data = Platform.Util.decodeQueryString(e.data);
 			}
-			
+
 			if(data.error) {
 				Platform.log(data.error,data.error_description);
 			}
-			
+
 			if(data.callback) {
 				var cb = this.callbacks[data.callback];
 				if(cb) {
@@ -293,6 +308,43 @@
 					delete this.callbacks[data.callback];
 				}
 			}
+		},
+
+		// Is this origin the authorization server we sent the request to?
+		//
+		// Derived from Platform._host, which is what every request URL is built from and what
+		// init({host:...}) overrides, so sandbox and development deployments keep working without
+		// a hardcoded list.
+		//
+		// Compared on hostname only, and allowing a subdomain of the configured host, because
+		// neither the scheme nor the exact hostname of the two is required to match in a working
+		// setup: _host defaults to "http://geni.com", every OAuth endpoint redirects to https,
+		// and that redirect lands on www -- so the window posting back reports
+		// "https://www.geni.com" while the configured host still says "http://geni.com".
+		// Requiring an exact origin match here would reject every legitimate message.
+		//
+		// Hostname is still the part that separates the authorization server from an attacker's
+		// page, which is the only decision being made here.  The exact pinning happens on the
+		// server, which postMessages to one registered origin (see the xd template), so this is
+		// the looser of the two checks rather than the only one.
+		//
+		// Rejects rather than accepts when it cannot tell: an empty origin, or the opaque "null"
+		// that a sandboxed, data: or file: frame reports, is never the authorization server.
+		isTrustedOrigin:function(origin) {
+			if(!origin || origin === 'null') return false;
+
+			var expected = Platform.Request.hostname(Platform._host);
+			var actual   = Platform.Request.hostname(origin);
+			if(!expected || !actual) return false;
+
+			// "geni.com" accepts "geni.com" and "www.geni.com", but not "geni.com.evil.com"
+			// (which ends in ".evil.com") and not "evil-geni.com" (no dot before the suffix).
+			return actual === expected || actual.slice(-(expected.length + 1)) === ('.' + expected);
+		},
+
+		hostname:function(url) {
+			var match = /^https?:\/\/([^\/?#:]+)/.exec(String(url || ''));
+			return match ? match[1].toLowerCase() : null;
 		},
 		
 		// get the origin of the page
