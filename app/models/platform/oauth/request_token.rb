@@ -25,8 +25,11 @@ class Platform::Oauth::RequestToken < Platform::Oauth::OauthToken
 
   validates_presence_of :user
 
+  # The authorization code handed to the client.  #client_token, not #token: request tokens are
+  # stored as a digest, so #token is the digest and only #client_token is the code the client can
+  # actually redeem.
   def code
-    token
+    client_token
   end
 
   def redirect_url
