@@ -599,5 +599,27 @@
     <div class="code_snippet">
         {"expires_in":86400,"refresh_token":"wEq6FMb3CcfPN6CckQv7","access_token":"sye4NMd130L4wqq13zjqqLHwuHd5jnnKwdVi9S8X"}
     </div>
+
+    <h2><%=tr("Security requirements")%></h2>
+    <p>
+      <%=tr("The requirements below are now checked. Each is already described above, so a client that follows this page needs no change -- but it is worth confirming each one.")%>
+    </p>
+    <ul>
+      <li>
+        <%=tr("[bold: Send client_secret when you exchange the code.] It is verified now, not just accepted. You may send it as a parameter, as shown above, or as HTTP Basic credentials with client_id as the username and client_secret as the password -- the header is preferred, because a secret in a query string is a secret in server logs.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Prefer POST for the token request.] The examples above use GET for readability, and GET still works, but everything in that URL -- including your client_secret and the authorization code -- is recorded by every proxy and log along the way.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Your redirect_uri must match your registered Callback URL] on scheme, host, port and path. Extra query parameters are allowed, so you can keep appending your own. Using http for a callback registered as https, or a different path on the same domain, will stop working.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Store the refresh_token from every response.] Each exchange returns a new refresh token and retires the one you sent. Newly issued refresh tokens expire after 90 days, and presenting one you have already exchanged revokes every token your application holds for that user -- so never retry with an older token. If a refresh fails, start a new authorization.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Send the access token in an Authorization header] rather than as an access_token query parameter -- {header} -- because a token in a URL is recorded in server logs, in Referer headers and in browser history. The parameter still works but is deprecated.", "", :header => "Authorization: Bearer YOUR_TOKEN")%>
+      </li>
+    </ul>
 </div>
 <%= render :partial => "footer" %>

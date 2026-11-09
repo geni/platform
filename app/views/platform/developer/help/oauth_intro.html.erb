@@ -238,6 +238,28 @@
                   false
               </td>
           </tr>
+          <tr>
+              <td>
+                  code_challenge
+              </td>
+              <td>
+                  <%=tr("[link: PKCE] challenge: the SHA-256 digest of a random code_verifier you generate per request, as unpadded url-safe base64.  Bound to the authorization code we issue, so that only a client holding the verifier can exchange it.  Required for applications registered as public clients, which cannot keep a client_secret -- desktop, mobile and in-browser apps.", "", :link => ["https://datatracker.ietf.org/doc/html/rfc7636"]) %>
+              </td>
+              <td>
+                  false
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  code_challenge_method
+              </td>
+              <td>
+                  <%=tr("Must be {method} if code_challenge is sent.  The {plain} method is not accepted.", "", :method => "S256", :plain => "plain") %>
+              </td>
+              <td>
+                  false
+              </td>
+          </tr>
       </table>
   </p>
   <h3><%=tr("Example") %></h3>
@@ -323,6 +345,17 @@
                   true
               </td>
           </tr>
+          <tr>
+              <td>
+                  code_verifier
+              </td>
+              <td>
+                  <%=tr("The random string whose SHA-256 digest you sent as code_challenge on the authorization request.  Required if that request carried a code_challenge.") %>
+              </td>
+              <td>
+                  false
+              </td>
+          </tr>
       </table>
   </p>
 	<p>
@@ -343,6 +376,9 @@
   <div class="code_snippet">
       https://<%=Platform::Config.site_base_url %>/platform/oauth/validate_token
   </div>
+  <p>
+    <%=tr("Must be requested over POST.  A token in a URL ends up in server logs, Referer headers and browser history, and a GET endpoint that revokes a credential can be triggered by any page that causes a navigation.")%>
+  </p>
   <h3><%=tr("Parameters") %></h3>
   <p>
       <table class="documentation_table">
@@ -356,6 +392,28 @@
               <th style="width:150px;">
                   <%=tr("Required") %>
               </th>
+          </tr>
+          <tr>
+              <td>
+                  client_id
+              </td>
+              <td>
+                  <%=tr("Your application id or key.") %>
+              </td>
+              <td>
+                  <%=tr("true (parameter or HTTP Basic credentials)")%>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  client_secret
+              </td>
+              <td>
+                  <%=tr("Your application secret.  Identifies the request as coming from your application, so that only you can read or revoke tokens issued to you.") %>
+              </td>
+              <td>
+                  <%=tr("true (parameter or HTTP Basic credentials)")%>
+              </td>
           </tr>
           <tr>
               <td>
@@ -384,6 +442,9 @@
   <div class="code_snippet">
       https://<%=Platform::Config.site_base_url %>/platform/oauth/invalidate_token
   </div>
+  <p>
+    <%=tr("Must be requested over POST.  A token in a URL ends up in server logs, Referer headers and browser history, and a GET endpoint that revokes a credential can be triggered by any page that causes a navigation.")%>
+  </p>
   <h3><%=tr("Parameters") %></h3>
   <p>
       <table class="documentation_table">
@@ -397,6 +458,28 @@
               <th style="width:150px;">
                   <%=tr("Required") %>
               </th>
+          </tr>
+          <tr>
+              <td>
+                  client_id
+              </td>
+              <td>
+                  <%=tr("Your application id or key.") %>
+              </td>
+              <td>
+                  <%=tr("true (parameter or HTTP Basic credentials)")%>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  client_secret
+              </td>
+              <td>
+                  <%=tr("Your application secret.  Identifies the request as coming from your application, so that only you can read or revoke tokens issued to you.") %>
+              </td>
+              <td>
+                  <%=tr("true (parameter or HTTP Basic credentials)")%>
+              </td>
           </tr>
           <tr>
               <td>

@@ -260,5 +260,21 @@ if (Geni.access_token == "") {
     	<%=tr("{site_title} Platform comes with a [link: full featured JavaScript library] that allows you to build dynamic web applications in the browser with {site_title}'s data.", "", :site_title => Platform::Config.site_title, :link => ["/platform/developer/help/sdk_js"])%>
 			<%=tr("It supports authentication, autherization and API calls to get the site data.")%>
     </p>
+
+    <h2><%=tr("Security requirements")%></h2>
+    <ul>
+      <li>
+        <%=tr("[bold: Your page origin must be registered.] Popup and hidden-iframe responses are delivered with postMessage targeted at your application's registered origin, so a page on an origin we do not have on file will not receive the response at all. Check that your Callback URL, Site URL or Site Domain matches the scheme, host and port of the page running the SDK.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Take the current jsdk.js if you host your own copy.] It verifies the origin of incoming messages, which stops another page from handing your application a forged authorization response.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Your redirect_uri must match your registered Callback URL] on scheme, host, port and path. Extra query parameters are allowed.")%>
+      </li>
+      <li>
+        <%=tr("[bold: For new integrations, prefer the server side flow with PKCE.] See [link: the server side flow]. This page describes the implicit grant, which returns the token through a browser redirect and is removed in OAuth 2.1. An authorization code plus PKCE gives a browser application the same thing without putting a token in a URL.", "", :link => ["/platform/developer/help/oauth_server_side"])%>
+      </li>
+    </ul>
 </div>
 <%= render :partial => "footer" %>

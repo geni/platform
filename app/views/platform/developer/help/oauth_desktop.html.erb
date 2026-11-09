@@ -187,5 +187,18 @@
         https://<%=Platform::Config.site_base_url %>/platform/oauth/auth_success#access_token=ACCESS_TOKEN_GENERATED_BY_SERVER
 &expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
     </div>
+
+    <h2><%=tr("Security requirements")%></h2>
+    <ul>
+      <li>
+        <%=tr("[bold: Do not ship a client_secret in a desktop application.] Anything distributed to users can be read by them, so a secret inside it authenticates nothing. Ask us to register your application as a public client: it will then be exempt from client_secret and will use PKCE instead.")%>
+      </li>
+      <li>
+        <%=tr("[bold: Use PKCE.] Generate a random code_verifier per authorization, send its SHA-256 digest as code_challenge (with code_challenge_method=S256) on the authorization request, and send the code_verifier when you exchange the code. That is what proves the application redeeming the code is the one that asked for it. Only S256 is accepted.")%>
+      </li>
+      <li>
+        <%=tr("[bold: The redirect_uri rules do not apply to this flow.] A desktop authorization lands on our own auth_success page and the token arrives in the URL fragment, so there is no callback of yours to register.")%>
+      </li>
+    </ul>
 </div>
 <%= render :partial => "footer" %>

@@ -44,6 +44,17 @@
             </tr>
             <tr>
                 <td>
+                    client_secret
+                </td>
+                <td>
+                    <%=tr("Application secret generated during the app registration.  Identifies the request as coming from your application; without it this endpoint would accept credentials from anyone holding your public client_id.") %>
+                </td>
+                <td>
+                    <%=tr("true (parameter or HTTP Basic credentials)")%>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     username
                 </td>
                 <td>
@@ -198,5 +209,18 @@
         <br>
         <br>
     </div>
+
+    <h2><%=tr("Security requirements")%></h2>
+    <p>
+      <%=tr("[bold: This flow now requires client_secret.] Earlier versions of this page did not mention it and the server did not check it, so if your application has never sent a client_secret on this grant, it must start doing so. Send it alongside client_id, either as a parameter or as HTTP Basic credentials. We will contact you before this becomes mandatory.")%>
+    </p>
+    <p>
+      <%=tr("The reason is that without it this endpoint accepts a username and password from anyone who knows your application's public client_id, which makes it a convenient place to test stolen credentials against our members' accounts.")%>
+    </p>
+    <h3><%=tr("Please migrate off this flow")%></h3>
+    <p>
+      <%=tr("Exchanging a member's {site_title} password directly is the resource owner password credentials grant. It is removed in OAuth 2.1 and we intend to retire it: it requires your application to handle a password that is not yours, it cannot support two-factor authentication, and it gives the member no consent screen and no way to see or revoke what they granted.", "", :site_title => Platform::Config.site_title)%>
+      <%=tr("The [link: server side flow] does the same job without any of that. If something about your integration makes that impractical, please tell us -- we would rather hear about it now than when we schedule the removal.", "", :link => ["/platform/developer/help/oauth_server_side"])%>
+    </p>
 </div>
 <%= render :partial => "footer" %>

@@ -467,7 +467,14 @@ module Platform
       #
       # The grant itself is removed in OAuth 2.1 (RFC 9700 section 2.4) and should be retired;
       # this only stops it from being open to the world in the meantime.
-      if (failure = authenticate_client!('password'))
+      #
+      # Staged on its own switch rather than the one the other grants use:
+      # developer/help/oauth_trusted_client documents this grant with client_id, username and
+      # password and never mentions client_secret, so clients following that page have never sent
+      # one and enforcing it here will break them.  The authorization_code and refresh_token
+      # grants are the opposite case -- their documentation has always shown the secret -- and
+      # should not have to wait behind this.
+      if (failure = authenticate_client!('password', :client_secret_password))
         return render_response(failure)
       end
 
