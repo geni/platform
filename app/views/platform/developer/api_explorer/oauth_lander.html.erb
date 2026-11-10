@@ -1,4 +1,38 @@
+<%#
+  The access token travels in a data attribute rather than interpolated into the script body.
+
+  Interpolating it was not exploitable: h() turns " into &quot; and < into &lt;, and HTML
+  entities are not decoded inside a script element, so there was no way to produce the quote
+  character needed to close the string literal.  But that safety was incidental -- it rested on
+  h() happening to cover the one character that mattered, in a context h() is not written for.
+
+  What it did break: h() does not escape backslashes, carriage returns or newlines, so a token
+  containing any of those made this script fail to parse.  The token was then never handed over
+  and the popup never closed, with nothing in the UI to say why.
+
+  An attribute has a single well-defined escaping rule that the template engine applies for us,
+  and getAttribute hands the value to JS without a second escaping context to get wrong.
+-%>
+<div id="oauth_lander" style="display:none;"
+     data-access-token="<%= h(params[:access_token]) %>"></div>
+
 <% javascript_tag do %>
-  window.opener.updateAccessToken("<%= h(params[:access_token]) %>");
-  window.close();
+  (function() {
+    var el    = document.getElementById("oauth_lander");
+    var token = el ? el.getAttribute("data-access-token") : null;
+
+    // The opener is the API Explorer page, same origin as this one.  If this window was opened
+    // by a page on another origin, reading window.opener.updateAccessToken throws instead of
+    // handing the token over -- which is the behaviour we want, so it is caught and ignored
+    // rather than prevented.
+    try {
+      if (token && window.opener && window.opener.updateAccessToken) {
+        window.opener.updateAccessToken(token);
+      }
+    } catch (e) {
+      // same-origin policy refused the handoff; nothing to do but close
+    }
+
+    window.close();
+  })();
 <% end %>
