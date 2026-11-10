@@ -59,6 +59,9 @@ module Platform
 
     PKCE_METHODS = %w[S256].freeze
 
+    # The API Explorer's OAuth lander: a fixed path on this server.
+    EXPLORER_LANDER_PATH = '/platform/developer/api_explorer/oauth_lander'.freeze
+
     # The keys whose presence makes an xd payload worth protecting.  A response carrying one of
     # these must go to a verified origin or not be sent at all; a response that carries none --
     # an error, or a "status: unknown" for a caller we could not even identify -- has nothing in
@@ -180,6 +183,59 @@ module Platform
       # not authenticate.  RFC 6749 section 5.2.
       { :error => :invalid_client,
         :error_description => "Client authentication failed - client_secret must be provided and must match" }
+    end
+
+    ##########################################################################
+    #### First-party redirect targets
+    ##########################################################################
+
+    # Is this redirect_uri our own API Explorer lander?
+    #
+    # The Explorer is a first-party tool: a developer signs in through it to get a token to try
+    # API calls with.  It redirects to a fixed path on *this* server
+    # (api_explorer.js#getAccessToken), which by definition can never match the developer's own
+    # registered callback -- and it has been getting away with that by sending display=mobile,
+    # which used to switch redirect_uri validation off entirely.  Removing that bypass is what
+    # broke it.
+    #
+    # Allowing this one destination is not a hole.  The token lands on a page we serve, which
+    # hands it to window.opener through a same-origin JS call; a page on another origin that
+    # opened the popup can neither read that window's URL nor be called into across origins, so
+    # naming this URL as a redirect_uri gets an attacker nothing.
+    #
+    # The host is checked against Platform::Config.site_base_url and *not* against request.host.
+    # request.host comes from the Host header, which a caller can set -- trusting it would turn
+    # this allowance into "redirect my token anywhere, as long as the path matches".
+    #
+    # http as well as https because the Explorer's JS prepends a scheme when its configured base
+    # URL carries none, and the QA hosts are reached over http.
+    def explorer_lander_redirect?(url)
+      uri = Platform::Application.parse_uri(url)
+      return false if uri.nil?
+      return false unless %w[http https].include?(uri.scheme)
+      return false unless Platform::Application.normalize_path(uri.path) == EXPLORER_LANDER_PATH
+
+      return true if own_oauth_host?(uri.host)
+
+      # Path matched but the host did not.  Either someone is probing, or site_base_url does not
+      # match the host the Explorer is actually served from -- and the second is miserable to
+      # diagnose from a bare "cannot point to a different server", so say it out loud.
+      Platform::Logger.error(
+        "OAUTH_EXPLORER_LANDER_HOST_MISMATCH host=#{uri.host.inspect} " \
+        "expected=#{Platform::Config.site_base_url.inspect} url=#{url.inspect}"
+      )
+      false
+    end
+
+    def own_oauth_host?(host)
+      host = host.to_s.downcase
+      return false if host.empty?
+
+      configured = Platform::Config.site_base_url.to_s.downcase
+                     .sub(%r{\Ahttps?://}, '').sub(%r{[/:].*\z}, '')
+      return false if configured.empty?
+
+      host == configured
     end
 
     ##########################################################################
