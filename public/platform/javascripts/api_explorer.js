@@ -31,8 +31,12 @@ function getAccessToken() {
   var top = (parseInt(window.innerHeight)-height)/2;
   var left = (parseInt(window.innerWidth)-width)/2;
   var land_url = oauth_base_url + "/platform/developer/api_explorer/oauth_lander";
-  if (land_url.indexOf("http") == -1) {
-    land_url = "http://" + land_url;
+  // Inherit the scheme of the page rather than hardcoding http.  The access token comes back on
+  // this URL, so an https Explorer page building an http lander made the token take a cleartext
+  // hop before the server's redirect to https picked it up.  The old indexOf("http") test also
+  // matched any URL merely containing "http" anywhere, not just a leading scheme.
+  if (!/^https?:\/\//i.test(land_url)) {
+    land_url = window.location.protocol + "//" + land_url.replace(/^\/+/, "");
   }
 
   var app_id = Platform.element("app_id").value;

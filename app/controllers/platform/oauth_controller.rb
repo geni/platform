@@ -650,6 +650,10 @@ private
     return false if url.blank?
     return false if client_application.nil?
 
+    # Our own API Explorer lander, which cannot match a third-party app's callback by
+    # construction.  See #explorer_lander_redirect? for why this is safe.
+    return true if explorer_lander_redirect?(url)
+
     return true if client_application.redirect_uri_allowed?(url)
 
     # Rejected by the check that was already in force: keep rejecting it.
