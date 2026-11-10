@@ -375,12 +375,22 @@ class Platform::Application < ActiveRecord::Base
   # from one that only the stricter check rejects.  The first has to keep being rejected --
   # staging a check must not loosen anything -- and only the second gets the grace period.  See
   # Platform::OauthController#redirect_url_valid?.
+  # Mirrors the old check *exactly*, including its blind spot:
+  #
+  #   return true  if client_application.try(:callback_url).blank?
+  #   Geni.app_callback_uri?(url, client_application)
+  #
+  # A blank callback_url short-circuited to true before #url was ever consulted, so the #url
+  # fallback inside app_callback_uri? was unreachable for that case.  Reproducing that here
+  # looks like a bug and is the point: staging a check must not change the answer for any
+  # request the old check accepted, and an application with no registered callback is exactly
+  # such a request.  Falling back to #url instead -- which an earlier version of this method
+  # did -- turns a staged log into a hard rejection, which is how the API Explorer broke.
   def redirect_uri_legacy_allowed?(candidate)
-    legacy_url = [callback_url, url].detect { |u| !(u.nil? || u.to_s.strip.empty?) }
-    return true if legacy_url.nil?   # nothing registered: the old check allowed everything
+    return true if callback_url.nil? || callback_url.to_s.strip.empty?
 
     candidate  = Platform::Application.parse_uri(candidate)
-    registered = Platform::Application.parse_uri(legacy_url)
+    registered = Platform::Application.parse_uri(callback_url)
     return false if candidate.nil? || registered.nil?
 
     candidate.host == registered.host
