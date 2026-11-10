@@ -298,16 +298,38 @@ class Platform::Config
   # Which token types are stored as a digest rather than in the clear.  See
   # Platform::Oauth::OauthToken.store_digest? for why access and client tokens are not in the
   # default list.
+  #
+  # The default is the list, not [].  #config reads the *host application's*
+  # config/platform/config.yml -- root is Rails.root -- so a host that has not copied the oauth
+  # block in gets whatever these methods default to, and defaulting to [] would silently store
+  # every token in the clear.
+  DEFAULT_HASHED_TOKEN_TYPES = %w[Platform::Oauth::RequestToken Platform::Oauth::RefreshToken].freeze
+
   def self.oauth_hashed_token_types
-    (oauth[:hashed_token_types] || []).map(&:to_s)
+    types = oauth[:hashed_token_types]
+    return DEFAULT_HASHED_TOKEN_TYPES.dup if types.nil?
+
+    types.map(&:to_s)
   end
 
   # Whether a token presented by a client may still be looked up by its cleartext value.  Needed
   # while rows written before hashing was turned on are still in play; each successful cleartext
   # lookup rewrites that row as a digest, so this can be turned off once the tail has aged out
   # past the longest token lifetime.
+  # Defaults to true when unset, and the default matters more than it looks.
+  #
+  # With hashing on, every token written before the switch is still cleartext in the column, and
+  # this is what finds them.  With hashing off, *every* token is cleartext and this is the only
+  # lookup that can succeed at all -- so defaulting it to false would mean no access token could
+  # ever be found, on any host application that had not copied the oauth config block in.
+  #
+  # Turn it off deliberately, once the longest token lifetime has elapsed since hashing was
+  # enabled, and not before.
   def self.oauth_allow_cleartext_token_lookup?
-    oauth[:allow_cleartext_token_lookup] ? true : false
+    value = oauth[:allow_cleartext_token_lookup]
+    return true if value.nil?
+
+    value ? true : false
   end
 
   def self.oauth_refresh_token_lifetime
