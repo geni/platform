@@ -55,6 +55,7 @@ defaults: &defaults
       redirect_uri:             false
       revocation_auth:          false
       scope:                    false
+      xd_origin:                false
 
     # request and refresh tokens are always freshly minted and handed straight back to the
     # caller, so digesting them at rest costs nothing.  access and client tokens are not in this
