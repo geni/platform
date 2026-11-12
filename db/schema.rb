@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160404122117) do
+ActiveRecord::Schema.define(:version => 20261109140000) do
 
   create_table "platform_admins", :force => true do |t|
     t.integer  "user_id"
@@ -220,22 +220,22 @@ ActiveRecord::Schema.define(:version => 20160404122117) do
   end
 
   create_table "platform_oauth_tokens", :force => true do |t|
-    t.string   "type",           :limit => 20
-    t.integer  "user_id",        :limit => 8
+    t.string   "type",                  :limit => 20
+    t.integer  "user_id",               :limit => 8
     t.integer  "application_id"
-    t.string   "token",          :limit => 50
-    t.string   "secret",         :limit => 50
-    t.string   "verifier",       :limit => 20
+    t.string   "token",                 :limit => 50
+    t.string   "secret",                :limit => 50
+    t.string   "verifier",              :limit => 20
     t.string   "callback_url"
     t.string   "scope"
-    t.string   "code_challenge",        :limit => 128
-    t.string   "code_challenge_method", :limit => 10
     t.datetime "valid_to"
     t.datetime "authorized_at"
     t.datetime "invalidated_at"
-    t.datetime "exchanged_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "code_challenge",        :limit => 128
+    t.string   "code_challenge_method", :limit => 10
+    t.datetime "exchanged_at"
   end
 
   add_index "platform_oauth_tokens", ["token"], :name => "index_platform_oauth_tokens_on_token", :unique => true
