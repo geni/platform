@@ -271,12 +271,20 @@ class Platform::Config
   #                     callback on scheme, host, port and path.  RFC 6749 section 3.1.2.
   #   revocation_auth - a validate_token / invalidate_token / revoke call that does not
   #                     authenticate the client, or that arrives over GET.  RFC 7009 section 2.1.
+  #   xd_origin       - a popup or hidden authorize response whose opener claimed an origin the
+  #                     application has not registered.  Needs its own switch because a browser
+  #                     extension's origin cannot be registered: Chrome reports
+  #                     chrome-extension://<id>, Firefox reports moz-extension://<uuid> with a
+  #                     uuid generated per *installation*, and #registered_origins is built from
+  #                     callback_url / url / site_domain, which are http(s).  Enforcing without a
+  #                     census would silently stop delivering tokens to every extension using the
+  #                     xd flow.  RFC 9700 section 4.1.
   #   scope           - an authorize request asking for a scope the application is not
   #                     registered for, and an access token that relies on "basic" meaning
   #                     unrestricted.  See Platform::Application#granted_scope.
   #########################################################
   OAUTH_CHECKS = [:client_secret, :client_secret_password, :pkce, :redirect_uri,
-                  :revocation_auth, :scope].freeze
+                  :revocation_auth, :scope, :xd_origin].freeze
 
   def self.oauth
     config[:oauth] || HashWithIndifferentAccess.new
