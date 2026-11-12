@@ -378,31 +378,60 @@ module Platform
     # framed the hidden iframe.  Since redirect_url_valid? waves through any xd request, that was
     # enough for any page to open the authorize endpoint and collect a logged-in user's tokens.
     #
-    # The JSDK already sends its own origin on every popup and hidden request
-    # (Platform.Request._origin), and the consent form carries it through the POST, so there is a
-    # claimed origin to check against what the developer registered.  There is deliberately no
-    # switch on this one: the fallback for an unverifiable origin is a *narrower* target (the
-    # app's registered origin) or no message at all, never "*".
+    # Staged behind :xd_origin, which it has to be.  A browser extension's origin cannot be
+    # registered: Chrome reports chrome-extension://<id>, Firefox reports moz-extension://<uuid>
+    # with a uuid generated per *installation*, and #registered_origins is built from
+    # callback_url / url / site_domain, which are http(s) URLs.  So an extension using the xd
+    # flow can never match, and enforcing without a census would silently stop delivering its
+    # tokens -- the failure mode being a login that hangs, with nothing in any log the developer
+    # can see.
+    #
+    # Three cases:
+    #
+    #   claimed origin is registered  -> use it.  The secure path, no logging.
+    #   claimed but not registered    -> switch off: deliver to the *claimed* origin and log.
+    #                                    Switch on: the registered origin, or refuse.
+    #   no origin claimed at all      -> switch off: "*", as before, and log.
+    #                                    Switch on: the registered origin, or refuse.
+    #
+    # Delivering to the claimed origin while staged is not a weakening relative to "*": an
+    # attacker who opens the popup can claim their own origin either way.  It is better than "*"
+    # in that the message goes to exactly one origin rather than to whatever happens to be the
+    # opener, and it keeps a legitimate unregistered client working while the log names it.
     def xd_target_origin
       return @xd_target_origin if defined?(@xd_target_origin)
 
       @xd_target_origin = begin
-        claimed = params[:origin]
+        claimed        = params[:origin]
+        claimed_origin = claimed.present? ? Platform::Helper.origin_of(claimed) : nil
 
-        if claimed.present? && client_application.try(:origin_allowed?, claimed)
-          Platform::Helper.origin_of(claimed)
+        if claimed_origin && client_application.try(:origin_allowed?, claimed)
+          claimed_origin
         else
-          registered = client_application.try(:default_origin)
+          reason = if claimed.blank?
+                     'no origin claimed by the opener'
+                   elsif claimed_origin.nil?
+                     "unparseable origin #{claimed.inspect}"
+                   else
+                     "origin #{claimed_origin.inspect} is not registered " \
+                     "(registered: #{client_application.try(:registered_origins).inspect})"
+                   end
 
-          if claimed.present?
+          if oauth_violation!(:xd_origin, reason)
+            # Enforcing.  oauth_violation! logs nothing in this direction -- the other checks
+            # raise next, and the raise is what gets logged.  This one recovers instead, so say so
+            # here, or an application whose popup starts going somewhere else has no trail.
+            registered = client_application.try(:default_origin)
+
             Platform::Logger.error(
               "OAUTH_XD_ORIGIN_REJECTED app=#{client_application.try(:id) || '-'} " \
-              "claimed=#{claimed.inspect} registered=#{client_application.try(:registered_origins).inspect} " \
-              "- falling back to #{registered.inspect}"
+              "#{reason} - falling back to #{registered.inspect}"
             )
-          end
 
-          registered
+            registered
+          else
+            claimed_origin || '*'                     # staged: preserve existing behaviour
+          end
         end
       end
     end
