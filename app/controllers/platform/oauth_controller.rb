@@ -694,9 +694,11 @@ private
 
       if target_origin.blank?
         if xd_payload_carries_credentials?(response_params)
-          # Nothing registered to post to, and a token or code to post.  This used to go to "*",
-          # which handed the credential to whatever opened the window; refusing costs a broken
-          # popup for a misconfigured application and nothing else.
+          # Only reachable with :xd_origin enforced -- while it is staged, #xd_target_origin
+          # always returns something (the claimed origin, or "*").  So this is the enforcing case
+          # with nothing registered to post to and a credential to post: refusing costs a broken
+          # popup for an unregistered application, where delivering to "*" would hand the
+          # credential to whatever opened the window.
           Platform::Logger.error(
             "OAUTH_XD_NO_TARGET_ORIGIN app=#{client_application.try(:id) || '-'} " \
             "- refusing to postMessage a credential; register a callback_url, url or site_domain"
