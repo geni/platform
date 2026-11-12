@@ -48,6 +48,8 @@ class Platform::OauthController < Platform::BaseController
       return redirect_with_response(:error_description => "invalid client application id", :error => :unauthorized_application)
     end
 
+    log_authorize_request
+
     save_oauth_login_redirect_params
 
     if Platform::Config.current_user_is_guest?

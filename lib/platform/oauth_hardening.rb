@@ -186,6 +186,73 @@ module Platform
     end
 
     ##########################################################################
+    #### Instrumentation
+    ##########################################################################
+
+    # One line per authorize request, so the enforcement rollout is a lookup rather than
+    # archaeology.
+    #
+    # Nothing else records this.  click_logs keeps the request URI, so response_type can be dug
+    # out of it with a regex, but it does not record the HTTP method -- and
+    # platform_application_logs, which does, has not been written since 2022.  Between them they
+    # cannot answer "which applications use the implicit grant", "which send PKCE" or "which
+    # would be affected if we required POST", which are the three questions the rollout turns on.
+    # See agent-docs/OAUTH_ENFORCEMENT_ROLLOUT.md in the host application.
+    #
+    # Called before the response_type and redirect_uri checks run, deliberately: a request those
+    # reject still has to appear here, because the rejections are the thing being counted.
+    #
+    # Logs the *origin* of the redirect_uri rather than the whole value.  The path and query can
+    # carry identifiers, and OAUTH_WOULD_REJECT already records the full value on the requests
+    # that fail.
+    def log_authorize_request
+      challenge = request_param(:code_challenge)
+      pkce = if challenge.nil?
+               'none'
+             else
+               method = (request_param(:code_challenge_method) || 'S256').upcase
+               PKCE_METHODS.include?(method) ? method : "unsupported:#{log_safe(method)}"
+             end
+
+      sent_redirect = !(request_param(:redirect_url) || request_param(:redirect_uri)).nil?
+      redirect_shown = if sent_redirect
+                         log_safe(Platform::Helper.origin_of(redirect_url) || 'unparseable', 80)
+                       else
+                         'omitted'
+                       end
+
+      Platform::Logger.info(
+        "OAUTH_AUTHORIZE app=#{client_application.id} " \
+        "method=#{request.method.to_s.upcase} " \
+        "response_type=#{log_value(request_param(:response_type), 'code(default)')} " \
+        "display=#{log_safe(display)} " \
+        "pkce=#{pkce} " \
+        "scope=#{log_value(request_param(:scope), 'basic(default)', 120)} " \
+        "redirect_uri=#{redirect_shown} " \
+        "state=#{request_param(:state).nil? ? 'omitted' : 'sent'} " \
+        "trusted=#{client_application.trusted? ? 'yes' : 'no'} " \
+        "public_client=#{client_application.public_client? ? 'yes' : 'no'}"
+      )
+    rescue StandardError => ex
+      # Instrumentation must not be able to fail an authorization.
+      Platform::Logger.error("OAUTH_AUTHORIZE logging failed: #{ex.class}: #{ex.message}") rescue nil
+    end
+
+    # response_type, display, scope and code_challenge_method all come straight from the request.
+    # A newline in any of them would let a caller forge log lines, so they are reduced to
+    # characters that cannot restructure the output and truncated.
+    # Sanitise only what the caller supplied.  Our own "(default)" markers are not request data
+    # and must survive intact -- running them through log_safe turned code(default) into
+    # code_default_, which is exactly the distinction this field exists to record.
+    def log_value(raw, default, limit = 40)
+      raw.nil? ? default : log_safe(raw, limit)
+    end
+
+    def log_safe(value, limit = 40)
+      value.to_s.gsub(/[^A-Za-z0-9_.:\/@\-]/, '_')[0, limit]
+    end
+
+    ##########################################################################
     #### First-party redirect targets
     ##########################################################################
 
