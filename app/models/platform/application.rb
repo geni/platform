@@ -88,7 +88,12 @@ module Platform
     has_many :application_categories, :dependent => :destroy
     has_many :categories, :through => :application_categories
 
-    has_many :application_permissions, :dependent => :destroy
+    # OAuth scopes granted to this application.  Capability flags are not here -- they are the
+    # comma-separated #permissions column, read through Platform::SimpleStringPermissions.  The
+    # two used to share platform_permissions, which is what made #granted_scope able to intersect
+    # a requested OAuth scope against :allow_iframe.
+    has_many :application_scopes, :dependent => :destroy
+    has_many :scopes, :through => :application_scopes
 
     belongs_to :icon, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
     belongs_to :logo, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
@@ -159,21 +164,27 @@ module Platform
       end
     end
 
-    def permission_keywords
-      []
-      # @permission_keywords ||= permissions.collect{|p| p.keyword.to_s}
+    # The OAuth scopes granted to this application.
+    def scope_keywords
+      scopes.map { |sc| sc.keyword.to_s }
     end
 
-    def add_permission(key)
-      key = key.to_s.strip
-      return if permitted_to?(key)
-      perm = Platform::Permission.for(key)
-      return unless perm
-      Platform::ApplicationPermission.create(:application => self, :permission => perm)
+    def add_scope(key)
+      scope = Platform::Scope.for(key.to_s.strip)
+      return unless scope
+
+      # Guard against the loaded association and insert through it, so a second call in the same
+      # instance sees the first one.  Checking #scope_granted? here instead would read a *cached*
+      # association loaded before the insert, so the guard would never fire and every call would
+      # add another row -- which is exactly what the original add_permission did, for the
+      # different reason that its guard consulted a method hardcoded to return [].
+      return if application_scopes.any? { |as| as.scope_id == scope.id }
+
+      application_scopes.create(:scope => scope)
     end
 
-    def permitted_to?(key)
-      permission_keywords.include?(key.to_s)
+    def scope_granted?(key)
+      scope_keywords.include?(key.to_s)
     end
 
     # The scope to actually record on a token, given what the request asked for.
@@ -182,25 +193,50 @@ module Platform
     # value the client chose was the value it got -- there was never a step that narrowed it to
     # what the application is registered for.
     #
-    # Narrowing only has teeth once applications carry registered permissions:
-    # #permission_keywords returns [] while Platform::Config.enable_permissions? is off, and
-    # intersecting with [] would reject everything.  So with nothing registered this returns the
-    # request unchanged, which is the behaviour that has always been in place, and the caller logs
-    # that it could not narrow.  Mapping scopes onto API resources is the part that still has to
-    # be designed.
+    # Narrowing only has teeth once applications carry registered scopes, and none do:
+    # #registered_scopes returns [], so this hands the request back unchanged -- the behaviour
+    # that has always been in place -- and the caller logs that it could not narrow.  Mapping
+    # scopes onto API resources is the part that still has to be designed.
     def granted_scope(requested)
       requested = requested.to_s.strip
       return 'basic' if requested.empty?
 
-      allowed = permission_keywords
+      allowed = registered_scopes
       return requested if allowed.empty?
 
       (requested.split(',').map { |sc| sc.strip } & allowed).join(',')
     end
 
+    # The scopes #granted_scope narrows a request against.
+    #
+    # Two things it must not be, both of which were live hazards while scopes and capability flags
+    # shared a table.
+    #
+    # Not the capability flags.  allow_iframe, no_rate_limit, grant_type_password and the rest say
+    # what an application may *do*; they are not scopes and 'basic' is not among them.
+    # Intersecting a requested scope against that list yields '' for every application holding a
+    # flag and leaves untouched every application holding none -- the blast radius exactly
+    # inverted.  They live in a different column entirely now, so it cannot happen by accident.
+    #
+    # Not hardcoded to ['basic'] either, tempting as that looks while 'basic' is the only scope the
+    # authorize endpoint issues.  Geni's ApiController#validate_access_token_scope also honours
+    # action-level scopes, so a token may legitimately carry a scope naming an API action.
+    # Intersecting that against ['basic'] gives '', and a blank scope reads as *unrestricted*
+    # while :scope is staged -- widening those tokens rather than narrowing them -- then raises
+    # UnauthorizedError once it is enforced.
+    #
+    # Gated on enable_scopes? so that granting a scope cannot start narrowing an application's
+    # tokens before the scope system is deliberately turned on.  The narrowing above is not behind
+    # Registry.oauth.enforce.scope, so this is the only thing between a row in
+    # platform_application_scopes and a live change in what tokens carry.
+    def registered_scopes
+      return [] unless Platform::Config.enable_scopes?
+      scope_keywords
+    end
+
     # Can this application's scope request actually be checked against a registration?
     def scope_registration_known?
-      not permission_keywords.empty?
+      not registered_scopes.empty?
     end
 
     def rate_limited(value=true)
@@ -564,9 +600,19 @@ module Platform
     end
 
     # deprecated
+    # The capability flags an admin may grant, which the admin screen renders as Add/Remove links.
+    #
+    # Flags only -- stored in the #permissions column and read by #has_permission?.  OAuth scopes
+    # are not here and never were; see #registered_scopes.
+    #
+    # allow_iframe, sendgrid_callback and skip_exception_logging are listed because they are real
+    # flags the host application reads and were missing, so the only way to grant them was a
+    # console.  Geni had worked around that by adding rows to platform_permissions, which it then
+    # unioned into this list -- which is how a scope catalogue came to hold capability flags.
+    # Naming them here is the fix; that union is gone.
     def self.permissions
       [:no_rate_limit, :grant_type_password, :unlimited_models, :add_without_premium, :trusted,
-       :tos_required, :public_client]
+       :tos_required, :public_client, :allow_iframe, :sendgrid_callback, :skip_exception_logging]
     end
 
     def icon_url

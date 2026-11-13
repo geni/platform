@@ -23,23 +23,28 @@
 
 # == Schema Information
 #
-# Table name: platform_permissions
+# Table name: platform_scopes
 #
 #  id          :integer          not null, primary key
 #  description :text             not null
 #  keyword     :string           not null
+#  headline    :string
+#  position    :integer
 #  created_at  :datetime
 #  updated_at  :datetime
+#  icon_id     :bigint
 #
 # Indexes
 #
-#  index_platform_permissions_on_keyword  (keyword)
+#  index_platform_scopes_on_keyword  (keyword)
 #
 module Platform
-  class Permission < ApplicationRecord
+  class Scope < ApplicationRecord
 
-    has_many :application_permissions
-    belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => 'icon_id'
+    has_many :application_scopes
+
+    belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => 'icon_id',
+               :optional => true
 
     def self.find_or_create(key)
       find_by_keyword(key) || create(:keyword => key, :description => '')
@@ -68,13 +73,16 @@ module Platform
       end
     end
 
+    # Every scope is developer-selectable now.
+    #
+    # This used to be `where("level = 0")`, which existed to keep the capability flags (level 1000)
+    # out of a list of things a developer may request.  Flags are not in this table any more, so
+    # there is nothing to exclude -- and the old filter would have silently hidden any row whose
+    # level was NULL, which is what both production rows turned out to have.  #admin_options,
+    # which listed level 1000 alongside level 0, is gone for the same reason.
     def self.developer_options
-      where("level = 0").order("position asc")
+      order(:position)
     end
 
-    def self.admin_options
-      where.order("position asc")
-    end
-
-  end # class Permission
+  end # class Scope
 end # module Platform

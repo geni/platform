@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_11_09_140000) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_13_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,12 +63,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_09_140000) do
     t.index ["application_id", "interval"], name: "idx_platform_application_metrics_on_app_and_interval"
   end
 
-  create_table "platform_application_permissions", id: :serial, force: :cascade do |t|
+  create_table "platform_application_scopes", id: :serial, force: :cascade do |t|
     t.integer "application_id"
-    t.integer "permission_id"
+    t.integer "scope_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.index ["application_id"], name: "index_platform_application_permissions_on_application_id"
+    t.index ["application_id"], name: "index_platform_application_scopes_on_application_id"
+    t.index ["scope_id"], name: "index_platform_application_scopes_on_scope_id"
   end
 
   create_table "platform_application_usage_metrics", id: :serial, force: :cascade do |t|
@@ -226,14 +227,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_09_140000) do
     t.index ["token"], name: "index_platform_oauth_tokens_on_token", unique: true
   end
 
-  create_table "platform_permissions", id: :serial, force: :cascade do |t|
-    t.string "keyword", null: false
-    t.text "description", null: false
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.index ["keyword"], name: "index_platform_permissions_on_keyword"
-  end
-
   create_table "platform_ratings", id: :serial, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "object_type"
@@ -253,6 +246,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_11_09_140000) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.index ["interval"], name: "index_platform_rollup_logs_on_interval"
+  end
+
+  create_table "platform_scopes", id: :serial, force: :cascade do |t|
+    t.string "keyword", null: false
+    t.text "description", null: false
+    t.string "headline"
+    t.bigint "icon_id"
+    t.integer "position"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
+    t.index ["keyword"], name: "index_platform_scopes_on_keyword"
   end
 
   create_table "tr8n_glossary", id: :serial, force: :cascade do |t|

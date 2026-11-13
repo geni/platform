@@ -113,13 +113,13 @@ module Platform
             application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-            application.application_permissions.each do |ap|
-              ap.destroy
+            application.application_scopes.each do |as|
+              as.destroy
             end
 
-            if (params[:permissions])
-              params[:permissions].split(",").each do |keyword|
-                application.add_permission(keyword)
+            if (params[:scopes])
+              params[:scopes].split(",").each do |keyword|
+                application.add_scope(keyword)
               end
             end
 
@@ -163,9 +163,17 @@ module Platform
         redirect_to :action => :index, :id => application.id
       end
 
-      def lb_permissions
-        @options = Platform::Permission.developer_options
-        @permissions = application.permissions
+      def lb_scopes
+        @options = Platform::Scope.developer_options
+
+        # The scopes this application already holds, as Platform::Scope records, because the view
+        # asks `@scopes.include?(option)` to decide which boxes start ticked.
+        #
+        # This used to be `application.permissions` -- the comma-separated capability-flag *string*
+        # column.  include?(a_record) on a String is always false, so no box ever rendered ticked
+        # and opening the picker silently cleared every scope the application had.  The two
+        # namespaces were crossed right here.
+        @scopes = application.scopes
         render :layout => false
       end
 

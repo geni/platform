@@ -39,7 +39,11 @@
 #  index_wf_filters_on_user_id  (user_id)
 #
 module Platform
-  class PermissionFilter < BaseFilter
+  class ApplicationScopeFilter < BaseFilter
 
-  end # class PermissionFilter
+    def inner_joins
+      [['Platform::Application', :application_id]]
+    end
+
+  end # class ApplicationScopeFilter
 end # module Platform

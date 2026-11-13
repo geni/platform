@@ -23,23 +23,24 @@
 
 # == Schema Information
 #
-# Table name: platform_application_permissions
+# Table name: platform_application_scopes
 #
 #  id             :integer          not null, primary key
 #  created_at     :datetime
 #  updated_at     :datetime
 #  application_id :integer
-#  permission_id  :integer
+#  scope_id       :integer
 #
 # Indexes
 #
-#  index_platform_application_permissions_on_application_id  (application_id)
+#  index_platform_application_scopes_on_application_id  (application_id)
+#  index_platform_application_scopes_on_scope_id        (scope_id)
 #
 module Platform
-  class ApplicationPermission < ApplicationRecord
+  class ApplicationScope < ApplicationRecord
 
     belongs_to :application
-    belongs_to :permission
+    belongs_to :scope
 
-  end # class Application
+  end # class ApplicationScope
 end # module Platform
