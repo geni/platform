@@ -1,11 +1,11 @@
 <style>
-	.perm_row {
+	.scope_row {
 		background-color:white;
 		border-bottom:1px dotted #ccc;
 		cursor: pointer;
 	}
 
-	.perm_row:hover {
+	.scope_row:hover {
 		background-color:#eee;
 	}
 </style>
@@ -29,9 +29,9 @@
 <div style="max-height:250px;overflow:auto;">
 <table>
 	<% @options.each_with_index do |p, index| %>
-		<tr class="perm_row" data-perm-idx="<%= index -%>">
+		<tr class="scope_row" data-scope-idx="<%= index -%>">
 			<td style="width:20px;">
-				<%=check_box_tag("perm_#{index}", p.keyword, @permissions.include?(p))%>
+				<%=check_box_tag("scope_#{index}", p.keyword, @scopes.include?(p))%>
 			</td>
 			<td style="width:20px;">
 				<%=image_tag(p.icon_url, :style => "widtd:16px;height:16px;")%>
@@ -48,19 +48,19 @@
 </div>
 
 <div style="padding-top:30px; padding-bottom:10px; text-align:center;">
-	<%=link_to_function("<span>#{tr("Set")}</span>", "setPermissions()", :class => "button super blue large") %>
+	<%=link_to_function("<span>#{tr("Set")}</span>", "setScopes()", :class => "button super blue large") %>
 	<%=tr("or")%>
-	<%=link_to_function(tr("Cancel"), "Platform.Effects.hide('permissions_dialog');") %>
+	<%=link_to_function(tr("Cancel"), "Platform.Effects.hide('scopes_dialog');") %>
 </div>
 
 <% javascript_tag do %>
 	document.addEventListener("DOMContentLoaded", function() {
-    var rows = document.getElementsByClassName('perm_row');
+    var rows = document.getElementsByClassName('scope_row');
     for(i = 0; i < rows.length; i++) {
 			rows[i].addEventListener('click', function() {
-			  var idx = this.getAttribute('data-perm-idx');
-				if (historyIdx) {
-					Platform.element('perm_' + idx).checked = !Platform.element('perm_' + idx).checked;
+			  var idx = this.getAttribute('data-scope-idx');
+				if (idx) {
+					Platform.element('scope_' + idx).checked = !Platform.element('scope_' + idx).checked;
 				}
 			});
 		}

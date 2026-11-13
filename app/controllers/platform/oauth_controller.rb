@@ -327,9 +327,10 @@ private
   #
   # The requested scope used to be stored on the token and echoed back untouched, so a client
   # received whatever it asked for.  Narrowing needs something to narrow against, and
-  # #permission_keywords is empty while Platform::Config.enable_permissions? is off -- so with no
-  # registration on file this logs that it could not check and passes the request through, which
-  # is the existing behaviour.  See Platform::Application#granted_scope.
+  # #registered_scopes is empty for every application -- so with no registration on file this
+  # logs that it could not check and passes the request through, which is the existing behaviour.
+  # See Platform::Application#registered_scopes for why it is empty rather than derived from the
+  # permission keywords that do exist.
   def authorized_scope
     @authorized_scope ||= begin
       requested = scope
