@@ -48,7 +48,11 @@ class Platform::OauthControllerTest < ActionController::TestCase
     get :request_token, :grant_type => 'password', :client_id => app.key, :client_secret => app.secret, :username => 'foo', :password => 'bar'
     assert_response :success
 
-    expected = ['access_token', 'expires_in', 'refresh_token']
+    # scope joined this list when the grant started reporting what it actually granted rather
+    # than echoing what was asked for.  RFC 6749 section 5.1 makes scope REQUIRED in the response
+    # when the granted scope differs from the requested one, and now that #granted_scope can
+    # narrow, this is the only way a client can tell that it was narrowed.
+    expected = ['access_token', 'expires_in', 'refresh_token', 'scope']
     assert_equal expected, JSON.parse(@response.body).keys.sort, 'iPhone clients should get json'
   end
 
