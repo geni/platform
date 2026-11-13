@@ -32,6 +32,14 @@ module Platform
 end
 
 # Require core Platform classes to avoid eager loading issues
+#
+# oauth_hardening is in this list rather than left to autoloading because this branch's engine
+# adds only app/models, app/controllers and app/helpers to autoload_paths -- not lib -- so
+# Platform::OauthController's `include Platform::OauthHardening` raised
+# "uninitialized constant Platform::OauthHardening" at class-definition time, which took the whole
+# app down rather than just that endpoint.  The other branches happen to autoload lib and so never
+# noticed.  It needs nothing but base64 and openssl, so requiring it here is safe at this point.
+require 'platform/oauth_hardening'
 require 'platform/config'
 require 'platform/exception'
 require 'platform/helper'
