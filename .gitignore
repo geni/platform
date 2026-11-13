@@ -3,9 +3,11 @@
 bundle
 coverage
 db/*.sqlite3
+test/dummy/db/*.sqlite3
 Gemfile.lock
 Gemfile.next.lock
 log/*.log
+test/dummy/log/*.log
 *.swp
 tmp/
 vendor
