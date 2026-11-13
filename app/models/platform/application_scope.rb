@@ -21,6 +21,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::PermissionFilter < Platform::BaseFilter
 
+class Platform::ApplicationScope < ActiveRecord::Base
+  self.table_name = "platform_application_scopes"
+  
+  # whitelist_attributes is on, so #add_scope's `application_scopes.create(:scope => scope)` would
+  # otherwise drop the scope and insert a row with a null scope_id.
+  attr_accessible :application, :scope
+
+  belongs_to :application, :class_name => "Platform::Application"
+  belongs_to :scope, :class_name => "Platform::Scope"
+  
 end

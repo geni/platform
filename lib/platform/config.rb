@@ -58,10 +58,10 @@ class Platform::Config
   def self.models
     @models ||= begin
       mdls = [
-          Platform::ApplicationDeveloper, Platform::ApplicationPermission, Platform::ApplicationUser,
+          Platform::ApplicationDeveloper, Platform::ApplicationScope, Platform::ApplicationUser,
           Platform::ApplicationCategory, Platform::Category,
           Platform::ForumMessage, Platform::ForumTopic,
-          Platform::Permission, Platform::Rating,
+          Platform::Scope, Platform::Rating,
           Platform::Developer, Platform::Application,
           Platform::Oauth::OauthToken, Platform::Oauth::AccessToken,
           Platform::Oauth::RequestToken, Platform::Oauth::RefreshToken,
@@ -88,7 +88,7 @@ class Platform::Config
     end
 
     init_default_categories
-    init_default_permissions
+    init_default_scopes
     # init_default_applications
 
     puts "Done."
@@ -108,13 +108,63 @@ class Platform::Config
     @system_developer ||= Platform::Developer.find_or_create(Platform::Config.system_user)
   end
 
-  def self.init_default_permissions
-    puts "Initializing default permissions..."
+  # Seed platform_scopes from config/platform/data/default_scopes.yml.
+  #
+  # Two shapes are in use and both have to work, because the host application overrides this file
+  # wholesale.  The gem ships a flat list of bare keywords:
+  #
+  #   user_basic:
+  #   family_basic:
+  #
+  # Geni ships groups, each with its own heading and a nested hash of the scopes under it:
+  #
+  #   user_scopes:
+  #     headline: "My Profile Information"
+  #     scopes:
+  #       user_basic:
+  #         position: 10
+  #         headline: "Access my basic information"
+  #
+  # The old version handled neither.  It did `default_permissions.each do |keyword, data|` and
+  # passed `data` straight to update_attributes, so against the gem's file it called
+  # update_attributes(nil) and against Geni's it tried to create a scope named after the *group*
+  # with a nested hash of attributes.  Which is why production never had this catalogue in it --
+  # only the two rows somebody added by hand.
+  SCOPE_COLUMNS = %w[headline description position].freeze
 
-    default_permissions.each do |keyword, data|
-      p = Platform::Permission.find_or_create(keyword)
-      p.update_attributes(data)
+  def self.init_default_scopes
+    puts "Initializing default scopes..."
+
+    default_scopes.each do |keyword, value|
+      nested = value.is_a?(Hash) && (value['scopes'] || value[:scopes])
+
+      if nested
+        nested.each { |scope_keyword, data| upsert_default_scope(scope_keyword, data) }
+      else
+        upsert_default_scope(keyword, value)
+      end
     end
+  end
+
+  # Assigns only the keys that are columns.  The file also carries `default`, which is
+  # consent-screen presentation rather than scope data, and the group level carries a `headline`
+  # and `description` of its own for the heading above the checkboxes.
+  def self.upsert_default_scope(keyword, data)
+    data = {} unless data.is_a?(Hash)
+
+    scope = Platform::Scope.find_or_create(keyword)
+    return unless scope
+
+    attrs = {}
+    SCOPE_COLUMNS.each do |column|
+      value = data.has_key?(column) ? data[column] : data[column.to_sym]
+      attrs[column] = value unless value.nil?
+    end
+
+    # description is NOT NULL and the files leave it out on plenty of entries.
+    attrs['description'] = scope.description.to_s if attrs['description'].nil?
+
+    scope.update_attributes(attrs)
   end
 
   def self.init_default_applications
@@ -154,8 +204,8 @@ class Platform::Config
     @default_applications ||= load_yml("/config/platform/data/default_applications.yml")
   end
 
-  def self.default_permissions
-    @default_permissions ||= load_yml("/config/platform/data/default_permissions.yml")
+  def self.default_scopes
+    @default_scopes ||= load_yml("/config/platform/data/default_scopes.yml")
   end
 
   def self.default_categories
@@ -216,8 +266,15 @@ class Platform::Config
     config[:enable_api_verification]
   end
 
-  def self.enable_permissions?
-    config[:enable_permissions]
+  # Is the OAuth scope system on?
+  #
+  # Off means: the developer screens hide the scope picker, and
+  # Platform::Application#registered_scopes returns [] whatever is granted, so #granted_scope
+  # hands every request back unnarrowed.  Renamed from enable_permissions? -- the word
+  # "permissions" in this codebase now means capability flags only, which are always on and are
+  # not affected by this switch.
+  def self.enable_scopes?
+    config[:enable_scopes]
   end
 
   def self.default_app_icon

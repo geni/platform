@@ -21,10 +21,16 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::Permission < ActiveRecord::Base
-  self.table_name = "platform_permissions"
+class Platform::Scope < ActiveRecord::Base
+  self.table_name = "platform_scopes"
 
-  has_many :application_permissions, :class_name => "Platform::ApplicationPermission"
+  # config.active_record.whitelist_attributes is true, so every attribute is mass-assignment
+  # protected unless named here.  Platform::Permission, which this replaces, declared nothing --
+  # so #find_or_create silently dropped the keyword it was passed and the insert failed the
+  # NOT NULL constraint.  Nothing had noticed, because nothing ever created one.
+  attr_accessible :keyword, :description, :headline, :position, :icon
+
+  has_many :application_scopes, :class_name => "Platform::ApplicationScope"
   belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => "icon_id"
   
   def self.find_or_create(key)
@@ -54,11 +60,13 @@ class Platform::Permission < ActiveRecord::Base
     end  
   end
 
+  # Every scope is developer-selectable now.
+  #
+  # This used to be `:conditions => "level = 0"`, which existed to keep the capability flags
+  # (level 1000) out of a list of things a developer may request.  Flags are not in this table any
+  # more, so there is nothing to exclude -- and the old filter would have silently hidden any row
+  # whose level was NULL, which is what both production rows turned out to have.
   def self.developer_options
-    find(:all, :conditions => "level = 0", :order => "position asc")
-  end
-
-  def self.admin_options
     find(:all, :order => "position asc")
   end
   

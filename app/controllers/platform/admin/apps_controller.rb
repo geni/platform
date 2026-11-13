@@ -40,39 +40,41 @@ class Platform::Admin::AppsController < Platform::Admin::BaseController
   end
 
   # def authorizations
-  #   @permissions = Platform::ApplicationPermission.filter(:params => params, :filter => Platform::ApplicationPermissionFilter)
+  #   @scopes = Platform::ApplicationScope.filter(:params => params, :filter => Platform::ApplicationScopeFilter)
   # end
 
-  def permissions
-    @permissions = Platform::Permission.filter(:params => params, :filter => Platform::PermissionFilter)
+  # The OAuth scope catalogue.  Capability flags are not managed here -- they are the Add/Remove
+  # links on an application's own page, which write the platform_applications.permissions column.
+  def scopes
+    @scopes = Platform::Scope.filter(:params => params, :filter => Platform::ScopeFilter)
   end
 
-  def lb_permission
-    @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
-    @permission ||= Platform::Permission.new
+  def lb_scope
+    @scope = Platform::Scope.find_by_id(params[:scope_id]) if params[:scope_id]
+    @scope ||= Platform::Scope.new
 
     if request.post? and verified_request?
-      if @permission.id.nil?
-        @permission = Platform::Permission.create(params[:permission])
+      if @scope.id.nil?
+        @scope = Platform::Scope.create(params[:scope])
       else
-        @permission.update_attributes(params[:permission])
+        @scope.update_attributes(params[:scope])
       end
 
-      @permission.store_icon(params[:new_icon]) unless params[:new_icon].blank?
+      @scope.store_icon(params[:new_icon]) unless params[:new_icon].blank?
 
-      return redirect_to_source(:action => :permissions)
+      return redirect_to_source(:action => :scopes)
     end
 
     render :layout => false
   end
 
-  def delete_permission
+  def delete_scope
     if request.post? and verified_request?
-      @permission = Platform::Permission.find_by_id(params[:perm_id]) if params[:perm_id]
-      @permission.destroy if @permission
+      @scope = Platform::Scope.find_by_id(params[:scope_id]) if params[:scope_id]
+      @scope.destroy if @scope
     end
 
-    redirect_to_source(:action => :permissions)
+    redirect_to_source(:action => :scopes)
   end
 
   def ratings

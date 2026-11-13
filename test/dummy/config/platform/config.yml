@@ -18,7 +18,11 @@ defaults: &defaults
   enable_developer_tabs:        true
   enable_app_statistics:        true
   enable_api_log:               true
-  enable_permissions:           false
+  # The OAuth scope system.  Off means the developer screens hide the scope picker and
+  # Platform::Application#registered_scopes returns [] whatever is granted, so no token is
+  # narrowed.  Capability flags (allow_iframe, no_rate_limit, ...) are a separate mechanism and
+  # are not affected by this.
+  enable_scopes:                false
   
   #############################################################################
   # Platform best run with caching enabled
