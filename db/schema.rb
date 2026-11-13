@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160404122117) do
+ActiveRecord::Schema.define(:version => 20261109140000) do
 
   create_table "platform_admins", :force => true do |t|
     t.integer  "user_id"
