@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20261109140000) do
+ActiveRecord::Schema.define(:version => 20261113120100) do
 
   create_table "platform_admins", :force => true do |t|
     t.integer  "user_id"
@@ -70,14 +70,15 @@ ActiveRecord::Schema.define(:version => 20261109140000) do
     t.datetime "updated_at"
   end
 
-  create_table "platform_application_permissions", :force => true do |t|
+  create_table "platform_application_scopes", :force => true do |t|
     t.integer  "application_id"
-    t.integer  "permission_id"
+    t.integer  "scope_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "platform_application_permissions", ["application_id"], :name => "index_platform_application_permissions_on_application_id"
+  add_index "platform_application_scopes", ["application_id"], :name => "index_platform_application_scopes_on_application_id"
+  add_index "platform_application_scopes", ["scope_id"], :name => "index_platform_application_scopes_on_scope_id"
 
   create_table "platform_application_usage_metrics", :force => true do |t|
     t.string   "type"
@@ -240,15 +241,6 @@ ActiveRecord::Schema.define(:version => 20261109140000) do
 
   add_index "platform_oauth_tokens", ["token"], :name => "index_platform_oauth_tokens_on_token", :unique => true
 
-  create_table "platform_permissions", :force => true do |t|
-    t.string   "keyword",     :null => false
-    t.text     "description", :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "platform_permissions", ["keyword"], :name => "index_platform_permissions_on_keyword"
-
   create_table "platform_ratings", :force => true do |t|
     t.integer  "user_id",     :limit => 8, :null => false
     t.string   "object_type"
@@ -271,6 +263,18 @@ ActiveRecord::Schema.define(:version => 20261109140000) do
   end
 
   add_index "platform_rollup_logs", ["interval"], :name => "index_platform_rollup_logs_on_interval"
+
+  create_table "platform_scopes", :force => true do |t|
+    t.string   "keyword",                  :null => false
+    t.text     "description",              :null => false
+    t.string   "headline"
+    t.integer  "icon_id",     :limit => 8
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "platform_scopes", ["keyword"], :name => "index_platform_scopes_on_keyword"
 
   create_table "platform_users", :force => true do |t|
     t.string   "name"

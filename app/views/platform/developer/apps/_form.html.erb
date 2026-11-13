@@ -1,5 +1,5 @@
 <style>
-.permissions_dialog {
+.scopes_dialog {
   position: absolute;
   top: 0;
   left: 0;
@@ -19,7 +19,7 @@
 	padding:5px;
 }
 
-.permissions_dialog .inner  {
+.scopes_dialog .inner  {
   background:#fff;
   border:solid 1px #bababa;
   border-color:#bababa #e8e8e8 #e8e8e8 #bababa;
@@ -317,17 +317,17 @@
     </td>
   </tr>
 
-  <% if Platform::Config.enable_permissions? %>
+  <% if Platform::Config.enable_scopes? %>
   <tr>
     <th>
-      <%=tr('Permissions:','Client application field label')%>
+      <%=tr('Scopes:','Client application field label')%>
     </th>
     <td>
-      <%=text_field_tag "permissions", @app.permission_keywords.join(", "), :class=>'', :style=>'width:430px;'%>
-			<%=link_to_function(image_tag("/platform/images/arrow_down.gif"), "togglePermissionsOptions(this)")%>
+      <%=text_field_tag "scopes", @app.scope_keywords.join(", "), :class=>'', :style=>'width:430px;'%>
+			<%=link_to_function(image_tag("/platform/images/arrow_down.gif"), "toggleScopesOptions(this)")%>
     </td>
     <td class="comments">
-      <%=tr("Default permissions that will be used unless a scope parameter is passed in the OAuth URL.", 'Client application field comment')%>
+      <%=tr("Default scopes that will be used unless a scope parameter is passed in the OAuth URL.", 'Client application field comment')%>
     </td>
   </tr>
 	<% end %>
@@ -381,32 +381,34 @@
 
 </table>
 
-<div id="permissions_dialog" class="permissions_dialog" style="display:none;">
-	<div id="permissions_dialog_container" class="inner">
+<div id="scopes_dialog" class="scopes_dialog" style="display:none;">
+	<div id="scopes_dialog_container" class="inner">
 	</div>
 </div>
 
 <% javascript_tag do %>
-  function setPermissions() {
+  function setScopes() {
     var i = 0;
-    var el = Platform.element("perm_" + i);
-    var perms = [];
+    var el = Platform.element("scope_" + i);
+    var scopes = [];
 
     while (el) {
-      if (el.checked) perms.push(el.value);
-      el = Platform.element("perm_" + (++i));
+      if (el.checked) scopes.push(el.value);
+      el = Platform.element("scope_" + (++i));
     }
 
-    Platform.element("permissions").value = perms.join(", ");
+    Platform.element("scopes").value = scopes.join(", ");
 
-    Platform.effects.hide("permissions_dialog");
+    // Platform.Effects, capitalised -- platform.js defines Platform.Effects and nothing defines
+    // Platform.effects, so the dialog never closed after Set.
+    Platform.Effects.hide("scopes_dialog");
   }
 
-  function togglePermissionsOptions(trigger) {
-    var options = Platform.element("permissions_dialog");
+  function toggleScopesOptions(trigger) {
+    var options = Platform.element("scopes_dialog");
 
     if (options.style.display == "none") {
-      Platform.element("permissions_dialog_container").innerHTML = "<img src='/platform/images/loading.gif' style='width:16px;vertical-align:middle;'>&nbsp;  Loading...";
+      Platform.element("scopes_dialog_container").innerHTML = "<img src='/platform/images/loading.gif' style='width:16px;vertical-align:middle;'>&nbsp;  Loading...";
 
       var trigger_position = Platform.Utils.cumulativeOffset(trigger);
       var container_position = {
@@ -416,14 +418,14 @@
 
       options.style.left = container_position.left;
       options.style.top = container_position.top;
-      Platform.Effects.show("permissions_dialog");
+      Platform.Effects.show("scopes_dialog");
 
-      Platform.Utils.update("permissions_dialog_container", "/platform/developer/apps/lb_permissions", {
+      Platform.Utils.update("scopes_dialog_container", "/platform/developer/apps/lb_scopes", {
         parameters: {api_version:"1", id:"<%=@app.id%>"}
       });
 
     } else {
-      Platform.Effects.hide("permissions_dialog");
+      Platform.Effects.hide("scopes_dialog");
 
     }
   }

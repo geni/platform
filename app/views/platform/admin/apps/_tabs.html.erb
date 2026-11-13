@@ -4,7 +4,7 @@
   [ ["Applications", {:action => :index}],
     ["Users", {:action => :users}],
     ["Access Tokens", {:action => :tokens}],
-    ["Permissions", {:action => :permissions}],
+    ["Scopes", {:action => :scopes}],
     ["Ratings", {:action => :ratings}],
   ].each do |link|
       if controller.action_name == link.last[:action].to_s

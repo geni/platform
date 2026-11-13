@@ -347,10 +347,10 @@
               <%=tr('Authorization', 'Client application section')%>
             </div>
             <div id="authentication">
-              <% if Platform::Config.enable_permissions? %>
+              <% if Platform::Config.enable_scopes? %>
               <div class="app_key_value">
-                <div class="app_key"><%=tr('Permissions:', 'Client application field label')%></div>
-                <div class="app_value"><%=@app.permission_keywords.join(", ")%></div>
+                <div class="app_key"><%=tr('Scopes:', 'Client application field label')%></div>
+                <div class="app_value"><%=@app.scope_keywords.join(", ")%></div>
               </div>
               <% end %>
 
