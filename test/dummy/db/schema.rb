@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_30_142938) do
+ActiveRecord::Schema[8.0].define(version: 2026_11_09_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -220,6 +220,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_30_142938) do
     t.datetime "invalidated_at", precision: nil
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+    t.string "code_challenge", limit: 128
+    t.string "code_challenge_method", limit: 10
+    t.datetime "exchanged_at", precision: nil
     t.index ["token"], name: "index_platform_oauth_tokens_on_token", unique: true
   end
 
