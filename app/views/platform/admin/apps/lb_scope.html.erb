@@ -3,10 +3,10 @@
         <div style="float:right;">
             <%=link_to_function(image_tag("/tr8n/images/close.gif"), "tr8nLightbox.hide();") %>
         </div>
-        	Update Permission
+        	Update Scope
     </div>
     <div class="bd">
-        <% form_for(:permission, @permission, :url => {:perm_id => @permission.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
+        <% form_for(:scope, @scope, :url => {:scope_id => @scope.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
 				<%=hidden_field_tag(:source_url, request.env['HTTP_REFERER'])%>
         <table class="admin_table">
 					<tr>
@@ -21,7 +21,7 @@
 					    	<span style="float:right; font-size:10px;">
 					    		<%=link_to_function(tr("Change your icon", 'Client application field action'), "Platform.Effects.toggle('icon_preview', 'icon_field')")%>
 					    	</span>
-					      <%=image_tag(@permission.icon_url, :style => "width:16px;height:16px;")%>
+					      <%=image_tag(@scope.icon_url, :style => "width:16px;height:16px;")%>
 							</div>
 						</td>
 					</tr>

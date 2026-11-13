@@ -205,19 +205,25 @@ class CreatePlatformTables < ActiveRecord::Migration
     add_index :platform_forum_messages, [:forum_topic_id]
     add_index :platform_forum_messages, [:user_id]
     
-    create_table :platform_permissions do |t|
+    # OAuth scopes.  Application capability flags are not here -- they are the comma-separated
+    # platform_applications.permissions column, read through Platform::SimpleStringPermissions.
+    create_table :platform_scopes do |t|
       t.string  :keyword,         :null => false
       t.text    :description,     :null => false
+      t.string  :headline
+      t.integer :icon_id,         :limit => 8
+      t.integer :position
       t.timestamps
     end
-    add_index :platform_permissions, [:keyword]    
-    
-    create_table :platform_application_permissions do |t|
+    add_index :platform_scopes, [:keyword]
+
+    create_table :platform_application_scopes do |t|
       t.integer :application_id
-      t.integer :permission_id
+      t.integer :scope_id
       t.timestamps
     end
-    add_index :platform_application_permissions, :application_id
+    add_index :platform_application_scopes, :application_id
+    add_index :platform_application_scopes, :scope_id
     
     create_table :platform_application_users do |t|
       t.integer :application_id,  :null => false
@@ -278,8 +284,8 @@ class CreatePlatformTables < ActiveRecord::Migration
     drop_table :platform_category_items
     drop_table :platform_forum_topics
     drop_table :platform_forum_messages
-    drop_table :platform_permissions
-    drop_table :platform_application_permissions
+    drop_table :platform_scopes
+    drop_table :platform_application_scopes
     drop_table :platform_application_users
     drop_table :platform_users
     drop_table :platform_admins

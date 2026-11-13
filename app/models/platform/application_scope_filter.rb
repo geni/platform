@@ -21,6 +21,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::PermissionFilter < Platform::BaseFilter
+
+class Platform::ApplicationScopeFilter < Platform::BaseFilter
+  
+  def inner_joins
+    [["Platform::Application", :application_id]]
+  end
 
 end

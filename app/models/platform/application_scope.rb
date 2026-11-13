@@ -21,10 +21,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Platform::ApplicationPermissionFilter < Platform::BaseFilter
-  
-  def inner_joins
-    [["Platform::Application", :application_id]]
-  end
 
+class Platform::ApplicationScope < ActiveRecord::Base
+  set_table_name :platform_application_scopes
+  
+  belongs_to :application, :class_name => "Platform::Application"
+  belongs_to :scope, :class_name => "Platform::Scope"
+  
 end
