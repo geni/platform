@@ -49,7 +49,17 @@ module Platform
     class OauthToken < ApplicationRecord
 
       belongs_to :application
-      belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+      # Optional because two of the four token types have no user by design: the
+      # client_credentials grant is server-to-server, so Application#create_client_token sets no
+      # user and #create_refresh_token is called with an explicit nil.  Rails 5+ makes belongs_to
+      # required by default, which turned that whole grant into a RecordInvalid.
+      #
+      # The token types that do need a user say so for themselves -- AccessToken declares
+      # validates_presence_of :user_id and RequestToken :user -- so relaxing it here does not
+      # relax it for them.
+      belongs_to :user, class_name:  Platform::Config.user_class_name,
+                        foreign_key: :user_id,
+                        optional:    true
 
       validates_uniqueness_of :token
       validates_presence_of   :application
