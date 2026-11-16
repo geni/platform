@@ -328,8 +328,8 @@ private
   # The requested scope used to be stored on the token and echoed back untouched, so a client
   # received whatever it asked for.  Narrowing needs something to narrow against, and
   # #registered_scopes is empty for every application -- so with no registration on file this
-  # logs that it could not check and passes the request through, which is the existing behaviour.
-  # See Platform::Application#registered_scopes for why it is empty rather than derived from the
+  # passes the request through, which is the existing behaviour.  See
+  # Platform::Application#registered_scopes for why it is empty rather than derived from the
   # permission keywords that do exist.
   def authorized_scope
     @authorized_scope ||= begin
@@ -338,9 +338,21 @@ private
       granted =
         if client_application.scope_registration_known?
           client_application.granted_scope(requested)
-        elsif oauth_violation!(:scope, "cannot narrow scope=#{requested.inspect} - application has no registered permissions")
-          # Enforcing, with nothing on file to check the request against: grant the minimum
-          # rather than the request.
+        elsif !Platform::Config.enable_scopes?
+          # The scope system is switched off, so there is no catalogue to register against and
+          # nothing to narrow with.  Deliberately not logged: OAUTH_WOULD_REJECT exists to name
+          # the applications that break when a check is turned on, and while enable_scopes? is
+          # false this condition is true of *every* application on *every* authorize -- which is
+          # not a census, and reads as though the application were misconfigured when the cause
+          # is a system-wide switch.
+          #
+          # It also makes Registry.oauth.enforce.scope inert until the scope system exists, which
+          # is the safe way round: flipping it while there is no catalogue would narrow every
+          # token to 'basic', precisely *because* nothing is registered.
+          requested
+        elsif oauth_violation!(:scope, "cannot narrow scope=#{requested.inspect} - application has no registered scopes")
+          # Scopes are on, this application has none registered, and the check is enforced: grant
+          # the minimum rather than the request.
           'basic'
         else
           requested
