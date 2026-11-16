@@ -1,0 +1,84 @@
+2026-11-12 18:21:37: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-12 18:21:37: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-12 18:21:37: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-12 18:21:37: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-12 18:21:37: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-12 18:21:37: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-12 18:21:37: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 05:53:11: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 05:53:11: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 05:53:11: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 05:53:11: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 05:53:11: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 05:53:11: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 05:53:11: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:18:58: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 06:18:58: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:18:58: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:18:59: OAUTH_AUTHORIZE app=11 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 06:18:59: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:18:59: OAUTH_TOKEN_REQUEST_NOT_POST app=13 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:18:59: OAUTH_TOKEN_REQUEST_NOT_POST app=14 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:20:23: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 06:20:23: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:20:23: OAUTH_TOKEN_REQUEST_NOT_POST app=31 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:20:23: OAUTH_TOKEN_REQUEST_NOT_POST app=32 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:20:24: OAUTH_AUTHORIZE app=33 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 06:20:24: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:20:24: OAUTH_TOKEN_REQUEST_NOT_POST app=34 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:56:46: OAUTH_TOKEN_REQUEST_NOT_POST app=46 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:56:46: OAUTH_TOKEN_REQUEST_NOT_POST app=47 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:56:46: OAUTH_TOKEN_REQUEST_NOT_POST app=48 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 06:56:46: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:56:46: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 06:56:46: OAUTH_AUTHORIZE app=50 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 06:56:46: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:18:47: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 12:18:47: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:18:47: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:18:47: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:18:47: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:18:47: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:18:47: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:20:23: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 12:20:23: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:20:23: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:20:23: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:20:23: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:20:23: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:20:23: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:26:34: OAUTH_TOKEN_REQUEST_NOT_POST app=20 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:26:34: OAUTH_TOKEN_REQUEST_NOT_POST app=21 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:26:34: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:26:34: OAUTH_AUTHORIZE app=23 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 12:26:34: OAUTH_TOKEN_REQUEST_NOT_POST app=24 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:26:34: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:26:34: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:29:07: OAUTH_TOKEN_REQUEST_NOT_POST app=49 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:29:07: OAUTH_TOKEN_REQUEST_NOT_POST app=50 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:29:07: OAUTH_AUTHORIZE app=51 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 12:29:07: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:29:07: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:29:07: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:29:07: OAUTH_TOKEN_REQUEST_NOT_POST app=54 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:30:18: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-13 12:30:18: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:30:18: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:30:18: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-13 12:30:18: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-13 12:30:18: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-13 12:30:18: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-16 11:10:09: OAUTH_AUTHORIZE app=76 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-16 11:10:09: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-16 11:10:09: OAUTH_TOKEN_REQUEST_NOT_POST app=78 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:10:09: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-16 11:10:09: OAUTH_TOKEN_REQUEST_NOT_POST app=79 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:10:09: OAUTH_TOKEN_REQUEST_NOT_POST app=80 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:10:09: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-16 11:13:27: OAUTH_AUTHORIZE app=8 method=GET response_type=code(default) display=web pkce=none scope=basic(default) redirect_uri=omitted state=omitted trusted=no public_client=no
+2026-11-16 11:13:27: OAUTH_TOKEN_REQUEST_NOT_POST app=9 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:13:27: OAUTH_TOKEN_REQUEST_NOT_POST app=10 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:13:27: OAUTH_TOKEN_REQUEST_NOT_POST app=11 grant=password method=GET - credentials are travelling in the URL
+2026-11-16 11:13:27: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/invalidate_token reason=no client_id presented
+2026-11-16 11:13:27: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
+2026-11-16 11:13:27: OAUTH_WOULD_REJECT check=revocation_auth app=- path=/platform/oauth/validate_token reason=no client_id presented
