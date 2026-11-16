@@ -152,6 +152,20 @@ module Platform
     #### The catalogue
     ##########################################################################
 
+    # The OAUTH_WOULD_REJECT census line must not fire while the scope system is off, because the
+    # condition it reports is then true of every application on every authorize.
+    test 'granted_scope passes the request through untouched while enable_scopes? is false' do
+      Platform::Scope.find_or_create('user_basic')
+      app.add_scope('user_basic')
+      app.reload
+
+      with_scopes_enabled(false) do
+        assert_equal false, app.scope_registration_known?,
+                     'nothing is registered as far as the scope check is concerned'
+        assert_equal 'user_basic,anything', app.granted_scope('user_basic,anything')
+      end
+    end
+
     test 'developer_options returns every scope, including ones with no position' do
       a = Platform::Scope.find_or_create('user_basic')
       a.update(:position => 10, :description => 'first')
