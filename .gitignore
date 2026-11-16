@@ -9,3 +9,12 @@ log/*.log
 *.swp
 tmp/
 vendor
+
+# The dummy application's test database.
+#
+# `db/*.sqlite3` above does not reach it: a pattern containing a slash is anchored to the
+# directory holding the .gitignore, so that one matches only the repo root's db/.  `log/` has no
+# slash and so already matches a log directory at any depth, including test/dummy/log -- those
+# files were reported as modified only because they were already tracked, and .gitignore never
+# applies to a tracked path.  Hence the `git rm --cached` alongside this.
+test/dummy/db/*.sqlite3
