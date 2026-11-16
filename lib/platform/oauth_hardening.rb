@@ -389,15 +389,27 @@ module Platform
     # Three cases:
     #
     #   claimed origin is registered  -> use it.  The secure path, no logging.
-    #   claimed but not registered    -> switch off: deliver to the *claimed* origin and log.
+    #   claimed but not registered    -> switch off: "*", and log.
     #                                    Switch on: the registered origin, or refuse.
-    #   no origin claimed at all      -> switch off: "*", as before, and log.
+    #   no origin claimed at all      -> switch off: "*", and log.
     #                                    Switch on: the registered origin, or refuse.
     #
-    # Delivering to the claimed origin while staged is not a weakening relative to "*": an
-    # attacker who opens the popup can claim their own origin either way.  It is better than "*"
-    # in that the message goes to exactly one origin rather than to whatever happens to be the
-    # opener, and it keeps a legitimate unregistered client working while the log names it.
+    # The staged fallback is "*" -- byte for byte what the pre-hardening template did, which was
+    # an unconditional `postMessage(params.to_query, "*")`.
+    #
+    # It was briefly the *claimed* origin instead, on the argument that one named origin beats
+    # broadcasting to whatever opened the window, and that an attacker who opens the popup can
+    # claim their own origin either way so nothing is lost.  Both of those are true, and it was
+    # still wrong, because it breaks a case the old code served: a client that claims an origin
+    # it is not listening on -- a hand-rolled integration with a hardcoded origin, say -- used to
+    # receive the message via "*" and would stop receiving it.  There is no way to find those
+    # clients in advance, because nothing recorded the claimed origin until this check existed.
+    #
+    # Which violates the rule the whole staged rollout rests on: while a check is off it must not
+    # change the answer for any request the old code accepted.  A switch that is supposed to be
+    # observational has to be observational, or the census it produces is being bought with the
+    # breakage it was meant to prevent.  So: "*" until :xd_origin is turned on, and the log is
+    # the only thing that changes in the meantime.
     def xd_target_origin
       return @xd_target_origin if defined?(@xd_target_origin)
 
@@ -430,7 +442,9 @@ module Platform
 
             registered
           else
-            claimed_origin || '*'                     # staged: preserve existing behaviour
+            # Staged: exactly what the old template sent.  See the note above on why this is not
+            # claimed_origin.
+            '*'
           end
         end
       end
