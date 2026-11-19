@@ -1,0 +1,29 @@
+<%#
+  Step two: say what is being approved, and make approval an explicit click.
+
+  This page is the whole defence of the grant.  There is no redirect_uri to inspect and no
+  client_secret in play, so the only thing standing between a phished user_code and somebody
+  else's account is a human reading the application's name here and deciding.  Which is why the
+  name is the largest thing on the page and why neither button is pre-selected.
+-%>
+<div style="max-width:30em;margin:3em auto;font:14px/1.5 -apple-system,'Segoe UI',Helvetica,sans-serif;">
+  <h1 style="font-size:1.3em;"><%= tr('Allow access?', 'Device grant confirmation heading') %></h1>
+
+  <p style="font-size:1.1em;">
+    <strong><%= h(@device_code.application.name) %></strong>
+    <%= tr('is asking to use your Geni account.', 'Device grant confirmation body') %>
+  </p>
+
+  <p style="color:#666;font-size:13px;">
+    <%= tr('Only continue if you just asked this application to connect. If you did not, close this page.',
+           'Device grant phishing warning') %>
+  </p>
+
+  <% form_tag({:controller => '/platform/oauth', :action => :device}) do %>
+    <%= hidden_field_tag 'user_code', @device_code.user_code_for_display %>
+    <%= submit_tag(tr('Allow', 'Device grant allow button'), :name => 'authorize', :value => '1',
+                   :class => 'button super blue large') %>
+    <%= submit_tag(tr('Do not allow', 'Device grant deny button'), :name => 'authorize', :value => '0',
+                   :class => 'button large') %>
+  <% end %>
+</div>
