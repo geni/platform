@@ -1,0 +1,35 @@
+<%#
+  The desktop flow's failure landing page, and the counterpart to auth_success.  Generic
+  fallback; a host application should override it.
+
+  Same mechanism: the response arrives in the URL fragment, so only JavaScript can read it.  This
+  file was 0 bytes, which meant a failed desktop authorization rendered a blank page -- no
+  reason, no next step.
+-%>
+<div style="max-width:34em;margin:3em auto;font:14px/1.5 -apple-system,'Segoe UI',Helvetica,sans-serif;">
+  <h1 style="font-size:1.3em;">Authorization failed</h1>
+  <p id="platform-auth-reason" style="color:#a3121a;"></p>
+  <p>Nothing has been shared with the application. You can close this window and try again.</p>
+</div>
+
+<% javascript_tag do %>
+  (function () {
+    var fragment = (window.location.hash || '').replace(/^#/, '');
+    var fields   = {};
+
+    fragment.split('&').forEach(function (pair) {
+      if (!pair) { return; }
+      var eq = pair.indexOf('=');
+      var k  = eq === -1 ? pair : pair.slice(0, eq);
+      var v  = eq === -1 ? ''   : pair.slice(eq + 1);
+      try { fields[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g, ' ')); }
+      catch (e) { /* ignore */ }
+    });
+
+    var reason = fields.error_description || fields.message || fields.error;
+    var el     = document.getElementById('platform-auth-reason');
+
+    // textContent, not innerHTML: the fragment is whatever is in the address bar.
+    if (reason && el) { el.textContent = reason; }
+  })();
+<% end %>

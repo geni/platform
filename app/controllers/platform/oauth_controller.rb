@@ -377,12 +377,27 @@ private
     @response_type ||= request_param(:response_type) || "code"
   end
 
+  # The display styles this endpoint knows, and the only values #display will answer.
+  #
+  # It used to answer CGI.escapeHTML(params[:display]) for anything the caller sent, and
+  # #render_action interpolates that straight into a template name -- so ?display=banana rendered
+  # "authorize_banana", which does not exist, and the endpoint answered 500.  Reachable by anyone,
+  # with no client_id needed beyond a valid one.  Escaping was never the right tool: the value is
+  # not going into markup, it is choosing a template.
+  #
+  # An allowlist rather than a rescue around the render.  Falling back on a missing template would
+  # turn each gap into silence instead of an error -- and for the xd styles that is worse than the
+  # 500: rendering the web consent form in a popup leaves the opener's postMessage listener
+  # waiting for a message that is never sent, which is a much harder thing to diagnose than a
+  # stack trace.  It would also hide a genuinely missing template forever.
+  DISPLAYS = %w[web popup hidden iframe mobile desktop fluid].freeze
+
   def display
     @display ||= begin
-      if mobile_device?
-        "mobile"
-      elsif params[:display]
-        CGI.escapeHTML(params[:display])
+      requested = mobile_device? ? "mobile" : params[:display].to_s
+
+      if DISPLAYS.include?(requested)
+        requested
       else
         "web"
       end
@@ -605,6 +620,14 @@ private
       return redirect_with_response(:status => :unauthorized, :message => "canceled")
     end
 
+    # A consent form cannot be shown in a hidden iframe: the user never sees it, so nobody can
+    # click Allow and the request can only hang.  Answer the opener through the xd channel
+    # instead, with the status the JSDK already understands, so it can decide to open a popup.
+    #
+    # Before this, display=hidden on an application the user had not already authorized rendered
+    # "authorize_hidden" -- a template that has never existed -- and the endpoint answered 500.
+    return redirect_with_response(:status => :unauthorized, :message => "interaction required") if display == "hidden"
+
     render_action("authorize")
   end
 
@@ -642,6 +665,14 @@ private
 
       return redirect_with_response(:status => :unauthorized, :message => "canceled")
     end
+
+    # A consent form cannot be shown in a hidden iframe: the user never sees it, so nobody can
+    # click Allow and the request can only hang.  Answer the opener through the xd channel
+    # instead, with the status the JSDK already understands, so it can decide to open a popup.
+    #
+    # Before this, display=hidden on an application the user had not already authorized rendered
+    # "authorize_hidden" -- a template that has never existed -- and the endpoint answered 500.
+    return redirect_with_response(:status => :unauthorized, :message => "interaction required") if display == "hidden"
 
     render_action("authorize")
   end
