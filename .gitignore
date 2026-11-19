@@ -12,11 +12,15 @@ test/dummy/log/*.log
 tmp/
 vendor
 
-# The dummy application's test database.
+# The dummy application's generated files.
 #
-# `db/*.sqlite3` above does not reach it: a pattern containing a slash is anchored to the
-# directory holding the .gitignore, so that one matches only the repo root's db/.  `log/` has no
-# slash and so already matches a log directory at any depth, including test/dummy/log -- those
-# files were reported as modified only because they were already tracked, and .gitignore never
-# applies to a tracked path.  Hence the `git rm --cached` alongside this.
+# Both patterns are needed, for the same reason: a pattern containing a slash is anchored to the
+# directory holding the .gitignore, so `db/*.sqlite3` and `log/*.log` above match only the repo
+# root's db/ and log/ and never reach test/dummy.  (rails-8.0.x spells the second one `log/`,
+# with no slash, which *does* match a log directory at any depth -- hence the difference between
+# the branches, and hence an earlier version of this comment being wrong about it here.)
+#
+# Adding the patterns is not enough on its own either: .gitignore is never consulted for a path
+# already in the index, so these needed a `git rm --cached` as well.
 test/dummy/db/*.sqlite3
+test/dummy/log/*.log
