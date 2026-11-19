@@ -477,6 +477,24 @@ class Platform::Application < ActiveRecord::Base
     token
   end
 
+  # A pending device authorization, RFC 8628 section 3.2.
+  #
+  # No user and no callback_url: there is no redirect in this grant, and the user is not known
+  # until somebody types the user_code into the verification page.  #scope is what the client
+  # asked for, narrowed the same way the other grants narrow it, so the consent screen shows what
+  # will actually be granted rather than what was requested.
+  def create_device_code(scope = 'basic', interval = Platform::Config.oauth_device_code_lifetime)
+    code = Platform::Oauth::DeviceCode.new
+    code.application = self
+    code.scope = granted_scope(scope)
+
+    code.generate_key
+    code.generate_user_code
+    code.expire_in(interval)
+    code.save!
+    code
+  end
+
   # interval defaults to a real lifetime now.  It defaulted to nil, and #expire_in returns
   # immediately on nil, so valid_to was left NULL and #valid_token? -- which only treats a
   # non-NULL valid_to as an expiry -- never expired one.  Every refresh token ever handed out was
