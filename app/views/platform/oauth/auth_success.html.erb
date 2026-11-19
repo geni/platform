@@ -1,0 +1,57 @@
+<%#
+  The desktop flow's landing page: a generic, host-agnostic fallback.
+
+  #redirect_with_response sends a desktop client here with the response in the URL *fragment*
+  (redirect_to(:action => :auth_success, :anchor => response_query)), deliberately, so the
+  credential is never in a request line and no server or proxy in between can read it.  Which is
+  also why the code is pulled out in JavaScript: nothing server-side has it to render.
+
+  This file was 0 bytes, so a desktop client that completed authorization landed on a blank page
+  with its code visible only in the address bar.  A host application should override it -- Geni
+  does, at app/views/platform/oauth/auth_success.html.erb, which wins because the application's
+  own app/views precedes this gem's view paths.  The point of filling it in here is that the
+  fallback is now usable rather than empty.
+-%>
+<div style="max-width:34em;margin:3em auto;font:14px/1.5 -apple-system,'Segoe UI',Helvetica,sans-serif;">
+  <h1 style="font-size:1.3em;">Authorization complete</h1>
+
+  <div id="platform-auth-code-wrap" style="display:none;">
+    <p>Copy this code and paste it into the application that sent you here.</p>
+    <input id="platform-auth-code" type="text" readonly onclick="this.select();"
+           style="width:100%;padding:.6em;font-family:monospace;font-size:13px;border:1px solid #ccc;border-radius:4px;">
+  </div>
+
+  <p id="platform-auth-none" style="display:none;">
+    Nothing to show here. Start the sign-in again from the application.
+  </p>
+</div>
+
+<% javascript_tag do %>
+  (function () {
+    var fragment = (window.location.hash || '').replace(/^#/, '');
+    var fields   = {};
+
+    fragment.split('&').forEach(function (pair) {
+      if (!pair) { return; }
+      var eq = pair.indexOf('=');
+      var k  = eq === -1 ? pair : pair.slice(0, eq);
+      var v  = eq === -1 ? ''   : pair.slice(eq + 1);
+      try { fields[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g, ' ')); }
+      catch (e) { /* a malformed fragment is not worth an exception */ }
+    });
+
+    var code = fields.code || fields.access_token;
+
+    if (code) {
+      document.getElementById('platform-auth-code').value = code;
+      document.getElementById('platform-auth-code-wrap').style.display = 'block';
+    } else {
+      document.getElementById('platform-auth-none').style.display = 'block';
+    }
+
+    // A credential left in the address bar survives in history and in anything that syncs it.
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  })();
+<% end %>
