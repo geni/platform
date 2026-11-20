@@ -115,9 +115,25 @@ module Platform
         authenticate_via_cookie if cookies_enabled? and (not jsonp?)
 
         if oauth_attempted_and_failed?
-          raise Exception.new('Invalid access token')
-        else
-          redirect_to_login unless allow_public?
+          # UnauthorizedError, not a bare Exception.  #render_exception has a case for exactly
+          # this -- it retypes an UnauthorizedError as an OAuthException with a 401 -- and
+          # PLATFORM_NON_LOGGED_EXCEPTIONS lists it as routine.  A bare Exception is not a
+          # StandardError, so the host's `rescue_from` never matched it: a client presenting a
+          # token that had expired or been revoked got an unhandled exception and a 500 with no
+          # status or message it could read, instead of the documented 401.
+          raise UnauthorizedError.new('Invalid access token')
+        end
+
+        # Only a caller who did not identify itself at all: no token that resolved, and no user
+        # picked up from the session either.  A client_credentials token is checked for too --
+        # there is no user behind one, so a guest check on its own would turn away an
+        # authenticated client.
+        #
+        # This used to be the `else` of the branch above, which sent every *successfully
+        # authenticated* call to the login page whenever allow_public? was false -- so presenting
+        # a valid bearer token answered a 302 to an HTML login form rather than the resource.
+        if access_token.nil? and Platform::Config.current_user_is_guest? and not allow_public?
+          redirect_to_login
         end
       end
 
