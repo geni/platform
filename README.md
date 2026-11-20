@@ -67,7 +67,7 @@ bundle exec rails db:create
 bundle exec rails db:seed
 
 # Spin up the server
-bundle exec rails server -b 0.0.0.0
+bundle exec rails server -b 0.0.0.0 -p 8080
 ```
 
 ## Upgrading
