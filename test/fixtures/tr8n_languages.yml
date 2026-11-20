@@ -1,0 +1,17 @@
+# The default language.
+#
+# tr8n seeds its languages with its own install task, so a real deployment has these rows and the
+# gem's views assume them: /platform/developer/apps reads
+# Tr8n::Language.for(app.locale || Tr8n::Config.default_locale).english_name, and the application
+# form's language select is Tr8n::Language.locale_options.  The dummy application's database had
+# no languages at all, so the first of those was a NoMethodError on nil and the second an empty
+# select.
+#
+# Only the default locale is here: these tests care that the language lookup resolves, not about
+# translation.  Tr8n itself is switched off in test_helper.
+en_us:
+  locale: en-US
+  english_name: English
+  native_name: English
+  enabled: true
+  right_to_left: false
