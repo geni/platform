@@ -95,11 +95,34 @@ module Platform
       Platform::Config.init(site_current_user)
     end
 
+    # Back to wherever the request came from.
+    #
+    # params[:source_url] is request input, so this was an open redirect: anything that could get
+    # a viewer to follow a link to one of the actions using it -- the forum and rating deletes,
+    # the admin edit screens -- could choose where that viewer ended up.  Rails 7 started raising
+    # ActionController::Redirecting::UnsafeRedirectError on an off-host redirect_to rather than
+    # following it, which turned the hole into a 500 but did not fix it.
+    #
+    # Both candidates are now checked against this host and dropped if they fail, which is what
+    # "the source" was ever meant to be: a page on this site that the viewer was just on.
     def redirect_to_source(default_url = nil)
-      return redirect_to(params[:source_url]) unless params[:source_url].blank?
-      return redirect_to(request.env['HTTP_REFERER']) unless request.env['HTTP_REFERER'].blank?
+      source = [params[:source_url], request.env['HTTP_REFERER']].find { |url| this_host?(url) }
+
+      return redirect_to(source) if source
       return redirect_to(default_url) if default_url
       redirect_to_site_default_url
+    end
+
+    # A path with no host of its own, or an absolute url pointing back at this host.
+    def this_host?(url)
+      return false if url.blank?
+
+      uri = URI.parse(url)
+      return true if uri.host.nil?
+
+      uri.host == request.host && uri.port == request.port
+    rescue URI::InvalidURIError
+      false
     end
 
     def redirect_to_site_default_url
