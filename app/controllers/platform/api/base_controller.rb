@@ -205,7 +205,17 @@ module Platform
         end
 
         # what is to_opts for?
-        to_opts = params.merge(:max_models => limit, :viewer => Platform::Config.current_user, :api_version => api_version)
+        #
+        # A plain, symbol-keyed Hash.  params.merge answers ActionController::Parameters and
+        # #to_unsafe_h a HashWithIndifferentAccess, and neither can hold these: Array#to_xml does
+        # `options[:builder] ||= Builder::XmlMarkup.new`, and storing a builder in either of them
+        # asks it `is_a?(Hash)` -- which XmlMarkup, being a BlankSlate, answers through
+        # method_missing by *building an element* and handing back a String.  So ?format=xml died
+        # on "undefined method 'instruct!' for an instance of String".  Same class of defect as
+        # #prev_page_url's.
+        to_opts = params.to_unsafe_h.symbolize_keys.merge(max_models: limit,
+                                                          viewer: Platform::Config.current_user,
+                                                          api_version: api_version)
         respond_to do |format|
           format.json   do
             json = obj.to_json(to_opts)
@@ -213,7 +223,12 @@ module Platform
 
             if jsonp?
               script = "#{params[:callback].strip}(#{json})"
-              render(:text => script)
+              # Rails 5 removed render's :text option, so this rendered nothing at all and the
+              # request fell through to the implicit render -- which answered
+              # ActionView::MissingTemplate for a template no API action has.  :plain is the
+              # replacement; the content type has to be set explicitly because a jsonp response
+              # is javascript, not json, and not text/plain either.
+              render(plain: script, content_type: 'application/javascript')
             else
               render(opts.merge(:json => json))
             end
@@ -224,7 +239,12 @@ module Platform
               obj = obj['error']
               opts[:xml_root] = 'error'
             end
-            render opts.merge(:text => obj.to_xml(to_opts.merge(:root => opts[:xml_root] || xml_root)))
+            # :body, not :text.  render's :text option went away in Rails 5, so ?format=xml
+            # rendered nothing and fell through to an implicit render of a template no API action
+            # has.  The xml is already serialized here, so :body plus the content type is what
+            # delivers it -- :xml would serialize the string again.
+            render opts.merge(body: obj.to_xml(to_opts.merge(root: opts[:xml_root] || xml_root)),
+                              content_type: 'application/xml')
           end
         end
 
@@ -320,8 +340,12 @@ module Platform
       ############################################################################
       #### XML Methods
       ############################################################################
+      # demodulize, because an XML element name cannot contain a slash: Platform::Application
+      # underscores to "platform/application", so the root tag was <platform/applications> and
+      # nothing could parse the response.  Not something a client can have been relying on --
+      # ?format=xml has answered a 500 since Rails 5 removed render's :text option.
       def xml_root
-        model_class.to_s.underscore.pluralize
+        model_class.to_s.demodulize.underscore.pluralize
       end
 
       ############################################################################

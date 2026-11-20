@@ -18,6 +18,10 @@ Gem::Specification.new do |spec|
     Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   end
 
+  # ActiveRecord#to_xml.  Rails 5 moved it out of ActiveRecord into this gem, and
+  # Platform::Api::BaseController#render_response offers ?format=xml -- without it XmlMini has no
+  # serializer to call and every element comes out holding the model's #to_s.
+  spec.add_dependency 'activemodel-serializers-xml'
   spec.add_dependency 'acts_as_state_machine'
   spec.add_dependency 'acts_as_tree'
   spec.add_dependency "rails", ">= 8.0.1"

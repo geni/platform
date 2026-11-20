@@ -1,6 +1,15 @@
 # not auto-included from gemspec
 require 'acts_as_tree'
 
+# ActiveRecord#to_xml, which Rails 5 moved out of ActiveRecord into this gem.  Required here
+# rather than left to Bundler for the same reason as acts_as_tree above: Bundler.require only
+# requires the Gemfile's own entries, not a gemspec dependency's.
+#
+# Platform::Api::BaseController#render_response offers ?format=xml, and without this XmlMini has
+# no serializer to call -- so every element came out holding the model's #to_s rather than its
+# attributes.  The gem's railtie includes the module into ActiveRecord::Base on load.
+require 'activemodel-serializers-xml'
+
 module Platform
   class Engine < ::Rails::Engine
     isolate_namespace Platform
