@@ -23,6 +23,18 @@
 
 class Platform::Oauth::RefreshToken < Platform::Oauth::OauthToken
 
+  # The clock reading to write into a timestamp column from raw SQL.
+  #
+  # ActiveRecord::Base.default_timezone decides how these columns are read back, so it has to decide
+  # how they are written.  Rails 2.3's #quoted_date is `value.to_s(:db)` and converts nothing, so
+  # handing it Time.now.utc on an app configured :local -- which both Geni applications are -- stores
+  # a clock reading hours ahead of local, and #grace_period_retry? then measures a *negative* age and
+  # calls every second presentation a retry, forever.  Modern #quoted_date does convert, so passing
+  # an already-correct Time is right on every branch this ships on.
+  def self.now_in_database_timezone
+    ActiveRecord::Base.default_timezone == :utc ? Time.now.utc : Time.now.getlocal
+  end
+
   def exchange!(params={})
     if user
       token = application.create_access_token(user, scope)
@@ -57,7 +69,7 @@ class Platform::Oauth::RefreshToken < Platform::Oauth::OauthToken
   # no conditions argument.  #connection.update answers the affected row count everywhere.
   def claim_for_exchange!(replacement)
     table = self.class.table_name
-    now   = self.class.connection.quoted_date(Time.now.utc)
+    now   = self.class.connection.quoted_date(self.class.now_in_database_timezone)
 
     claimed = self.class.connection.update(<<-SQL) == 1
       UPDATE #{table}

@@ -96,7 +96,8 @@ class Platform::OauthControllerTest < ActionController::TestCase
     # Push the exchange out of the window rather than waiting for it.
     exchanged = Platform::Oauth::RefreshToken.find(refresh.id)
     stale     = exchanged.class.connection.quoted_date(
-                  Time.now.utc - Platform::Config.oauth_refresh_token_grace_period - 60)
+                  Platform::Oauth::RefreshToken.now_in_database_timezone -
+                    Platform::Config.oauth_refresh_token_grace_period - 60)
     exchanged.class.connection.update(
       "UPDATE #{exchanged.class.table_name} SET exchanged_at = '#{stale}' WHERE id = #{exchanged.id.to_i}"
     )
