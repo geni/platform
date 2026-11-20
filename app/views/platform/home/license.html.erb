@@ -1,4 +1,8 @@
-<%= tr8n_with_options_tag(:default_locale => 'en-US', :admin => true) do %>
+<%# tr8n_with_options_tag was tr8n 2's name for this and no longer exists, so /platform/home/license
+    was a NoMethodError.  Tr8n::Config.with_options is the current spelling -- the same call
+    /platform/forum/index already makes -- and `<%` rather than `<%=` because an ERB block emits its
+    own content. %>
+<% Tr8n::Config.with_options(default_locale: 'en-US', admin: true) do %>
 
 <style>
 	h3 {
