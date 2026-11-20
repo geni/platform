@@ -10,7 +10,7 @@
 <% unless app.recently_updated_reviews.empty? %>
 	<div style="padding-top:10px; font-size:14px; border-bottom:1px solid #ccc; margin-bottom:5px;">
     <div style="float:right; font-size:12px;">
-       <%=link_to(tr("view all", "Link to view all translation votes"), :controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Reviews')%>
+       <%=link_to(tr("view all", "Link to view all translation votes"), controller: "/platform/apps", action: :view, id: app.id, sec: 'Reviews')%>
     </div>
 
     <%=platform_toggler_tag("reviews_content_#{app.id}", "", false)%>
@@ -32,10 +32,10 @@
 						  <table>
 						    <tr>
 						      <td style="vertical-align:top;padding-right:2px;">
-						        <%=platform_user_mugshot_tag(review.user, :linked => true)%>
+						        <%=platform_user_mugshot_tag(review.user, linked: true)%>
 						      </td>
 						      <td style="vertical-align:top">
-						        <%=platform_user_tag(review.user, :linked => true)%>
+						        <%=platform_user_tag(review.user, linked: true)%>
 						        <div style="color:grey;">
 						            <%=review.created_at.trl(:date_time) %>
 						        </div>
@@ -44,7 +44,7 @@
 						  </table>
 						</td>
             <td style="text-align:left; vertical-align:top; padding-top:3px;">
-						    <%=platform_rating_tag(review, :width => "12px;") %> - <%=review.comment ? review.toHTML : "<span style='color:#ccc'>#{tr('no comment')}</span>" %>
+						    <%=platform_rating_tag(review, width: "12px;") %> - <%=review.comment ? review.toHTML : "<span style='color:#ccc'>#{tr('no comment')}</span>" %>
 						</td>
 		    </tr>
 		  <% end %>

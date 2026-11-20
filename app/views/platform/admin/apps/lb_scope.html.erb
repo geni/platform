@@ -6,7 +6,7 @@
         	Update Scope
     </div>
     <div class="bd">
-        <%= form_for(@scope, :as => :scope, :url => {:scope_id => @scope.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n", :multipart=>true}) do |f| %>
+        <%= form_for(@scope, as: :scope, url: {scope_id: @scope.id}, html: {id: 'tr8n_form', method: :post, class: "tr8n", multipart: true}) do |f| %>
 				<%=hidden_field_tag(:source_url, request.env['HTTP_REFERER'])%>
         <table class="admin_table">
 					<tr>
@@ -15,13 +15,13 @@
 			      </th>
 			      <td>
 				      <div id="icon_field" style="display:none">
-				        <%= file_field_tag "new_icon", :size=>"45", :accept => 'image/png,image/gif,image/jpeg', :id => 'new_icon' %>
+				        <%= file_field_tag "new_icon", size: "45", accept: 'image/png,image/gif,image/jpeg', id: 'new_icon' %>
 				      </div>
 				      <div id="icon_preview">
 					    	<span style="float:right; font-size:10px;">
 					    		<%=link_to_function(tr("Change your icon", 'Client application field action'), "Platform.Effects.toggle('icon_preview', 'icon_field')")%>
 					    	</span>
-					      <%=image_tag(@scope.icon_url, :style => "width:16px;height:16px;")%>
+					      <%=image_tag(@scope.icon_url, style: "width:16px;height:16px;")%>
 							</div>
 						</td>
 					</tr>
@@ -30,7 +30,7 @@
                   Name:
               </th>
               <td>
-                	<%= f.text_field :keyword, :style=>"width:99%;" %>
+                	<%= f.text_field :keyword, style: "width:99%;" %>
               </td>
           </tr>
           <tr>
@@ -38,13 +38,13 @@
                   Description:
               </th>
               <td>
-                	<%= f.text_area :description, :style=>"width:99%;height:100px;" %>
+                	<%= f.text_area :description, style: "width:99%;height:100px;" %>
               </td>
           </tr>
         </table>
         <% end %>
     </div>
     <div class="ft">
-        <%= render :partial => "/tr8n/admin/common/lightbox_buttons" %>
+        <%= render partial: "/tr8n/admin/common/lightbox_buttons" %>
     </div>
 </div>

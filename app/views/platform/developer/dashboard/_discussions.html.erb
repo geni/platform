@@ -10,7 +10,7 @@
 <% unless app.recently_updated_discussions.empty? %>
   <div style="padding-top:10px; font-size:14px; border-bottom:1px solid #ccc; margin-bottom:5px;">
     <div style="float:right; font-size:12px;">
-       <%=link_to(tr("view all", "Link to view all translation votes"), :controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Discussions')%>
+       <%=link_to(tr("view all", "Link to view all translation votes"), controller: "/platform/apps", action: :view, id: app.id, sec: 'Discussions')%>
     </div>
 
     <%=platform_toggler_tag("discussions_content_#{app.id}", "", false)%>
@@ -33,10 +33,10 @@
               <table>
                 <tr>
                   <td style="vertical-align:top;padding-right:2px;">
-                    <%=platform_user_mugshot_tag(topic.user, :linked => true)%>
+                    <%=platform_user_mugshot_tag(topic.user, linked: true)%>
                   </td>
                   <td style="vertical-align:top">
-                    <%=platform_user_tag(topic.user, :linked => true)%>
+                    <%=platform_user_tag(topic.user, linked: true)%>
                     <div style="color:grey;">
                         <%=topic.created_at.trl(:date_time) %>
                     </div>
@@ -51,14 +51,14 @@
 	            <% if topic.last_post %>
 	               <div style="font-size:10px;"><%=topic.last_post.created_at.trl(:date_time) %> 
 	                <% if topic.user %>
-	                  <br><%=tr("by {user}", "Name of the publisher", :user => [topic.user, platform_user_tag(topic.user, :linked => true)])%>
+	                  <br><%=tr("by {user}", "Name of the publisher", user: [topic.user, platform_user_tag(topic.user, linked: true)])%>
 	                <% end %>
 	               </div> 
 	               <% 
 	                  message = topic.last_post.message[0..60]
 	                  message << "..." if topic.last_post.message.length > 60 
 	               %> 
-	               <div style="font-style:italic; font-size:10px">"<%=link_to(h(message), :controller => '/platform/apps', :action => :view, :id => app.id, :sec => 'Discussions', :topic_id =>topic.id, :last_page => true)%>"</div>
+	               <div style="font-style:italic; font-size:10px">"<%=link_to(h(message), controller: '/platform/apps', action: :view, id: app.id, sec: 'Discussions', topic_id: topic.id, last_page: true)%>"</div>
 	            <% end %>
             </td>
         </tr>

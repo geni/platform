@@ -42,11 +42,11 @@ module Platform
     # supports response_type = code, token
     def authorize
       if request_param(:client_id).blank?
-        return redirect_with_response(:error_description => "client_id must be provided", :error => :invalid_request)
+        return redirect_with_response(error_description: "client_id must be provided", error: :invalid_request)
       end
 
       unless client_application
-        return redirect_with_response(:error_description => "invalid client application id", :error => :unauthorized_application)
+        return redirect_with_response(error_description: "invalid client application id", error: :unauthorized_application)
       end
 
       log_authorize_request
@@ -54,20 +54,20 @@ module Platform
       save_oauth_login_redirect_params
 
       if Platform::Config.current_user_is_guest?
-        return redirect_to Platform::Config.login_url(:client_id => request_param(:client_id), :display => display)
+        return redirect_to Platform::Config.login_url(client_id: request_param(:client_id), display: display)
       end
 
       if redirect_url_required? and redirect_url.blank?
-        return redirect_with_response(:error_description => "redirect_uri must be provided as a parameter or in the application callback_url property", :error => :invalid_request)
+        return redirect_with_response(error_description: "redirect_uri must be provided as a parameter or in the application callback_url property", error: :invalid_request)
       end
 
       unless ["code","token"].include?(response_type)
-        return redirect_with_response(:error_description => "only code and token response types are currently supported", :error => :unsupported_response_type)
+        return redirect_with_response(error_description: "only code and token response types are currently supported", error: :unsupported_response_type)
       end
 
       unless redirect_url_valid?(redirect_url)
         @error = "redirect_uri cannot point to a different server than the one configured in the application"
-        return render_action("authorize_failure", :status => 403)
+        return render_action("authorize_failure", status: 403)
       end
 
       send("oauth2_authorize_#{response_type}")
@@ -78,11 +78,11 @@ module Platform
     end
 
     def auth_success
-      render :layout => false
+      render layout: false
     end
 
     def auth_failed
-      render :layout => false
+      render layout: false
     end
 
     # http://tools.ietf.org/html/draft-ietf-oauth-v2-16#section-4.2
@@ -92,15 +92,15 @@ module Platform
       # send client_id and client_secret as HTTP Basic credentials instead of as parameters, and a
       # client that does so has still provided a client_id.
       if presented_client_id.blank?
-        return render_response(:error_description => "client_id must be provided", :error => :invalid_request)
+        return render_response(error_description: "client_id must be provided", error: :invalid_request)
       end
 
       unless client_application
-        return render_response(:error_description => "invalid client application id", :error => :unauthorized_application)
+        return render_response(error_description: "invalid client application id", error: :unauthorized_application)
       end
 
       unless ["authorization_code", "password", "refresh_token", "client_credentials"].include?(grant_type)
-        return render_response(:error_description => "only authorization_code, password and refresh_token grant types are currently supported", :error => :unsupported_grant_type)
+        return render_response(error_description: "only authorization_code, password and refresh_token grant types are currently supported", error: :unsupported_grant_type)
       end
 
       # Not rejected, because this is how the flow is documented -- oauth_server_side shows the
@@ -128,9 +128,9 @@ module Platform
 
       token = presented_token_for_client
       if token && token.valid_token?
-        render_response(:result => "OK")
+        render_response(result: "OK")
       else
-        render_response(:error => :invalid_token, :error_description => "invalid token")
+        render_response(error: :invalid_token, error_description: "invalid token")
       end
     end
 
@@ -143,7 +143,7 @@ module Platform
 
       # "OK" whether or not a token was found, per RFC 7009 section 2.2: telling the caller that
       # the token it named did not exist is the oracle we just closed.
-      render_response(:result => "OK")
+      render_response(result: "OK")
     end
 
     # RFC 7009 names this endpoint "revoke", and /oauth/revoke has been routed to a #revoke that
@@ -154,7 +154,7 @@ module Platform
       unless Platform::Config.current_user_is_guest?
         client_application.deauthorize_user if client_application
       end
-      render_response(:result => "OK")
+      render_response(result: "OK")
     end
 
     def logout
@@ -171,21 +171,21 @@ module Platform
         # handle default logout strategy
       end
 
-      render_response(:result => "OK")
+      render_response(result: "OK")
     end
 
     def xd
-      render :layout => false
+      render layout: false
     end
 
     # XD only method - for now
     def status
       if params[:origin].blank?
-        return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "origin must be specified")
+        return redirect_with_response(status: "unknown", error: :invalid_request, error_description: "origin must be specified")
       end
 
       unless client_application
-        return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "client_id must be specified")
+        return redirect_with_response(status: "unknown", error: :invalid_request, error_description: "client_id must be specified")
       end
 
       # Compared only the host against site_domain, so an http origin passed a check meant to
@@ -193,19 +193,19 @@ module Platform
       # whole origin, and against every callback the developer registered rather than site_domain
       # alone.
       unless client_application.origin_allowed?(params[:origin])
-        return redirect_with_response(:status => "unknown", :error => :invalid_request, :error_description => "Unauthorized access - invalid origin.")
+        return redirect_with_response(status: "unknown", error: :invalid_request, error_description: "Unauthorized access - invalid origin.")
       end
 
       if Platform::Config.current_user_is_guest?
-        return redirect_with_response(:status => "unknown")
+        return redirect_with_response(status: "unknown")
       end
 
       # implement authorized user
       if client_application.authorized_user?
-        return redirect_with_response(:status => "authorized")
+        return redirect_with_response(status: "authorized")
       end
 
-      redirect_with_response(:status => "unauthorized")
+      redirect_with_response(status: "unauthorized")
     end
 
   private
@@ -259,7 +259,7 @@ module Platform
       end
 
       unless client_application
-        render_response(:error_description => "invalid client application id", :error => :unauthorized_application)
+        render_response(error_description: "invalid client application id", error: :unauthorized_application)
         return true
       end
 
@@ -281,8 +281,8 @@ module Platform
     def reject_revocation!(reason)
       return false unless oauth_violation!(:revocation_auth, reason)
 
-      render_response(:error_description => "#{action_name} requires an authenticated client over POST",
-                      :error => :invalid_client)
+      render_response(error_description: "#{action_name} requires an authenticated client over POST",
+                      error: :invalid_client)
       true
     end
 
@@ -429,7 +429,7 @@ module Platform
     # request token with grant_type = authorization_code
     def oauth2_request_token_authorization_code
       if request_param(:code).blank?
-        return render_response(:error_description => "Code must be provided", :error => :invalid_request)
+        return render_response(error_description: "Code must be provided", error: :invalid_request)
       end
 
       # This grant did not authenticate the client at all: it matched the code against the
@@ -454,11 +454,11 @@ module Platform
       if request_token.nil? ||
          request_token.application_id != client_application.id ||
          !request_token.valid_token?
-        return render_response(:error_description => "Invalid authorization code", :error => :invalid_request)
+        return render_response(error_description: "Invalid authorization code", error: :invalid_request)
       end
 
       if request_token.callback_url != redirect_url
-        return render_response(:error_description => "Redirection url must match the url used for the code request", :error => :invalid_request)
+        return render_response(error_description: "Redirection url must match the url used for the code request", error: :invalid_request)
       end
 
       if (failure = verify_pkce!(request_token))
@@ -469,24 +469,24 @@ module Platform
       refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
       request_token.destroy
 
-      render_response(:access_token  => access_token.client_token,
-                      :refresh_token => refresh_token.client_token,
-                      :scope         => access_token.scope,
-                      :expires_in    => (access_token.valid_to.to_i - Time.now.to_i))
+      render_response(access_token: access_token.client_token,
+                      refresh_token: refresh_token.client_token,
+                      scope: access_token.scope,
+                      expires_in: (access_token.valid_to.to_i - Time.now.to_i))
     end
 
     # request token with grant_type = password
     def oauth2_request_token_password
       unless client_application.allow_grant_type_password?
-        return render_response(:error_description => "This application is not authorized to use grant_type password", :error => :unauthorized_application)
+        return render_response(error_description: "This application is not authorized to use grant_type password", error: :unauthorized_application)
       end
 
       if request_param(:username).blank?
-        return render_response(:error_description => "Username must be provided", :error => :invalid_request)
+        return render_response(error_description: "Username must be provided", error: :invalid_request)
       end
 
       if request_param(:password).nil?
-        return render_response(:error_description => "Password must be provided", :error => :invalid_request)
+        return render_response(error_description: "Password must be provided", error: :invalid_request)
       end
 
       # An unauthenticated password grant is a credential-testing oracle: anyone who knows the
@@ -510,26 +510,26 @@ module Platform
 
       user = authenticate_user(request_param(:username), request_param(:password))
       unless user
-        return render_response(:error_description => "Invalid username and/or password combination", :error => :invalid_request)
+        return render_response(error_description: "Invalid username and/or password combination", error: :invalid_request)
       end
 
       granted       = client_application.granted_scope(scope)
       access_token  = client_application.find_or_create_access_token(user, granted)
       refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
-      render_response(:access_token  => access_token.client_token,
-                      :refresh_token => refresh_token.client_token,
-                      :scope         => access_token.scope,
-                      :expires_in    => (access_token.valid_to.to_i - Time.now.to_i))
+      render_response(access_token: access_token.client_token,
+                      refresh_token: refresh_token.client_token,
+                      scope: access_token.scope,
+                      expires_in: (access_token.valid_to.to_i - Time.now.to_i))
     end
 
     # request token with grant_type = client_credentials
     def oauth2_request_token_client_credentials
       unless client_application.allow_grant_type_client_credentials?
-        return render_response(:error_description => "This application is not authorized to use grant_type client_credentials", :error => :unauthorized_application)
+        return render_response(error_description: "This application is not authorized to use grant_type client_credentials", error: :unauthorized_application)
       end
 
       if presented_client_secret.nil?
-        return render_response(:error_description => "Application secret must be provided", :error => :invalid_request)
+        return render_response(error_description: "Application secret must be provided", error: :invalid_request)
       end
 
       # secure_compare rather than !=: a byte-by-byte string comparison returns faster the earlier
@@ -540,22 +540,22 @@ module Platform
       # No oauth_violation! staging here: this grant has always required the secret, so enforcing
       # it cannot break a client that was working.
       unless Platform::Helper.secure_compare(presented_client_secret, client_application.secret)
-        return render_response(:error_description => "Invalid application secret", :error => :invalid_request)
+        return render_response(error_description: "Invalid application secret", error: :invalid_request)
       end
 
       granted       = client_application.granted_scope(scope)
       client_token  = client_application.create_client_token(granted)
       refresh_token = client_application.create_refresh_token(nil, granted)
-      render_response(:access_token  => client_token.client_token,
-                      :refresh_token => refresh_token.client_token,
-                      :scope         => client_token.scope,
-                      :expires_in    => (client_token.valid_to.to_i - Time.now.to_i))
+      render_response(access_token: client_token.client_token,
+                      refresh_token: refresh_token.client_token,
+                      scope: client_token.scope,
+                      expires_in: (client_token.valid_to.to_i - Time.now.to_i))
     end
 
     # request token with grant_type = refresh_token
     def oauth2_request_token_refresh_token
       if request_param(:refresh_token).blank?
-        return render_response(:error_description => "Refresh token must be provided", :error => :invalid_request)
+        return render_response(error_description: "Refresh token must be provided", error: :invalid_request)
       end
 
       # Same gap as the authorization_code grant: the refresh token was matched on
@@ -568,7 +568,7 @@ module Platform
       refresh_token = Platform::Oauth::RefreshToken.find_by_presented_token(request_param(:refresh_token))
 
       if refresh_token.nil? || refresh_token.application_id != client_application.id
-        return render_response(:error_description => "Invalid refresh token", :error => :invalid_request)
+        return render_response(error_description: "Invalid refresh token", error: :invalid_request)
       end
 
       # Refresh tokens rotate, so a token that was already redeemed and is being presented again
@@ -577,12 +577,12 @@ module Platform
       # RefreshToken#replay!.
       if refresh_token.replayed?
         refresh_token.replay!
-        return render_response(:error_description => "Refresh token has already been used - all tokens for this application have been revoked, please re-authorize",
-                               :error => :invalid_grant)
+        return render_response(error_description: "Refresh token has already been used - all tokens for this application have been revoked, please re-authorize",
+                               error: :invalid_grant)
       end
 
       unless refresh_token.valid_token?
-        return render_response(:error_description => "Refresh token expired", :error => :invalid_request)
+        return render_response(error_description: "Refresh token expired", error: :invalid_request)
       end
 
       if refresh_token.user
@@ -593,10 +593,10 @@ module Platform
       refresh_token.exchanged!
 
       refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
-      render_response(:access_token  => access_token.client_token,
-                      :refresh_token => refresh_token.client_token,
-                      :scope         => access_token.scope,
-                      :expires_in    => (access_token.valid_to.to_i - Time.now.to_i))
+      render_response(access_token: access_token.client_token,
+                      refresh_token: refresh_token.client_token,
+                      scope: access_token.scope,
+                      expires_in: (access_token.valid_to.to_i - Time.now.to_i))
     end
 
     # authorize with response_type = code
@@ -610,16 +610,16 @@ module Platform
                                                          authorized_scope,
                                                          Platform::Config.oauth_request_token_lifetime,
                                                          requested_pkce_challenge)
-          return redirect_with_response(:code       => code.code,
-                                        :scope      => code.scope,
-                                        :expires_in => (code.valid_to.to_i - Time.now.to_i))
+          return redirect_with_response(code: code.code,
+                                        scope: code.scope,
+                                        expires_in: (code.valid_to.to_i - Time.now.to_i))
         end
 
         if iframe? and client_application.auto_signin?
           return redirect_to(Platform::Config.default_url)
         end
 
-        return redirect_with_response(:status => :unauthorized, :message => "canceled")
+        return redirect_with_response(status: :unauthorized, message: "canceled")
       end
 
       # A consent form cannot be shown in a hidden iframe: the user never sees it, so nobody can
@@ -629,7 +629,7 @@ module Platform
       # Before this, display=hidden on an application the user had not already authorized
       # rendered "authorize_hidden" -- a template that has never existed -- and the endpoint
       # answered 500.
-      return redirect_with_response(:status => :unauthorized, :message => "interaction required") if display == "hidden"
+      return redirect_with_response(status: :unauthorized, message: "interaction required") if display == "hidden"
 
       render_action("authorize")
     end
@@ -642,9 +642,9 @@ module Platform
         if params[:authorize] == '1' or client_application.trusted?
           Platform::ApplicationUser.touch(client_application)
           access_token = client_application.find_or_create_access_token(Platform::Config.current_user, authorized_scope)
-          response_params = {:access_token => access_token.client_token,
-                             :scope        => access_token.scope,
-                             :expires_in   => (access_token.valid_to.to_i - Time.now.to_i)}
+          response_params = {access_token: access_token.client_token,
+                             scope: access_token.scope,
+                             expires_in: (access_token.valid_to.to_i - Time.now.to_i)}
 
           if xd?
             # The "token" response type implements OAuth2's implicit grant, which should not return refresh_tokens
@@ -666,7 +666,7 @@ module Platform
           return redirect_to(Platform::Config.default_url)
         end
 
-        return redirect_with_response(:status => :unauthorized, :message => "canceled")
+        return redirect_with_response(status: :unauthorized, message: "canceled")
       end
 
       # A consent form cannot be shown in a hidden iframe: the user never sees it, so nobody can
@@ -676,7 +676,7 @@ module Platform
       # Before this, display=hidden on an application the user had not already authorized
       # rendered "authorize_hidden" -- a template that has never existed -- and the endpoint
       # answered 500.
-      return redirect_with_response(:status => :unauthorized, :message => "interaction required") if display == "hidden"
+      return redirect_with_response(status: :unauthorized, message: "interaction required") if display == "hidden"
 
       render_action("authorize")
     end
@@ -756,7 +756,7 @@ module Platform
             # Named explicitly rather than through render_action: that interpolates #display, and
             # there is no authorize_failure_hidden template for display=hidden.  The popup
             # template is the right shape for both xd displays.
-            return render(:action => "authorize_failure_popup", :layout => false, :status => 400)
+            return render(action: "authorize_failure_popup", layout: false, status: 400)
           end
 
           # No credential in the payload, so there is nothing here to leak.  #status answers
@@ -770,7 +770,7 @@ module Platform
         # with nothing in it to protect.
         @xd_post_target   = target_origin
         @xd_payload_query = xd_payload_query(response_params)
-        return render(:action => :xd, :layout => false)
+        return render(action: :xd, layout: false)
       end
 
       response_query = begin
@@ -787,9 +787,9 @@ module Platform
         # only indifferences the keys -- so this compared a Symbol with a String, never matched,
         # and a desktop user who pressed Deny landed on auth_success.
         if response_params[:error_description] or response_params[:status].to_s == 'unauthorized'
-          return redirect_to(:action => :auth_failed, :anchor => response_query)
+          return redirect_to(action: :auth_failed, anchor: response_query)
         else
-          return redirect_to(:action => :auth_success, :anchor => response_query)
+          return redirect_to(action: :auth_success, anchor: response_query)
         end
       end
 
@@ -801,7 +801,7 @@ module Platform
       redirect_uri = URI.parse(redirect_url)
       redirect_uri.path = (redirect_uri.path.blank? ? "/" : redirect_uri.path) unless mobile? # mobile apps will not have path
       redirect_uri.query = redirect_uri.query.blank? ? response_query : redirect_uri.query + "&#{response_query}"
-      redirect_to(redirect_uri.to_s, :allow_other_host => true)
+      redirect_to(redirect_uri.to_s, allow_other_host: true)
     end
 
     # used by the request token process
@@ -816,7 +816,7 @@ module Platform
 
       # we need to support json and redirect based method as well
       if jsonp?
-        render(:text => "#{params[:callback].strip}(#{response_params.to_json})")
+        render(text: "#{params[:callback].strip}(#{response_params.to_json})")
       else
         opts[:status] ||= begin
           if [:unsupported_grant_type, :invalid_request, :invalid_token, :invalid_grant,
@@ -831,7 +831,7 @@ module Platform
             200
           end
         end
-        render(:json => response_params.to_json, :status => opts[:status])
+        render(json: response_params.to_json, status: opts[:status])
       end
     end
 
@@ -848,9 +848,9 @@ module Platform
       @scope = scope
 
       if display == 'web'
-        render(opts.merge(:action => "#{action}_#{display}"))
+        render(opts.merge(action: "#{action}_#{display}"))
       else
-        render(opts.merge(:action => "#{action}_#{display}", :layout => false))
+        render(opts.merge(action: "#{action}_#{display}", layout: false))
       end
     end
 

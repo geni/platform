@@ -14,7 +14,7 @@
           entry_name.gsub!("_", " ")  
         end 
       %>
-      <td style="text-align:right; vertical-align:top;font-size:11px; font-family:arial;"><%= tr8n_page_entries_info(objects, :entry_name => entry_name.downcase) %></td>
+      <td style="text-align:right; vertical-align:top;font-size:11px; font-family:arial;"><%= tr8n_page_entries_info(objects, entry_name: entry_name.downcase) %></td>
     </tr>
   </table>
 </div>

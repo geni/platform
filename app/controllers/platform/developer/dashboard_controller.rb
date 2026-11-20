@@ -24,7 +24,7 @@
 module Platform
   module Developer
     class DashboardController < BaseController
-      before_action :prepare_apps, :only => [:settings, :update_section]
+      before_action :prepare_apps, only: [:settings, :update_section]
 
       def index
         selected_app_ids = session[:platform_dashboard_apps] || []
@@ -42,7 +42,7 @@ module Platform
 
       def update_section
         unless request.post? and verified_request?
-          return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
+          return render(partial: params[:section], locals: {mode: params[:mode].to_sym})
         end
 
         @selected_app_ids = checked_app_ids
@@ -52,7 +52,7 @@ module Platform
     #    platform_current_developer.update(params[:developer])
     #    platform_current_developer.reload
 
-        render(:partial => params[:section], :locals => {:mode => :view})
+        render(partial: params[:section], locals: {mode: :view})
       end
 
     private

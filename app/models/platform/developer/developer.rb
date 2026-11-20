@@ -43,12 +43,12 @@ module Platform
   module Developer
     class Developer < ApplicationRecord
 
-      belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+      belongs_to :user, class_name: Platform::Config.user_class_name, foreign_key: :user_id
 
       has_many :applications
       has_many :application_developers
 
-      before_validation :ensure_name, :on => :create
+      before_validation :ensure_name, on: :create
 
       def self.for(user)
         return nil unless user and user.id
@@ -59,7 +59,7 @@ module Platform
 
       def self.find_or_create(user)
         dev = where("user_id = ?", user.id).first
-        dev = create(:user => user, :name => Platform::Config.user_name(user), :email => Platform::Config.user_email(user)) unless dev
+        dev = create(user: user, name: Platform::Config.user_name(user), email: Platform::Config.user_email(user)) unless dev
         dev
       end
 

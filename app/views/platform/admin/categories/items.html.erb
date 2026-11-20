@@ -86,8 +86,8 @@
           next unless item.application
       %>
           <tr class='data_row <%=(index % 2 == 0) ? "wf_row_even" : "wf_row_odd"%>'>
-            <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
-            <td style="padding:3px;"><%=link_to(h(item.application.name), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), controller: "/platform/admin/apps", action: :view, app_id: item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(h(item.application.name), controller: "/platform/admin/apps", action: :view, app_id: item.application.id)%></td>
             <td style="padding:3px;"><%=item.position%></td>
             <td style="padding:3px;text-align:right">
                <%=link_to_function("Edit", "editApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>
@@ -136,8 +136,8 @@
 		      next unless item.application
 		  %>
           <tr class='data_row <%=(index % 2 == 0) ? "wf_row_even" : "wf_row_odd"%>'>
-            <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
-            <td style="padding:3px;"><%=link_to(h(item.application.name), :controller => "/platform/admin/apps", :action => :view, :app_id => item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(image_tag(item.application.icon_url), controller: "/platform/admin/apps", action: :view, app_id: item.application.id)%></td>
+            <td style="padding:3px;"><%=link_to(h(item.application.name), controller: "/platform/admin/apps", action: :view, app_id: item.application.id)%></td>
             <td style="padding:3px;"><%=item.position%></td>
             <td style="padding:3px;text-align:right">
                <%=link_to_function("Edit", "editApplicationCategory('#{item.category.id}', '#{item.application.id}');")%>

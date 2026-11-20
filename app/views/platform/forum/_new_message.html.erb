@@ -11,13 +11,13 @@
           <%=tr("Your Reply:") %>
         </td>
         <td>
-          <%=text_area_tag(:message, "", :style=>"width:99%; height:70px")%>
+          <%=text_area_tag(:message, "", style: "width:99%; height:70px")%>
         </td>
       </tr>
     </table>
     
     <div style="padding-top:20px; padding-bottom:10px;text-align:center">
-        <%=link_to_function(tr('Reply to This Discussion', 'Client application action label'), "Platform.Effects.submit('forum_topic_form')", :class=>'button super blue medium') %>
+        <%=link_to_function(tr('Reply to This Discussion', 'Client application action label'), "Platform.Effects.submit('forum_topic_form')", class: 'button super blue medium') %>
     </div>
   <% end %>
   

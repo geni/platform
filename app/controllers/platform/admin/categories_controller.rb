@@ -35,7 +35,7 @@ module Platform
         @root = Platform::Category.root
         @category = Platform::Category.find(params[:category_id]) if params[:category_id]
         @category ||= @root
-        render :layout => false
+        render layout: false
       end
 
       def items
@@ -44,14 +44,14 @@ module Platform
         @featured_apps = @parent.featured_application_categories
         @apps = @parent.regular_application_categories
 
-        render :layout => false
+        render layout: false
       end
 
       def lb_update_category
         @parent = Platform::Category.find(params[:parent_id]) if params[:parent_id]
         @category = Platform::Category.find(params[:category_id]) if params[:category_id]
-        @category = Platform::Category.new(:parent_id=>params[:parent_id]) unless @category
-        render :layout => false
+        @category = Platform::Category.new(parent_id: params[:parent_id]) unless @category
+        render layout: false
       end
 
       def update_category
@@ -70,7 +70,7 @@ module Platform
 
       def lb_update_application_category
         @app_cat = Platform::ApplicationCategory.find_by_category_id_and_application_id(params[:category_id], params[:app_id])
-        render :layout => false
+        render layout: false
       end
 
       def update_application_category
@@ -80,7 +80,7 @@ module Platform
           app_cat.update(application_category_params)
         end
 
-        redirect_to :action => :index, :category_id => app_cat.category.id
+        redirect_to action: :index, category_id: app_cat.category.id
       end
 
       def delete_category
@@ -88,7 +88,7 @@ module Platform
           recursive_category_delete(params[:category_id])
         end
 
-        redirect_to :action => :index
+        redirect_to action: :index
       end
 
       def assign_category
@@ -108,12 +108,12 @@ module Platform
           app.reload
         end
 
-        render(:partial=>"/platform/admin/apps/categories", :locals => {:app => app})
+        render(partial: "/platform/admin/apps/categories", locals: {app: app})
       end
 
       def category_assigner
         @app = Platform::Application.find_by_id(params[:app_id])
-        render :layout=>false
+        render layout: false
       end
 
       def category_assigner_tree
@@ -121,17 +121,17 @@ module Platform
         @root_keyword = params[:root_keyword] || "root"
         @root = Platform::Category.find_by_keyword(@root_keyword)
 
-        render :layout=>false
+        render layout: false
       end
 
       def update_featured_flag
         app_cat = Platform::ApplicationCategory.find(params[:app_category_id])
 
         if request.post? and verified_request?
-          app_cat.update(:featured => params[:checked])
+          app_cat.update(featured: params[:checked])
         end
 
-        render(:partial=>"/platform/admin/apps/categories", :locals => {:app => app_cat.application})
+        render(partial: "/platform/admin/apps/categories", locals: {app: app_cat.application})
       end
 
     private

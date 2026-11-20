@@ -26,19 +26,19 @@ module Platform
     class MetricsController < BaseController
 
       def index
-        @metrics = Platform::ApplicationMetric.filter(:params => params, :filter => Platform::ApplicationMetricFilter)
+        @metrics = Platform::ApplicationMetric.filter(params: params, filter: Platform::ApplicationMetricFilter)
       end
 
       def usage
-        @metrics = Platform::ApplicationUsageMetric.filter(:params => params, :filter => Platform::ApplicationUsageMetricFilter)
+        @metrics = Platform::ApplicationUsageMetric.filter(params: params, filter: Platform::ApplicationUsageMetricFilter)
       end
 
       def application_log
-        @logs = Platform::ApplicationLog.filter(:params => params, :filter => Platform::ApplicationLogFilter)
+        @logs = Platform::ApplicationLog.filter(params: params, filter: Platform::ApplicationLogFilter)
       end
 
       def rollup_log
-        @logs = Platform::RollupLog.filter(:params => params, :filter => Platform::RollupLogFilter)
+        @logs = Platform::RollupLog.filter(params: params, filter: Platform::RollupLogFilter)
       end
 
     end # class MetricsController

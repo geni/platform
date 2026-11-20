@@ -1,32 +1,32 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 <div class="documentation_section_title">
-    <%= tr("{site_title} Applications", "", :site_title => Platform::Config.site_title) %>
+    <%= tr("{site_title} Applications", "", site_title: Platform::Config.site_title) %>
 </div>
 <div class="documentation_section">
     <p>
-        <%=tr("{site_title} Platform provides a mechanism for creating your own embedded applications (extensions) for the site.", "", :site_title => Platform::Config.site_title) %>
-        <%=tr("{site_title}  extensions are applications that are launched inside of an iframe on the site.", "", :site_title => Platform::Config.site_title) %>
+        <%=tr("{site_title} Platform provides a mechanism for creating your own embedded applications (extensions) for the site.", "", site_title: Platform::Config.site_title) %>
+        <%=tr("{site_title}  extensions are applications that are launched inside of an iframe on the site.", "", site_title: Platform::Config.site_title) %>
     </p>
     <p>
         <%=tr("This document provides you with steps for creating your own extension and embed it into the site.")%> 
     </p>
     <p>
-	<%=tr("[link:Create and Manage Applications]", "", :link => lambda {|text| link_to(text, '/platform/developer/apps', {:target => '_blank', :class => 'platform-button'}) })%>
+	<%=tr("[link:Create and Manage Applications]", "", link: lambda {|text| link_to(text, '/platform/developer/apps', {target: '_blank', class: 'platform-button'}) })%>
     </p>
     <h3><%=tr("Embedded Application Example") %></h3>
     <p>
     	 <%=tr("Below is an example of a Photo Gallery extension that loads user's photo albums and displays them using an interactive layout.")%>
-       <%=tr("The embedded application is running inside of an iFrame and is served by a server outside of {site_title}.", "", :site_title => Platform::Config.site_title)%> 
+       <%=tr("The embedded application is running inside of an iFrame and is served by a server outside of {site_title}.", "", site_title: Platform::Config.site_title)%> 
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/ext.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/ext.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <h2><%=tr("Embedded Application Registration") %></h2>
     <p>
        <%=tr("In order to create an embedded application, you have to provide the following information:")%>
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/app_reg_ext.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/app_reg_ext.png", style: "width:600px;", class: "screenshot") %>
     </p>
 		
     <h3><%=tr("Application Fields") %></h3>
@@ -115,7 +115,7 @@
                     <%=tr("Canvas Page")%>
                 </td>
                 <td>
-                    <%=tr("Name of the canvas page that will be used to identify your application on {site_title}.", "", :site_title => Platform::Config.site_title)%>
+                    <%=tr("Name of the canvas page that will be used to identify your application on {site_title}.", "", site_title: Platform::Config.site_title)%>
 										<%=tr("This name must be unique and distinctively identify your application.")%> 
                 </td>
                 <td>
@@ -249,7 +249,7 @@
         https://<%=Platform::Config.site_base_url %>/platform/oauth/authorize?client_id=YOUR_APP_KEY&redirect_uri=YOUR_URL&response_type=token
     </div>
     <p style="text-align:center">
-       <%=image_tag("/platform/images/help/auth_iframe.png", :style=>"width:600px;", :class => "screenshot") %>
+       <%=image_tag("/platform/images/help/auth_iframe.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <p>
         <%=tr("If the user presses Don't Allow, your app is not authorized.") %><%=tr("The user will be redirected (via HTTP 302) to the URL you passed in the redirect_uri parameter with the following error information:") %>
@@ -342,4 +342,4 @@
         http://YOUR_URL#access_token=ACCESS_TOKEN_GENERATED_BY_SERVER&expires_in=SECONDS_UNTIL_IT_IS_EXPIRED
     </div>		
 </div>
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

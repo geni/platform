@@ -21,7 +21,7 @@
 		<div class="inner">
 
 			<div class="module mbl">
-				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", :application => h(@client_application.name))%></div>
+				<div class="mbs" style="font-size:16px;"><%=trl("[bold: {application}] would like permission to access your Geni account.","", application: h(@client_application.name))%></div>
 				<div class="quiet">
 					<%= trl("Only allow access if you trust this application with your Geni Information.") %>
 				</div>
@@ -35,7 +35,7 @@
 								<%= image_tag(@client_application.logo_url) %>
 							</div>
 							<div class="mbs">
-							<%= link_to(h(@client_application.name), app_path(:id => @client_application.id), :target => "_blank") %><br>
+							<%= link_to(h(@client_application.name), app_path(id: @client_application.id), target: "_blank") %><br>
 							</div>
 							<div>
 							 <%= platform_app_rank_tag(@client_application, 95) %>
@@ -44,7 +44,7 @@
 					</div>
 					<div class="platform-authorize__access-panel">
 						<div class="media mrl">
-							<%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :class => "img")%>
+							<%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), class: "img")%>
 							<div class="bd">
 								<h4><%= trl("This application will have access to:") %></h4>
 								<p class="quiet mbl">
@@ -74,16 +74,16 @@
         <input id='tos-accepted' type='checkbox'/>
       <%- end -%>
       <%= tr(@client_application.terms_statement_tr_label, "",
-             :application  => h(@client_application.name),
-             :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
-             :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
+             application: h(@client_application.name),
+             link_tos: lambda{|text| link_to(text, h(@client_application.terms_of_service_url), target: "_blank") },
+             link_privacy: lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   target: "_blank") }) -%>
 			</div>
 
 		</div>
 	</div>
 
 </div>
-<%= render :partial => "authorize_form" %>
+<%= render partial: "authorize_form" %>
 
   </div>
 

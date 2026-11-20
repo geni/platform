@@ -26,7 +26,7 @@ module Platform
     class AppsController < Admin::BaseController
 
       def index
-        @apps = Platform::Application.filter(:params => params, :filter => Platform::ApplicationFilter)
+        @apps = Platform::Application.filter(params: params, filter: Platform::ApplicationFilter)
       end
 
       def view
@@ -34,11 +34,11 @@ module Platform
       end
 
       def tokens
-        @tokens = Platform::Oauth::OauthToken.filter(:params => params, :filter => Platform::Oauth::OauthTokenFilter)
+        @tokens = Platform::Oauth::OauthToken.filter(params: params, filter: Platform::Oauth::OauthTokenFilter)
       end
 
       def users
-        @users = Platform::ApplicationUser.filter(:params => params, :filter => Platform::ApplicationUserFilter)
+        @users = Platform::ApplicationUser.filter(params: params, filter: Platform::ApplicationUserFilter)
       end
 
       # def authorizations
@@ -49,7 +49,7 @@ module Platform
       # Add/Remove links on an application's own page, which write the
       # platform_applications.permissions column.
       def scopes
-        @scopes = Platform::Scope.filter(:params => params, :filter => Platform::ScopeFilter)
+        @scopes = Platform::Scope.filter(params: params, filter: Platform::ScopeFilter)
       end
 
       def lb_scope
@@ -65,10 +65,10 @@ module Platform
 
           @scope.store_icon(params[:new_icon]) unless params[:new_icon].blank?
 
-          return redirect_to_source(:action => :scopes)
+          return redirect_to_source(action: :scopes)
         end
 
-        render :layout => false
+        render layout: false
       end
 
       def delete_scope
@@ -77,11 +77,11 @@ module Platform
           @scope.destroy if @scope
         end
 
-        redirect_to_source(:action => :scopes)
+        redirect_to_source(action: :scopes)
       end
 
       def ratings
-        @ratings = Platform::Rating.filter(:params => params, :filter => Platform::RatingFilter)
+        @ratings = Platform::Rating.filter(params: params, filter: Platform::RatingFilter)
       end
 
       def block
@@ -95,7 +95,7 @@ module Platform
           end
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def unblock
@@ -105,7 +105,7 @@ module Platform
           app.unblock!
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def approve
@@ -119,7 +119,7 @@ module Platform
           app.approve!
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def reject
@@ -129,7 +129,7 @@ module Platform
           app.reject!
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def set_permission
@@ -140,7 +140,7 @@ module Platform
           app.save
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def remove_permission
@@ -151,12 +151,12 @@ module Platform
           app.save
         end
 
-        redirect_to(:action => :view, :app_id => app.id)
+        redirect_to(action: :view, app_id: app.id)
       end
 
       def lb_edit
         @app = Platform::Application.find_by_id(params[:app_id])
-        render :layout => false
+        render layout: false
       end
 
       def update
@@ -169,7 +169,7 @@ module Platform
           end
         end
 
-        redirect_to_source(:action => :index)
+        redirect_to_source(action: :index)
       end
 
     private

@@ -35,7 +35,7 @@ module Platform
       end
 
       def documentation_field_link_tag(name, type)
-        link_to(name, :controller => "/platform/developer/help", :action => :api, :path => type.underscore)
+        link_to(name, controller: "/platform/developer/help", action: :api, path: type.underscore)
       end
 
     private

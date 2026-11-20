@@ -59,7 +59,7 @@ module Platform
                       optional:    true
     belongs_to :application
 
-    serialize :data, :type => Object, :coder => YAML
+    serialize :data, type: Object, coder: YAML
 
   end # class ApplicationLog
 end # module Platform

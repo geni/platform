@@ -2,7 +2,7 @@
 	Category Details
 </div>
 <div style="margin-top:10px;">
-    <%= form_for(@category, :as => :category, :url =>  {:action => :update_category}, :html => {:method => 'post', :id => 'platform_form'}) do |form| %>
+    <%= form_for(@category, as: :category, url:  {action: :update_category}, html: {method: 'post', id: 'platform_form'}) do |form| %>
     <div class="content">
         <%= form.hidden_field :parent_id %>
         <%= form.hidden_field :id %>
@@ -20,7 +20,7 @@
                     Name:
                 </th>
                 <td>
-                    <%= form.text_field :name, :size=>"50" %>
+                    <%= form.text_field :name, size: "50" %>
                 </td>
             </tr>
             <tr>
@@ -28,7 +28,7 @@
                     Keyword:
                 </th>
                 <td>
-                    <%= form.text_field :keyword, :size=>"50" %>
+                    <%= form.text_field :keyword, size: "50" %>
                 </td>
             </tr>
             <tr>
@@ -36,7 +36,7 @@
                     Position:
                 </th>
                 <td>
-                    <%= form.text_field :position, :size=>"50" %>
+                    <%= form.text_field :position, size: "50" %>
                 </td>
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                     Enable On:
                 </th>
                 <td>
-                    <%= form.text_field :enable_on, :size=>"50" %>
+                    <%= form.text_field :enable_on, size: "50" %>
                 </td>
             </tr>
             <tr>
@@ -52,7 +52,7 @@
                     Disable On:
                 </th>
                 <td>
-                    <%= form.text_field :disable_on, :size=>"50" %>
+                    <%= form.text_field :disable_on, size: "50" %>
                 </td>
             </tr>
         </table>

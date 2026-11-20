@@ -31,13 +31,13 @@ module Platform
         if params[:topic_id]
           topic = Platform::ForumTopic.find_by_id(params[:topic_id])
         else
-          topic = Platform::ForumTopic.create(:subject => app, :user => Platform::Config.current_user, :topic => params[:topic])
+          topic = Platform::ForumTopic.create(subject: app, user: Platform::Config.current_user, topic: params[:topic])
         end
 
-        Platform::ForumMessage.create(:topic => topic, :message => params[:message], :user => Platform::Config.current_user)
+        Platform::ForumMessage.create(topic: topic, message: params[:message], user: Platform::Config.current_user)
       end
 
-      redirect_to(:controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Discussions', :topic_id => topic&.id, :last_page => true)
+      redirect_to(controller: "/platform/apps", action: :view, id: app.id, sec: 'Discussions', topic_id: topic&.id, last_page: true)
     end
 
     def delete_topic
@@ -55,7 +55,7 @@ module Platform
         end
 
         topic.destroy
-        trfn("The topic {topic} has been removed", nil, :topic => "\"#{Platform.escape_html(topic.topic)}\"")
+        trfn("The topic {topic} has been removed", nil, topic: "\"#{Platform.escape_html(topic.topic)}\"")
       end
 
       redirect_to_source

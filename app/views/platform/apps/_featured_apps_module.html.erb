@@ -5,7 +5,7 @@
 %> 
     <div class="apps_header">
       <span style="float:right; font-size:12px; font-weight:normal">
-			  <%=render(:partial => "paginator", :locals => {:apps => apps, :element_id => "featured_apps"})%> 
+			  <%=render(partial: "paginator", locals: {apps: apps, element_id: "featured_apps"})%> 
       </span>
       <%=tr(Platform::Config.featured_apps_title)%>
     </div>
@@ -16,10 +16,10 @@
             <td style="width:<%=block_width%>;text-align:left">
                    <div style="height:<%=block_height%>; border: 1px dotted #ccc; padding:5px; margin:3px;">
                       <div style="float:right;padding-left:10px;padding-bottom:1px;">
-                         <%= link_to(image_tag(app.logo_url), {:action => :view, :id => app.id}) %>
+                         <%= link_to(image_tag(app.logo_url), {action: :view, id: app.id}) %>
                       </div> 
                       <div style="font-size:14px;padding-bottom:10px;">
-                        <%= link_to(h(app.name), {:action => :view, :id => app.id}) %><br>
+                        <%= link_to(h(app.name), {action: :view, id: app.id}) %><br>
                       </div>
                       <div style="font-size:11px;">
                         <%= app.short_description %>

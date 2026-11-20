@@ -31,7 +31,7 @@ module Platform
 
       def index
         unless request.url.index("developer")
-          return redirect_to(:controller=>"/platform/developer/help", :action=>"index")
+          return redirect_to(controller: "/platform/developer/help", action: "index")
         end
       end
 
@@ -87,12 +87,12 @@ module Platform
         ref = Platform::Config.api_reference(@version)
         unless ref
           trfe("Unsupported API version")
-          return redirect_to(:action => :index, :version => @version)
+          return redirect_to(action: :index, version: @version)
         end
 
         if params[:path].blank?
           trfe("API path must be provided")
-          return redirect_to(:action => :index, :version => @version)
+          return redirect_to(action: :index, version: @version)
         end
 
         parts = params[:path].split("/")
@@ -101,7 +101,7 @@ module Platform
         @api = ref[parts.first]
         unless @api
           trfe("Unsupported API path")
-          return redirect_to(:action => :index, :version => @version)
+          return redirect_to(action: :index, version: @version)
         end
 
         parts << @api[:default_action] if parts.size == 1 and @api[:default_action]

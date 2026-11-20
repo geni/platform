@@ -1,4 +1,4 @@
-<%= render :partial => "/platform/common/header" %>
+<%= render partial: "/platform/common/header" %>
 
 <style>
   .apps_header {
@@ -58,7 +58,7 @@
   <div class="inner">
     <div class="hd">
       <span style="float:right;">
-         <%=link_to(tr('Launch Application', 'Client application action label'), h(@app.app_url), :class=>'button super blue medium') %>
+         <%=link_to(tr('Launch Application', 'Client application action label'), h(@app.app_url), class: 'button super blue medium') %>
       </span>
 
       <h1><%= h(@app.name) %></h1>
@@ -72,6 +72,6 @@
     <table style="width:100%">
       <tr>
         <td style="width:200px;vertical-align:top;">
-          <%= render(:partial => "/platform/apps/left", :locals => {:app => @app} )%>
+          <%= render(partial: "/platform/apps/left", locals: {app: @app} )%>
         </td>
         <td>

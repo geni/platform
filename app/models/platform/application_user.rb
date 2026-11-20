@@ -40,17 +40,17 @@
 module Platform
   class ApplicationUser < ApplicationRecord
 
-    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    belongs_to :user, class_name: Platform::Config.user_class_name, foreign_key: :user_id
     belongs_to :application
 
-    serialize :data, :type => Object, :coder => YAML
+    serialize :data, type: Object, coder: YAML
 
     def self.for(app, user=Platform::Config.current_user)
       where('application_id = ? and user_id = ?', app.id, user.id).first
     end
 
     def self.find_or_create(app, user=Platform::Config.current_user)
-      self.for(app, user) || create(:application => app, :user => user)
+      self.for(app, user) || create(application: app, user: user)
     end
 
     def self.touch(app, user=Platform::Config.current_user)

@@ -3,7 +3,7 @@ Platform::Engine.routes.draw do
   mount Tr8n::Engine => '/tr8n'
 
   namespace :admin do
-    root :to => 'apps#index'
+    root to: 'apps#index'
   end # namespace :admin
 
   namespace :developer do
@@ -17,11 +17,11 @@ Platform::Engine.routes.draw do
     get     '/apps/new'     => 'apps#new'
     put     '/apps/update'  => 'apps#update'
 
-    root :to => 'dashboard#index'
+    root to: 'dashboard#index'
   end # namespace :developer
 
   get     '/apps'     => 'apps#index'
-  get     '/apps/:id' => 'apps#view', :as => 'app'
+  get     '/apps/:id' => 'apps#view', as: 'app'
 
   get     '/home'         => 'home#index'
   get     '/home/credits' => 'home#credits'
@@ -33,7 +33,7 @@ Platform::Engine.routes.draw do
   get     '/oauth/request_token'    => 'oauth#request_token'
   get     '/oauth/validate_token'   => 'oauth#validate_token'
 
-  get '/', :to => 'home#index'
+  get '/', to: 'home#index'
 
 #  map.connect '/platform/developer/apps/:id',
 #              :controller => 'platform/developer/apps', :action => 'delete',

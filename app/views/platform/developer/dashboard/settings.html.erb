@@ -1,8 +1,8 @@
-<%= render :partial => "/platform/developer/common/header" %>
+<%= render partial: "/platform/developer/common/header" %>
 
-  <%=render(:partial => "apps_info", :locals => {:mode => :view}) %>
+  <%=render(partial: "apps_info", locals: {mode: :view}) %>
 
-<%= render :partial => "/platform/developer/common/footer" %>
+<%= render partial: "/platform/developer/common/footer" %>
 
 <%= javascript_tag do %>
   function switchSectionMode(section, mode) {

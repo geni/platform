@@ -1,12 +1,12 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 
 <div class="documentation_section_title">
-  <%= tr("Authentication with {site_title}", "", :site_title => Tr8n::Config.site_title) %>
+  <%= tr("Authentication with {site_title}", "", site_title: Tr8n::Config.site_title) %>
 </div>
 
 <div class="documentation_section">
 	<p>
-		<%=tr("{site_title} Platform uses the [link: OAuth 2.0 protocol] for authentication and authorization.", "", :site_title => Tr8n::Config.site_title, :link => ["http://tools.ietf.org/html/draft-ietf-oauth-v2-20"]) %>
+		<%=tr("{site_title} Platform uses the [link: OAuth 2.0 protocol] for authentication and authorization.", "", site_title: Tr8n::Config.site_title, link: ["http://tools.ietf.org/html/draft-ietf-oauth-v2-20"]) %>
 		<%=tr("The Platform supports a number of different flows that you can use within your website, desktop and mobile applications.")%>
   </p>
 
@@ -62,7 +62,7 @@
 
   <h2><%=tr("Authenticaton/Authorization Flows")%></h2>
   <p>
-    <%=tr("The following table outlines the various mechanisms {site_title} Platform uses to support each of those flows.", "", :site_title => Tr8n::Config.site_title)%> 
+    <%=tr("The following table outlines the various mechanisms {site_title} Platform uses to support each of those flows.", "", site_title: Tr8n::Config.site_title)%> 
   </p>    
   <p>
   	<table class="documentation_table">
@@ -73,7 +73,7 @@
   		</tr>
 			<tr>
 				<td>
-					<%=link_to(tr("Server Side Flow"), :action => :oauth_server_side)%>
+					<%=link_to(tr("Server Side Flow"), action: :oauth_server_side)%>
 				</td>
 				<td>
 					<a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1"><%=tr("Authentication Code")%></a>
@@ -84,18 +84,18 @@
 			</tr>
       <tr>
         <td>
-          <%=link_to(tr("Client Side Flow"), :action => :oauth_client_side)%>
+          <%=link_to(tr("Client Side Flow"), action: :oauth_client_side)%>
         </td>
         <td>
           <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2"><%=tr("Implicit Grant")%></a>
         </td>
         <td>
-          <%=tr("Use this flow if your application needs to call {site_title}'s API from a client, such as JavaScript in a Web browser or from a native mobile or desktop application.", "", :site_title => Tr8n::Config.site_title)%>
+          <%=tr("Use this flow if your application needs to call {site_title}'s API from a client, such as JavaScript in a Web browser or from a native mobile or desktop application.", "", site_title: Tr8n::Config.site_title)%>
         </td>
       </tr>
       <tr>
         <td>
-          <%=link_to(tr("Desktop App Flow"), :action => :oauth_desktop)%>
+          <%=link_to(tr("Desktop App Flow"), action: :oauth_desktop)%>
         </td>
         <td>
           <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2"><%=tr("Implicit Grant")%></a>
@@ -106,7 +106,7 @@
       </tr>
       <tr>
         <td>
-          <%=link_to(tr("Mobile App Flow"), :action => :oauth_mobile)%>
+          <%=link_to(tr("Mobile App Flow"), action: :oauth_mobile)%>
         </td>
         <td>
           <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2"><%=tr("Implicit Grant")%></a>
@@ -117,7 +117,7 @@
       </tr>
       <tr>
         <td>
-          <%=link_to(tr("Trusted App Flow"), :action => :oauth_trusted_client)%>
+          <%=link_to(tr("Trusted App Flow"), action: :oauth_trusted_client)%>
         </td>
         <td>
           <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.3"><%=tr("Resource Owner Password Credentials") %></a>
@@ -129,7 +129,7 @@
       </tr>
       <tr>
         <td>
-        	<%=link_to("App Login Flow", :action => :oauth_app_login)%>
+        	<%=link_to("App Login Flow", action: :oauth_app_login)%>
         </td>
         <td>
           <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.4">Client Credentials</a>
@@ -195,7 +195,7 @@
                   response_type
               </td>
               <td>
-                  <%=tr("Available options: {opts}.", "", :opts => "code, token") %>
+                  <%=tr("Available options: {opts}.", "", opts: "code, token") %>
 									<%=tr("Default: ")%> code
               </td>
               <td>
@@ -220,7 +220,7 @@
               </td>
               <td>
               	   <%=tr("Provides a mechanism to select an appropriate template to display the authorization flow.")%>
-                   <%=tr("Available options: {opts}.", "", :opts => "web, mobile, desktop, iframe") %>
+                   <%=tr("Available options: {opts}.", "", opts: "web, mobile, desktop, iframe") %>
 									 <%=tr("Default: ")%> web
               </td>
               <td>
@@ -232,7 +232,7 @@
                   state
               </td>
               <td>
-                  <%=tr("Used for additional parameters and [link: CSRF protection].", "", :link => ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
+                  <%=tr("Used for additional parameters and [link: CSRF protection].", "", link: ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
               </td>
               <td>
                   false
@@ -243,7 +243,7 @@
                   code_challenge
               </td>
               <td>
-                  <%=tr("[link: PKCE] challenge: the SHA-256 digest of a random code_verifier you generate per request, as unpadded url-safe base64.  Bound to the authorization code we issue, so that only a client holding the verifier can exchange it.  Required for applications registered as public clients, which cannot keep a client_secret -- desktop, mobile and in-browser apps.", "", :link => ["https://datatracker.ietf.org/doc/html/rfc7636"]) %>
+                  <%=tr("[link: PKCE] challenge: the SHA-256 digest of a random code_verifier you generate per request, as unpadded url-safe base64.  Bound to the authorization code we issue, so that only a client holding the verifier can exchange it.  Required for applications registered as public clients, which cannot keep a client_secret -- desktop, mobile and in-browser apps.", "", link: ["https://datatracker.ietf.org/doc/html/rfc7636"]) %>
               </td>
               <td>
                   false
@@ -254,7 +254,7 @@
                   code_challenge_method
               </td>
               <td>
-                  <%=tr("Must be {method} if code_challenge is sent.  The {plain} method is not accepted.", "", :method => "S256", :plain => "plain") %>
+                  <%=tr("Must be {method} if code_challenge is sent.  The {plain} method is not accepted.", "", method: "S256", plain: "plain") %>
               </td>
               <td>
                   false
@@ -338,7 +338,7 @@
                   grant_type
               </td>
               <td>
-                  <%=tr("Available options: {opts}.", "", :opts => "authorization_code, password, refresh_token") %>
+                  <%=tr("Available options: {opts}.", "", opts: "authorization_code, password, refresh_token") %>
                   <%=tr("For the server side flow the response type is defaulted to \"authorization_code\".") %>
               </td>
               <td>
@@ -501,4 +501,4 @@
 			        
 </div>
 
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

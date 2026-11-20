@@ -28,7 +28,7 @@ module Platform
       skip_before_action :validate_guest_user
       skip_before_action :validate_developer
 
-      protect_from_forgery :only => [:topic, :delete_topic, :delete_message]
+      protect_from_forgery only: [:topic, :delete_topic, :delete_message]
 
       # The site-wide topics -- the ones with no subject.  A topic with a subject belongs to an
       # application and is listed on that application's page by Platform::AppsController#view.
@@ -50,11 +50,11 @@ module Platform
           if params[:topic_id]
             topic = Platform::ForumTopic.find_by_id(params[:topic_id])
           else
-            topic = Platform::ForumTopic.create(:user => platform_current_user, :topic => params[:topic])
+            topic = Platform::ForumTopic.create(user: platform_current_user, topic: params[:topic])
           end
 
-          Platform::ForumMessage.create(:topic => topic, :message => params[:message], :user => platform_current_user)
-          return redirect_to(:action => :topic, :topic_id => topic.id, :last_page => true)
+          Platform::ForumMessage.create(topic: topic, message: params[:message], user: platform_current_user)
+          return redirect_to(action: :topic, topic_id: topic.id, last_page: true)
         end
 
         # @topic may be nil -- no :topic_id, or one that names nothing -- and topic.html.erb
@@ -91,14 +91,14 @@ module Platform
 
           if topic.user != platform_current_user
             trfe("You cannot delete topics you didn't create.")
-            return redirect_to(:action => :index)
+            return redirect_to(action: :index)
           end
 
           topic.destroy
-          trfn("The topic {topic} has been removed", 'Developer Forum', :topic => "\"#{Platform.escape_html(topic.topic)}\"")
+          trfn("The topic {topic} has been removed", 'Developer Forum', topic: "\"#{Platform.escape_html(topic.topic)}\"")
         end
 
-        redirect_to(:action => :index)
+        redirect_to(action: :index)
       end
 
       def delete_message
@@ -128,7 +128,7 @@ module Platform
           trfn("The message has been removed")
         end
 
-        redirect_to(:action => :topic, :topic_id => message.topic.id)
+        redirect_to(action: :topic, topic_id: message.topic.id)
       end
 
     end # class ForumController

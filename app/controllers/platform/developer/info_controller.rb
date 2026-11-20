@@ -30,13 +30,13 @@ module Platform
 
       def update_section
         unless request.post? and verified_request?
-          return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
+          return render(partial: params[:section], locals: {mode: params[:mode].to_sym})
         end
 
         platform_current_developer.update(developer_params)
 
         platform_current_developer.reload
-        render(:partial => params[:section], :locals => {:mode => :view})
+        render(partial: params[:section], locals: {mode: :view})
       end
 
     private

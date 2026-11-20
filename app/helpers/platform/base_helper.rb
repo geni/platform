@@ -26,7 +26,7 @@ module Platform
 
     def platform_user_login_tag(opts = {})
       opts[:class] ||= 'tr8n_right_horiz_list'
-      render(:partial => '/platform/common/user_login', :locals => {:opts => opts})
+      render(partial: '/platform/common/user_login', locals: {opts: opts})
     end
 
     # Where will_filter's javascript fetches its filter UI from.
@@ -73,27 +73,27 @@ module Platform
     end
 
     def platform_documentation_tag(url_options = {})
-      link_to(image_tag("/platform/images/bullet_go.png", :style=>"vertical-align:middle;"), url_options.merge({:controller => "/platform/developer/help", :action => "api"}))
+      link_to(image_tag("/platform/images/bullet_go.png", style: "vertical-align:middle;"), url_options.merge({controller: "/platform/developer/help", action: "api"}))
     end
 
     def platform_documentation_field_decorators_tag(field)
       return unless field[:status]
-      return image_tag("/platform/images/cancel.png", :style=>"vertical-align:top;height:10px;", :title => trl("This field has been deprecated and will no longer be supported in the future versions")) if ['deprecated', 'removed'].include?(field[:status])
-      return image_tag("/platform/images/exclamation.png", :style=>"vertical-align:top;height:10px;", :title => trl("This field will be changed in the future versions")) if field[:status] == 'changed'
-      return image_tag("/platform/images/add.png", :style=>"vertical-align:top;height:10px;", :title => trl("This field has been added")) if field[:status] == 'added'
-      return image_tag("/platform/images/accept.png", :style=>"vertical-align:top;height:10px;", :title => trl("This field has been changed")) if field[:status] == 'updated'
+      return image_tag("/platform/images/cancel.png", style: "vertical-align:top;height:10px;", title: trl("This field has been deprecated and will no longer be supported in the future versions")) if ['deprecated', 'removed'].include?(field[:status])
+      return image_tag("/platform/images/exclamation.png", style: "vertical-align:top;height:10px;", title: trl("This field will be changed in the future versions")) if field[:status] == 'changed'
+      return image_tag("/platform/images/add.png", style: "vertical-align:top;height:10px;", title: trl("This field has been added")) if field[:status] == 'added'
+      return image_tag("/platform/images/accept.png", style: "vertical-align:top;height:10px;", title: trl("This field has been changed")) if field[:status] == 'updated'
     end
 
     def platform_documentation_api_decorators_tag(api)
       return unless api[:status]
-      return image_tag("/platform/images/exclamation.png", :style=>"vertical-align:top;height:10px;", :title => trl("The API structure has changed")) if ['changed'].include?(api[:status])
-      return image_tag("/platform/images/cancel.png", :style=>"vertical-align:top;height:10px;", :title => trl("The API has been removed")) if ['removed', 'deprecated'].include?(api[:status])
-      return image_tag("/platform/images/add.png", :style=>"vertical-align:top;height:10px;", :title => trl("This API has been added")) if api[:status] == 'added'
-      return image_tag("/platform/images/accept.png", :style=>"vertical-align:top;height:10px;", :title => trl("This API has been updated")) if api[:status] == 'updated'
+      return image_tag("/platform/images/exclamation.png", style: "vertical-align:top;height:10px;", title: trl("The API structure has changed")) if ['changed'].include?(api[:status])
+      return image_tag("/platform/images/cancel.png", style: "vertical-align:top;height:10px;", title: trl("The API has been removed")) if ['removed', 'deprecated'].include?(api[:status])
+      return image_tag("/platform/images/add.png", style: "vertical-align:top;height:10px;", title: trl("This API has been added")) if api[:status] == 'added'
+      return image_tag("/platform/images/accept.png", style: "vertical-align:top;height:10px;", title: trl("This API has been updated")) if api[:status] == 'updated'
     end
 
     def platform_scripts_tag(opts = {})
-      render(:partial => '/platform/common/scripts', :locals => {:opts => opts})
+      render(partial: '/platform/common/scripts', locals: {opts: opts})
     end
 
     def platform_app_rank_tag(app, rank = nil, opts = {})
@@ -126,9 +126,9 @@ module Platform
       html = "<span dir='ltr'>"
       1.upto(5) do |i|
         if i <= value
-          html << image_tag("/tr8n/images/rating_star1.png", :style => style.join(";"))
+          html << image_tag("/tr8n/images/rating_star1.png", style: style.join(";"))
         else
-          html << image_tag("/tr8n/images/rating_star0.png", :style => style.join(";"))
+          html << image_tag("/tr8n/images/rating_star0.png", style: style.join(";"))
         end
       end
       html << "</span>"
@@ -137,7 +137,7 @@ module Platform
 
     def platform_spinner_tag(id = "spinner", label = nil, cls='spinner')
       html = "<div id='#{id}' class='#{cls}' style='display:none'>"
-      html << image_tag("/platform/images/spinner.gif", :style => "vertical-align:middle;")
+      html << image_tag("/platform/images/spinner.gif", style: "vertical-align:middle;")
       html << " #{trl(label)}" if label
       html << "</div>"
     end
@@ -175,7 +175,7 @@ module Platform
     end
 
     def platform_help_icon_tag(path = "index", opts = {})
-      link_to(image_tag("/platform/images/help.png", :style => "border:0px; vertical-align:middle;", :title => trl("Help")), opts.merge({:controller => "/platform/developer/help", :action => path}), :target => "_new")
+      link_to(image_tag("/platform/images/help.png", style: "border:0px; vertical-align:middle;", title: trl("Help")), opts.merge({controller: "/platform/developer/help", action: path}), target: "_new")
     end
 
   private

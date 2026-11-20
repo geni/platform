@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 <div class="documentation_section_title">
     <%= tr("Mobile Application Authorization Flow") %>
 </div>
@@ -144,13 +144,13 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
         <%=tr("If the user is already logged in, we validate the login cookie that we have stored on the user's browser and authenticate the user.") %><%=tr("If the user is not logged in, they are prompted to enter their credentials:") %>
     </p>
     <center>
-        <%=image_tag("/platform/images/help/login_iphone.png", :style=>"width:300px;") %>
+        <%=image_tag("/platform/images/help/login_iphone.png", style: "width:300px;") %>
     </center>
     <p>
         <%=tr("Once we have successfully authenticated the user, we will prompt the user to authorize your application:") %>
     </p>
     <center>
-        <%=image_tag("/platform/images/help/auth_iphone.png", :style=>"width:300px;") %>
+        <%=image_tag("/platform/images/help/auth_iphone.png", style: "width:300px;") %>
     </center>
     <h3><%=tr("Handling iOS Application Callback")%></h3>
     <p>
@@ -285,7 +285,7 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
     </div>
     <h3><%=tr("Geni iOS Client SDK")%></h3>
     <p>
-    	<%=tr("{site_title} comes with a [link: full featured iOS library] that allows you to build dynamic iOS applications using the site data.", "", :site_title => Platform::Config.site_title, :link => ["/platform/developer/help/ios_sdk"])%>
+    	<%=tr("{site_title} comes with a [link: full featured iOS library] that allows you to build dynamic iOS applications using the site data.", "", site_title: Platform::Config.site_title, link: ["/platform/developer/help/ios_sdk"])%>
       <%=tr("It supports authentication, autherization and API calls to get the site data.")%>
     </p>
 
@@ -302,4 +302,4 @@ NSString *geniOauthURL = [NSString stringWithFormat:@"%@?client_id=%@&redirect_u
       </li>
     </ul>
 </div>
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

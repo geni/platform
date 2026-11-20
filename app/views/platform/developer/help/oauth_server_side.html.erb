@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 <div class="documentation_section_title">
     <%= tr("Server Side Authorization Flow") %>
 </div>
@@ -91,7 +91,7 @@
                     state
                 </td>
                 <td>
-                    <%=tr("Used for additional parameters and [link: CSRF protection].", "", :link => ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
+                    <%=tr("Used for additional parameters and [link: CSRF protection].", "", link: ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
                 </td>
                 <td>
                     false
@@ -108,13 +108,13 @@
 				<%=tr("If the user is not logged in, they are prompted to enter their credentials:") %>
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/login_web.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/login_web.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <p>
         <%=tr("Once we have successfully authenticated the user, we will prompt the user to authorize your application:") %>
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/auth_web.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/auth_web.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <p>
         <%=tr("If the user presses Don't Allow, your app is not authorized.") %>
@@ -423,7 +423,7 @@
     </div>
     <h3><%=tr("Full Example in PHP") %></h3>
     <p>
-        <%=tr("The following example demonstrates an authentication/autherization flow in a single PHP page.") %><%=tr("The example uses [link: CSRF protection] for extra security.", "", :link => ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
+        <%=tr("The following example demonstrates an authentication/autherization flow in a single PHP page.") %><%=tr("The example uses [link: CSRF protection] for extra security.", "", link: ["http://en.wikipedia.org/wiki/Cross-site_request_forgery"]) %>
     </p>
     <pre class="code_snippet">
 &lt;?php 
@@ -618,8 +618,8 @@
         <%=tr("[bold: Store the refresh_token from every response.] Each exchange returns a new refresh token and retires the one you sent. Newly issued refresh tokens expire after 90 days, and presenting one you have already exchanged revokes every token your application holds for that user -- so never retry with an older token. If a refresh fails, start a new authorization.")%>
       </li>
       <li>
-        <%=tr("[bold: Send the access token in an Authorization header] rather than as an access_token query parameter -- {header} -- because a token in a URL is recorded in server logs, in Referer headers and in browser history. The parameter still works but is deprecated.", "", :header => "Authorization: Bearer YOUR_TOKEN")%>
+        <%=tr("[bold: Send the access token in an Authorization header] rather than as an access_token query parameter -- {header} -- because a token in a URL is recorded in server logs, in Referer headers and in browser history. The parameter still works but is deprecated.", "", header: "Authorization: Bearer YOUR_TOKEN")%>
       </li>
     </ul>
 </div>
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

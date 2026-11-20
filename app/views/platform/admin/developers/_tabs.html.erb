@@ -2,7 +2,7 @@
   links = []
   current_tab ||= ""
   [ 
-    ["Developers", {:action => :index}]
+    ["Developers", {action: :index}]
   ].each do |link|
       if controller.action_name == link.last[:action].to_s
         current_tab = link.first if current_tab.blank?

@@ -3,6 +3,6 @@
 	   <%=(@app.last_monthly_metric ? @app.last_monthly_metric.active_user_count : 0)%>
 	</div>
   <div style="color:#666; font-size:11px;">
-    <%=tr("monthly active {count|user}", '', :count => (@app.last_monthly_metric ? @app.last_monthly_metric.active_user_count : 0))%>
+    <%=tr("monthly active {count|user}", '', count: (@app.last_monthly_metric ? @app.last_monthly_metric.active_user_count : 0))%>
 	</div>	
 </div>

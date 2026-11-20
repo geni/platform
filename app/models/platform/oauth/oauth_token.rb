@@ -205,8 +205,8 @@ module Platform
 
       def to_json(options={})
         hash = {
-          :access_token => client_token,
-          :expires_in   => (valid_to.to_i - Time.now.to_i),
+          access_token: client_token,
+          expires_in: (valid_to.to_i - Time.now.to_i),
         }.to_json(options)
       end
 

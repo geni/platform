@@ -43,11 +43,11 @@ module Platform
 
     has_many :application_scopes
 
-    belongs_to :icon, :class_name => Platform::Config.site_media_class, :foreign_key => 'icon_id',
-               :optional => true
+    belongs_to :icon, class_name: Platform::Config.site_media_class, foreign_key: 'icon_id',
+               optional: true
 
     def self.find_or_create(key)
-      find_by_keyword(key) || create(:keyword => key, :description => '')
+      find_by_keyword(key) || create(keyword: key, description: '')
     end
 
     def self.for(key)
@@ -65,10 +65,10 @@ module Platform
 
     def store_icon(file)
       if Platform::Config.site_media_enabled?
-        update(:icon => Platform::Config.create_media(file))
+        update(icon: Platform::Config.create_media(file))
       else
         self.icon = Platform::Media::Image.create
-        self.icon.write(file, :size => 16)
+        self.icon.write(file, size: 16)
         self.save
       end
     end

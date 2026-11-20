@@ -1,13 +1,13 @@
-<%= render :partial => "/platform/admin/common/header" %>
-<%= render :partial => "tabs" %>
+<%= render partial: "/platform/admin/common/header" %>
+<%= render partial: "tabs" %>
 
 <%# Both helpers take the result collection, not the filter: Platform::ApplicationHelper's
     versions read #wf_filter off what they are given, and that is set by
     WillFilter::Filter#results.  Handed the filter itself they read nil. %>
 <%= will_filter(@apps.results) %>
 <%= will_filter_table_tag(@apps.results, columns: [
-  [:icon, lambda{|app| link_to(image_tag(h(app.icon_url)), :action => :view, :app_id => app.id)}, "width:18px;"],
-  [:id, lambda{|app| link_to(app.id, :action => :view, :app_id => app.id)}],
+  [:icon, lambda{|app| link_to(image_tag(h(app.icon_url)), action: :view, app_id: app.id)}, "width:18px;"],
+  [:id, lambda{|app| link_to(app.id, action: :view, app_id: app.id)}],
   [:developer_id, lambda{|app| link_to(h(app.developer.name), "") if app.developer}],
   [:name, lambda{|app| h(app.name)}],
   [:url, lambda{|app| link_to(h(app.url), app.url)}],
@@ -15,7 +15,7 @@
   [:categories, lambda{|app|
       html = []
       html << "<div id='app_categories_#{app.id}'>"
-      html << render(:partial => "categories", :locals => {:app => app})
+      html << render(partial: "categories", locals: {app: app})
       html << "</div>"
       html.join("\n")
   }],
@@ -23,14 +23,14 @@
   :created_at,
   [:actions, lambda{|app|
       html = []
-      html << link_to("view", :action => :view, :app_id => app.id)
+      html << link_to("view", action: :view, app_id: app.id)
    	  html << link_to_function("edit", "tr8nLightbox.show('/platform/admin/apps/lb_edit?app_id=#{app.id}', {\"height\": 600})")
-      html << link_to("access tokens", {:action => :tokens, :wf_model=>"Platform::Oauth::OauthToken",:wf_c0=>:application_id, :wf_o0=>:is, :wf_v0_0=>app.id} )
+      html << link_to("access tokens", {action: :tokens, wf_model: "Platform::Oauth::OauthToken",wf_c0: :application_id, wf_o0: :is, wf_v0_0: app.id} )
       html << link_to_function("categorize", "assignCategories(#{app.id})")
       html.join(" | ").html_safe
   }, 'padding:5px;text-align:right;white-space:nowrap;']
 ]) %>
 
-<%= render :partial => "categories_scripts" %>
+<%= render partial: "categories_scripts" %>
 
-<%= render :partial => "/platform/admin/common/footer" %>
+<%= render partial: "/platform/admin/common/footer" %>

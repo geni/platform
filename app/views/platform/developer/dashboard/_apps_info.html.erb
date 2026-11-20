@@ -20,7 +20,7 @@
   }
 </style>
 <div id="apps_info_container">
-  <%=render(:partial => "header", :locals => {:section => "apps_info", :label => "Dashboard Applications", :description => "Section title", :mode => mode})%>
+  <%=render(partial: "header", locals: {section: "apps_info", label: "Dashboard Applications", description: "Section title", mode: mode})%>
   
 <%# Two things were wrong here.  :update_settings is not an action on this controller -- the one
     that saves the selection is :update_section, which is also where the submitSection() on

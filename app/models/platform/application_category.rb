@@ -45,7 +45,7 @@ module Platform
     belongs_to :application
 
     def self.find_or_create(app, cat)
-      find_by_application_id_and_category_id(app.id, cat.id) || create(:application => app, :category => cat)
+      find_by_application_id_and_category_id(app.id, cat.id) || create(application: app, category: cat)
     end
 
   end # class ApplicationCategory

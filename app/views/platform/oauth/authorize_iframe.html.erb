@@ -18,7 +18,7 @@
         </div>
 
         <div style="margin-top:10px;margin-bottom:10px;">
-          <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {:application => link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"})}) %>
+          <%=tr("{application} is requesting permission to access your Geni account.", "API permission", {application: link_to(h(@client_application.name), {controller: '/platform/apps', action: :view, id: @client_application.id}, {target: "_top"})}) %>
         </div>
 
         <div style="padding:10px;">
@@ -28,7 +28,7 @@
                 <table>
                   <tr>
                     <td style="vertical-align:top">
-                       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), :style => "padding-right:15px;")%>
+                       <%=image_tag(Platform::Config.user_mugshot(Platform::Config.current_user), style: "padding-right:15px;")%>
                     </td>
                     <td>
                       <div style="font-weight:bold;"><%=tr("Access to my profile information")%></div>
@@ -45,10 +45,10 @@
               <td style="width:30%">
                  <div style="height:130px; padding:5px; margin:3px; text-align:center;">
                     <div style="">
-                       <%= image_tag(h(@client_application.logo_url), :style => "width:75px;height:75px;") %>
+                       <%= image_tag(h(@client_application.logo_url), style: "width:75px;height:75px;") %>
                     </div>
                     <div style="font-size:12px; padding-top:10px;">
-                      <%= link_to(h(@client_application.name), {:controller => '/platform/apps', :action => :view, :id => @client_application.id}, {:target => "_top"}) %><br>
+                      <%= link_to(h(@client_application.name), {controller: '/platform/apps', action: :view, id: @client_application.id}, {target: "_top"}) %><br>
                     </div>
                     <div style="font-size:11px; padding-top:10px;">
                      <%= platform_app_rank_tag(@client_application) %>
@@ -64,9 +64,9 @@
             <input id='tos-accepted' type='checkbox'/>
           <%- end -%>
           <%= tr(@client_application.terms_statement_tr_label, "",
-                 :application  => h(@client_application.name),
-                 :link_tos     => lambda{|text| link_to(text, h(@client_application.terms_of_service_url), :target => "_blank") },
-                 :link_privacy => lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   :target => "_blank") }) -%>
+                 application: h(@client_application.name),
+                 link_tos: lambda{|text| link_to(text, h(@client_application.terms_of_service_url), target: "_blank") },
+                 link_privacy: lambda{|text| link_to(text, h(@client_application.privacy_policy_url),   target: "_blank") }) -%>
       </div>
 
       <div style="background:#eee; text-align:left; padding:10px; vertical-align:middle; ">
@@ -80,8 +80,8 @@
                   <%= tr('You must approve the Terms of Service and Privacy Policy', 'Client application error text') %>
                 </div>
               <%- end -%>
-              <%= link_to_function(trl('Allow', 'Client application action label'), 'allowClicked()', :class=>'button super blue medium') %>
-              <%= link_to_function(trl("Don't Allow", 'Client application action label'), 'denyClicked()', :class=>'button super blue medium') %>
+              <%= link_to_function(trl('Allow', 'Client application action label'), 'allowClicked()', class: 'button super blue medium') %>
+              <%= link_to_function(trl("Don't Allow", 'Client application action label'), 'denyClicked()', class: 'button super blue medium') %>
             </td>
           </tr>
         </table>
@@ -89,7 +89,7 @@
     </div>
   </center>
 
-  <%= render :partial => "authorize_form" %>
+  <%= render partial: "authorize_form" %>
 
   <%= javascript_tag do %>
     function doAccept() {

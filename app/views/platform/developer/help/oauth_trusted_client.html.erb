@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 <div class="documentation_section_title">
     <%= tr("Trusted Application Authorization Flow") %>
 </div>
@@ -219,8 +219,8 @@
     </p>
     <h3><%=tr("Please migrate off this flow")%></h3>
     <p>
-      <%=tr("Exchanging a member's {site_title} password directly is the resource owner password credentials grant. It is removed in OAuth 2.1 and we intend to retire it: it requires your application to handle a password that is not yours, it cannot support two-factor authentication, and it gives the member no consent screen and no way to see or revoke what they granted.", "", :site_title => Platform::Config.site_title)%>
-      <%=tr("The [link: server side flow] does the same job without any of that. If something about your integration makes that impractical, please tell us -- we would rather hear about it now than when we schedule the removal.", "", :link => ["/platform/developer/help/oauth_server_side"])%>
+      <%=tr("Exchanging a member's {site_title} password directly is the resource owner password credentials grant. It is removed in OAuth 2.1 and we intend to retire it: it requires your application to handle a password that is not yours, it cannot support two-factor authentication, and it gives the member no consent screen and no way to see or revoke what they granted.", "", site_title: Platform::Config.site_title)%>
+      <%=tr("The [link: server side flow] does the same job without any of that. If something about your integration makes that impractical, please tell us -- we would rather hear about it now than when we schedule the removal.", "", link: ["/platform/developer/help/oauth_server_side"])%>
     </p>
 </div>
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

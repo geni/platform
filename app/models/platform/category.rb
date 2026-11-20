@@ -43,12 +43,12 @@
 module Platform
   class Category < ApplicationRecord
 
-    acts_as_tree :order => 'position, name'
+    acts_as_tree order: 'position, name'
     has_many :application_categories, -> { order('position') }
-    has_many :applications, :through => :application_categories
+    has_many :applications, through: :application_categories
 
     def self.root
-      find_by_keyword('root') || create(:keyword => 'root', :name => 'Root')
+      find_by_keyword('root') || create(keyword: 'root', name: 'Root')
     end
 
     def self.category_id_by_keyword(keyword)

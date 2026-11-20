@@ -26,11 +26,11 @@ module Platform
     class ForumController < Admin::BaseController
 
       def index
-        @topics = Platform::ForumTopic.filter(:params => params, :filter => Platform::ForumTopicFilter)
+        @topics = Platform::ForumTopic.filter(params: params, filter: Platform::ForumTopicFilter)
       end
 
       def messages
-        @messages = Platform::ForumMessage.filter(:params => params, :filter => Platform::ForumMessageFilter)
+        @messages = Platform::ForumMessage.filter(params: params, filter: Platform::ForumMessageFilter)
       end
 
     end # class ForumController

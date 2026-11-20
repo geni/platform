@@ -3,7 +3,7 @@
 </div>
 
 <div style="margin-top:10px;">
-	<%= form_for(@app_cat, :as => :application_category, :url =>  {:action => :update_application_category}, :html => {:method => 'post', :id => 'platform_form'}) do |form| %>
+	<%= form_for(@app_cat, as: :application_category, url:  {action: :update_application_category}, html: {method: 'post', id: 'platform_form'}) do |form| %>
 	<div class="content">
 	    <%= form.hidden_field :id %>
 	    <table class="admin_table">
@@ -36,7 +36,7 @@
 	                Position:
 	            </th>
 	            <td>
-	                <%= form.text_field :position, :size=>"50" %>
+	                <%= form.text_field :position, size: "50" %>
 	            </td>
 	        </tr>
 	        <tr>

@@ -25,9 +25,9 @@ module Platform
   module Developer
     class AppsController < BaseController
 
-      protect_from_forgery :only => [:create, :delete, :update, :version, :reset_secret]
+      protect_from_forgery only: [:create, :delete, :update, :version, :reset_secret]
 
-      before_action :validate_application_developer, :except => [:index, :new, :create, :version]
+      before_action :validate_application_developer, except: [:index, :new, :create, :version]
 
       def index
         @app = Platform::Application.find_by_id(params[:id]) if params[:id]
@@ -41,7 +41,7 @@ module Platform
         @menu_app = @app
         @menu_app = @app.parent if @app && @app.parent
 
-        @page_title = tr('Application Details for {app_name}', 'Client application controller title', :app_name => Platform.escape_html(@app.name)) if @app
+        @page_title = tr('Application Details for {app_name}', 'Client application controller title', app_name: Platform.escape_html(@app.name)) if @app
       end
 
       def new
@@ -57,24 +57,24 @@ module Platform
             application.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             application.store_logo(params[:new_logo]) unless params[:new_logo].blank?
 
-            trfn('{app_name} registered', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
-            redirect_to(:action => :index, :id => application.id)
+            trfn('{app_name} registered', 'Client application controller notice', app_name: Platform.escape_html(application.name))
+            redirect_to(action: :index, id: application.id)
           else
             flash[:error] = application.errors.full_messages.join(', ')
             prepare_form
-            render :action => :new
+            render action: :new
           end
         end
       end
 
       def edit
-        @page_title = tr('Edit {app_name}', 'Client application controller title', :app_name => Platform.escape_html(application.name))
+        @page_title = tr('Edit {app_name}', 'Client application controller title', app_name: Platform.escape_html(application.name))
         application.touch
         @languages = Tr8n::Language.locale_options
       end
 
       def create_version
-        @page_title = tr('Version {app_name}', 'Client application controller title', :app_name => Platform.escape_html(application.name))
+        @page_title = tr('Version {app_name}', 'Client application controller title', app_name: Platform.escape_html(application.name))
         @current_app = Platform::Application.find(params[:id])
         @app = Platform::Application.new(@current_app.attributes)
         @languages = Tr8n::Language.locale_options
@@ -84,27 +84,27 @@ module Platform
         old_app = Platform::Application.find(params[:current_version_id])
 
         if request.post? and verified_request?
-          app = Platform::Application.create(application_params.merge(:developer => Platform::Config.current_developer))
+          app = Platform::Application.create(application_params.merge(developer: Platform::Config.current_developer))
           if params[:new_icon].blank?
-            app.update(:icon_id => old_app.icon_id)
+            app.update(icon_id: old_app.icon_id)
           else
             app.store_icon(params[:new_icon])
           end
 
           if params[:new_logo].blank?
-            app.update(:logo_id => old_app.logo_id)
+            app.update(logo_id: old_app.logo_id)
           else
             app.store_logo(params[:new_logo])
           end
 
           old_app.children.each do |child_app|
-            child_app.update(:parent_id => app.id)
+            child_app.update(parent_id: app.id)
           end
 
-          old_app.update(:parent_id => app.id, :version => (old_app.version || 1.0))
+          old_app.update(parent_id: app.id, version: (old_app.version || 1.0))
         end
 
-        redirect_to(:action => :index, :id => app&.id)
+        redirect_to(action: :index, id: app&.id)
       end
 
       def update
@@ -123,35 +123,35 @@ module Platform
               end
             end
 
-            trfn('{app_name} updated.', 'Client applicaiton controller notice', :app_name => Platform.escape_html(application.name))
-            redirect_to(:action => :index, :id => application.id)
+            trfn('{app_name} updated.', 'Client applicaiton controller notice', app_name: Platform.escape_html(application.name))
+            redirect_to(action: :index, id: application.id)
           else
             flash[:error] = application.errors.full_messages.join(', ')
             prepare_form
-            render :action => :edit
+            render action: :edit
           end
         else
           prepare_form
-          render :action => :edit
+          render action: :edit
         end
       end
 
       def delete
         if (request.delete? or request.post?) and verified_request?
           application.destroy
-          trfn('{app_name} has been removed.', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
+          trfn('{app_name} has been removed.', 'Client application controller notice', app_name: Platform.escape_html(application.name))
         end
 
-        redirect_to :action => :index
+        redirect_to action: :index
       end
 
       def reset_secret
         if request.post? and verified_request?
           application.reset_secret!
-          trfn('Secret for {app_name} has been reset.', 'Client application controller notice', :app_name => Platform.escape_html(application.name))
+          trfn('Secret for {app_name} has been reset.', 'Client application controller notice', app_name: Platform.escape_html(application.name))
         end
 
-        redirect_to :action => :index, :id => application.id
+        redirect_to action: :index, id: application.id
       end
 
       def submit
@@ -160,7 +160,7 @@ module Platform
           application.submit!
         end
 
-        redirect_to :action => :index, :id => application.id
+        redirect_to action: :index, id: application.id
       end
 
       def lb_scopes
@@ -174,7 +174,7 @@ module Platform
         # and opening the picker silently cleared every scope the application had.  The two
         # namespaces were crossed right here.
         @scopes = application.scopes
-        render :layout => false
+        render layout: false
       end
 
     private
@@ -184,7 +184,7 @@ module Platform
 
         unless application.developed_by?(Platform::Config.current_developer)
           trfe("You are not authorized to access this application")
-          redirect_to(:action => :index)
+          redirect_to(action: :index)
         end
       end
 
@@ -193,9 +193,9 @@ module Platform
           if params.has_key?(:id)
             Platform::Application.find(params[:id])
           elsif params.has_key?(:application)
-            Platform::Application.create(application_params.merge(:developer => Platform::Config.current_developer))
+            Platform::Application.create(application_params.merge(developer: Platform::Config.current_developer))
           else
-            Platform::Application.new(:contact_email => Platform::Config.user_email(Platform::Config.current_user), :version => "1.0")
+            Platform::Application.new(contact_email: Platform::Config.user_email(Platform::Config.current_user), version: "1.0")
           end
         end
       end

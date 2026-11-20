@@ -24,12 +24,12 @@
 namespace :platform do
 
   desc "Initializes all of the tables with default data"
-  task :init => :environment do
+  task init: :environment do
     raise "This action is prohibited in this environment" if ['production', 'stage', 'staging'].include?(Rails.env) and env('force') != 'true'
     Platform::Config.reset_all!
   end
 
-  task :rollup_metrics => :environment do
+  task rollup_metrics: :environment do
     # for debugging purposes
 #    Platform::RollupLog.delete_all
 #    Platform::ApplicationMetric.delete_all
@@ -49,7 +49,7 @@ namespace :platform do
     rollup_interval(interval)
   end
 
-  task :rollup_daily_metrics => :environment do
+  task rollup_daily_metrics: :environment do
     start_date = parse_date_param('since', :today)
     end_date   = parse_date_param('until', :today)
 
@@ -84,7 +84,7 @@ private
 
     log_msg("Rolling up interval: #{interval_start} - #{interval_end}...")
 
-    rollup_log = Platform::RollupLog.create(:interval => interval, :started_at => Time.now)
+    rollup_log = Platform::RollupLog.create(interval: interval, started_at: Time.now)
 
     # figure out which apps to calculates stats for. there is no point for having empty records.
     app_ids = Platform::Application.connection.select_values("select distinct application_id from platform_application_users where created_at >= '#{interval_start}' and created_at < '#{interval_end}'")
@@ -104,7 +104,7 @@ private
       Platform::ApplicationUsageMetric.calculate_metric(app, interval)
     end
 
-    rollup_log.update(:finished_at => Time.now)
+    rollup_log.update(finished_at: Time.now)
 
     now = Time.now
     if now >= interval_start && now < interval_end

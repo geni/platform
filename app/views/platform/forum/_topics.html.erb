@@ -21,16 +21,16 @@
             <table>
               <tr>
                 <td style="vertical-align:top;padding:5px;">
-                  <%=platform_user_mugshot_tag(topic.user, :linked => true)%>
+                  <%=platform_user_mugshot_tag(topic.user, linked: true)%>
                 </td>
                 <td style="vertical-align:top;padding:5px;">
-                  <%=platform_user_tag(topic.user, :linked => true)%>
+                  <%=platform_user_tag(topic.user, linked: true)%>
                   <div style="color:grey;">
                       <%=topic.created_at.trl(:date_time) %>
                   </div>
                   <div style="font-size:10px;padding:0px;">
                     <% if topic.user == platform_current_user %>
-  							        <%=link_to(tr("Delete", "Link to delete forum topic"), {:controller => '/platform/forum', :action => :delete_topic, :topic_id => topic.id}, {:confirm => trl("Are you sure you want to delete this topic and all of the messages under it?")})%>
+  							        <%=link_to(tr("Delete", "Link to delete forum topic"), {controller: '/platform/forum', action: :delete_topic, topic_id: topic.id}, {confirm: trl("Are you sure you want to delete this topic and all of the messages under it?")})%>
                     <% end %>
                   </div>
                 </td>
@@ -38,7 +38,7 @@
             </table>
           </td>
           <td class="topic_value" style="padding:5px;">
-            <%=link_to(h(topic.topic), :controller => '/platform/apps', :action => :view, :sec => 'Discussions', :topic_id => topic.id, :id => @app.id)%><br>
+            <%=link_to(h(topic.topic), controller: '/platform/apps', action: :view, sec: 'Discussions', topic_id: topic.id, id: @app.id)%><br>
           </td>
           <td class="topic_value" style="padding:5px;">
             <%=topic.post_count %>
@@ -47,14 +47,14 @@
             <% if topic.last_post %>
                <div style="font-size:10px;"><%=topic.last_post.created_at.trl(:date_time) %>
                 <% if topic.user %>
-                  <br><%=tr("by {user}", "Name of the publisher", :user => [topic.user, platform_user_tag(topic.user, :linked => true)])%>
+                  <br><%=tr("by {user}", "Name of the publisher", user: [topic.user, platform_user_tag(topic.user, linked: true)])%>
                 <% end %>
                </div>
                <%
                   message = topic.last_post.message[0..60]
                   message << "..." if topic.last_post.message.length > 60
                %>
-               <div style="font-style:italic; font-size:10px">"<%=link_to(h(message), :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions', :topic_id =>topic.id, :last_page => true)%>"</div>
+               <div style="font-style:italic; font-size:10px">"<%=link_to(h(message), controller: '/platform/apps', action: :view, id: @app.id, sec: 'Discussions', topic_id: topic.id, last_page: true)%>"</div>
             <% end %>
             &nbsp;
           </td>
@@ -65,8 +65,8 @@
     <div style="margin-bottom:5px; padding-top:5px; border-top: 1px solid #ccc;">
       <table style="width:100%;">
         <tr>
-          <td align='left'><%= page_entries_info(@topics, :entry_name => "forum topic", :skip_decorations => true) %></td>
-          <td align='right'><%= will_paginate(@topics, :skip_decorations => true, :style => "text-align:right;") %></td>
+          <td align='left'><%= page_entries_info(@topics, entry_name: "forum topic", skip_decorations: true) %></td>
+          <td align='right'><%= will_paginate(@topics, skip_decorations: true, style: "text-align:right;") %></td>
         </tr>
       </table>
     </div>
@@ -77,4 +77,4 @@
   <% end %>
 </div>
 
-<%= render :partial => "/platform/forum/new_topic", :locals => {:include_cancel_button => false} %>
+<%= render partial: "/platform/forum/new_topic", locals: {include_cancel_button: false} %>

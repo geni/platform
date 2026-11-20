@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 
 <style>
   table.documentation_table img { max-width:150px; }
@@ -9,6 +9,6 @@
   <%= tr("Terms of Use") %>
 </div>
 
-<%=render :partial => "/company/api_terms_of_use", :locals => {:title => false} %>
+<%=render partial: "/company/api_terms_of_use", locals: {title: false} %>
 
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

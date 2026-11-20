@@ -181,8 +181,8 @@ module Platform
 
       # "invalid_client", not "invalid_request": the request was well formed, the client just did
       # not authenticate.  RFC 6749 section 5.2.
-      { :error => :invalid_client,
-        :error_description => "Client authentication failed - client_secret must be provided and must match" }
+      { error: :invalid_client,
+        error_description: "Client authentication failed - client_secret must be provided and must match" }
     end
 
     ##########################################################################
@@ -323,7 +323,7 @@ module Platform
       method = (request_param(:code_challenge_method) || 'S256').upcase
       return nil unless PKCE_METHODS.include?(method)
 
-      { :code_challenge => challenge, :code_challenge_method => method }
+      { code_challenge: challenge, code_challenge_method: method }
     end
 
     # Verify a code_verifier against the challenge stored on the authorization code.  Returns nil
@@ -337,22 +337,22 @@ module Platform
         return nil unless client_application.try(:public_client?)
         return nil unless oauth_violation!(:pkce, 'public client exchanged a code issued without a code_challenge')
 
-        return { :error => :invalid_request,
-                 :error_description => "code_challenge is required for this application" }
+        return { error: :invalid_request,
+                 error_description: "code_challenge is required for this application" }
       end
 
       verifier = request_param(:code_verifier)
       if verifier.nil?
         return nil unless oauth_violation!(:pkce, 'code issued with a code_challenge was exchanged without a code_verifier')
 
-        return { :error => :invalid_grant, :error_description => "code_verifier must be provided" }
+        return { error: :invalid_grant, error_description: "code_verifier must be provided" }
       end
 
       unless Platform::Helper.secure_compare(pkce_transform(verifier, request_token.code_challenge_method), challenge)
         # Always rejected, switch or no switch.  Unlike the other checks this cannot break a
         # client that was working: the only way to get here is to present a verifier that does
         # not match a challenge the same client chose moments earlier.
-        return { :error => :invalid_grant, :error_description => "code_verifier did not match code_challenge" }
+        return { error: :invalid_grant, error_description: "code_verifier did not match code_challenge" }
       end
 
       nil

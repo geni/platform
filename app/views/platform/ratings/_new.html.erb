@@ -8,7 +8,7 @@
            <div class='rating-block'>
              <% html = []
                 1.upto(5) do |index|
-                  html << image_tag("/tr8n/images/rating_star0.png", :id => "rating#{index}", :class => 'rating-img', :'data-rating-idx' => index, :style => "cursor:pointer")
+                  html << image_tag("/tr8n/images/rating_star0.png", id: "rating#{index}", class: 'rating-img', 'data-rating-idx': index, style: "cursor:pointer")
                 end
              %>
              <%=html.join("").html_safe%>
@@ -18,12 +18,12 @@
        <tr>
          <td style="text-align:right; padding:3px;">Review:</td>
          <td style=" padding:3px;">
-           <%=text_area_tag(:rating_comment, "", :style=>"width:98%")%>
+           <%=text_area_tag(:rating_comment, "", style: "width:98%")%>
          </td>
        </tr>
      </table>
      <div style="text-align:center;padding:10px;">
-      <%=link_to_function(tr('Submit Review', 'Client application action label'), "Platform.Effects.submit('app_rating_form')", :class=>'button super blue medium') %>
+      <%=link_to_function(tr('Submit Review', 'Client application action label'), "Platform.Effects.submit('app_rating_form')", class: 'button super blue medium') %>
      </div>
    <% end %>
  </div>

@@ -1,4 +1,4 @@
-<%= render :partial => "/platform/developer/common/header" %>
+<%= render partial: "/platform/developer/common/header" %>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <%= javascript_tag do %>
     google.load("visualization", "1", {packages:["corechart"]});
@@ -10,10 +10,10 @@
     and the whole dashboard answered UrlGenerationError.  The page meant Platform::Developer::InfoController. %>
      <%=link_to(tr("edit developer information", "Developer preferences link"), controller: "/platform/developer/info", action: :index)%>
 		 |
-     <%=link_to(tr("dashboard preferences", "Dashboard preferences link"), :controller => "/platform/developer/dashboard", :action => :settings)%>
+     <%=link_to(tr("dashboard preferences", "Dashboard preferences link"), controller: "/platform/developer/dashboard", action: :settings)%>
   </div>
 
-  <%=tr("{user}'s Dashboard", "Dashboard section title", :user => h(platform_current_developer.name)) %>
+  <%=tr("{user}'s Dashboard", "Dashboard section title", user: h(platform_current_developer.name)) %>
 </div>
 
 <div class="section_box" style="background-color:#FDFFF0;">
@@ -23,7 +23,7 @@
           <table>
             <tr>
               <td style="vertical-align:top;padding-right:2px; width:60px;">
-                <%=platform_user_mugshot_tag(platform_current_user, :linked => true)%>
+                <%=platform_user_mugshot_tag(platform_current_user, linked: true)%>
               </td>
               <td style="vertical-align:top">
                 <table>
@@ -33,16 +33,16 @@
                   </tr>
                   <tr>
                     <td><%=tr("Your Total Applications:", "Dashboard section header") %></td>
-                    <td><%=link_to(platform_current_developer.applications.count, :controller => "/platform/developer/apps")%></td>
+                    <td><%=link_to(platform_current_developer.applications.count, controller: "/platform/developer/apps")%></td>
                   </tr>
                   <tr>
                     <td style="vertical-align:top;"><%=tr("Dashboard Applications:", "Dashboard section header") %></td>
                     <td style="vertical-align:top;">
                       <% apps = [] %>
                       <% @apps.each do |app|
-                          apps << link_to(h(app.versioned_name), :anchor => "app_#{app.id}")
+                          apps << link_to(h(app.versioned_name), anchor: "app_#{app.id}")
                          end %>
-                      <%= apps.join(" | ") %> (<%=link_to(tr("change", "Dashboard preferences link"), :controller => "/platform/developer/dashboard", :action => :settings)%>)
+                      <%= apps.join(" | ") %> (<%=link_to(tr("change", "Dashboard preferences link"), controller: "/platform/developer/dashboard", action: :settings)%>)
                     </td>
                   </tr>
                 </table>
@@ -61,27 +61,27 @@
 <% @apps.each do |app| %>
   <div class="section_title">
     <div style="float:right; font-size:12px; font-weight:normal; padding-top:5px;">
-      <%=link_to(tr("info", "Application action link"), :controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Info')%>
-      | <%=link_to(tr("reviews", "Application action link"), :controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Reviews')%>
-      | <%=link_to(tr("discussions", "Application action link"), :controller => "/platform/apps", :action => :view, :id => app.id, :sec => 'Discussions')%>
-      | <%=link_to(tr("configure", "Application action link"), :controller => "/platform/developer/apps", :action => :index, :id => app.id)%>
+      <%=link_to(tr("info", "Application action link"), controller: "/platform/apps", action: :view, id: app.id, sec: 'Info')%>
+      | <%=link_to(tr("reviews", "Application action link"), controller: "/platform/apps", action: :view, id: app.id, sec: 'Reviews')%>
+      | <%=link_to(tr("discussions", "Application action link"), controller: "/platform/apps", action: :view, id: app.id, sec: 'Discussions')%>
+      | <%=link_to(tr("configure", "Application action link"), controller: "/platform/developer/apps", action: :index, id: app.id)%>
     </div>
 
     <%=platform_toggler_tag("app_content_#{app.id}")%>
 
-    <%=image_tag(h(app.icon_url), :title => h(app.name)) %>&nbsp;
+    <%=image_tag(h(app.icon_url), title: h(app.name)) %>&nbsp;
     <a name="app_<%=app.id%>" style="text-decoration:none;color:black;"><%= h(app.versioned_name) %></a>
   </div>
 
   <div id="app_content_<%=app.id%>" class="section_box colored">
-    <%=render :partial=>"statistics", :locals => {:app => app}%>
+    <%=render partial: "statistics", locals: {app: app}%>
 
-    <%=render :partial=>"reviews", :locals => {:app => app}%>
+    <%=render partial: "reviews", locals: {app: app}%>
 
-    <%=render :partial=>"discussions", :locals => {:app => app}%>
+    <%=render partial: "discussions", locals: {app: app}%>
 
   </div>
 <% end %>
 
 
-<%= render :partial => "/platform/developer/common/footer" %>
+<%= render partial: "/platform/developer/common/footer" %>

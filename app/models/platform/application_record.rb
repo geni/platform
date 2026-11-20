@@ -6,7 +6,7 @@ module Platform
 
     # Used by acts_as_state_machine. Removed in Rails 3.2
     def self.write_inheritable_attribute(attr, value)
-      class_attribute attr, :default => value
+      class_attribute attr, default: value
     end
 
     # Used by acts_as_state_machine. Removed in Rails 3.2
@@ -16,7 +16,7 @@ module Platform
 
     # Used by acts_as_state_machine. Removed in Rails 3.2
     def self.write_inheritable_hash(attr, hash={})
-      class_attribute attr, :default => hash
+      class_attribute attr, default: hash
     end
 
     def self.read_inheritable_attribute(attr)

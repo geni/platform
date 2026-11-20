@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     end
 
     if save_locale and !current_user.guest?
-      current_user.update!(:locale => session[:locale])
+      current_user.update!(locale: session[:locale])
     end
 
     session[:locale]
@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user
   def current_user
-    @current_user ||= User.find_by_id(session[:user_id].to_i) || User.new(:id => -1, :name => 'Guest').freeze
+    @current_user ||= User.find_by_id(session[:user_id].to_i) || User.new(id: -1, name: 'Guest').freeze
   end
 
 private

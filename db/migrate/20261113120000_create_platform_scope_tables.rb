@@ -24,15 +24,15 @@ class CreatePlatformScopeTables < ActiveRecord::Migration[4.2]
   # belongs.  The join table was empty.
   def self.up
     create_table :platform_scopes do |t|
-      t.string    :keyword,     :null => false
-      t.text      :description, :null => false
+      t.string    :keyword,     null: false
+      t.text      :description, null: false
       t.string    :headline
-      t.integer   :icon_id,     :limit => 8
+      t.integer   :icon_id,     limit: 8
       t.integer   :position
       t.timestamps
     end
 
-    add_index :platform_scopes, [:keyword], :name => 'index_platform_scopes_on_keyword'
+    add_index :platform_scopes, [:keyword], name: 'index_platform_scopes_on_keyword'
 
     create_table :platform_application_scopes do |t|
       t.integer   :application_id
@@ -41,9 +41,9 @@ class CreatePlatformScopeTables < ActiveRecord::Migration[4.2]
     end
 
     add_index :platform_application_scopes, [:application_id],
-              :name => 'index_platform_application_scopes_on_application_id'
+              name: 'index_platform_application_scopes_on_application_id'
     add_index :platform_application_scopes, [:scope_id],
-              :name => 'index_platform_application_scopes_on_scope_id'
+              name: 'index_platform_application_scopes_on_scope_id'
   end
 
   def self.down

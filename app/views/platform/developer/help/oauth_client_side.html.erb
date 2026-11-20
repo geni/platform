@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 <div class="documentation_section_title">
     <%= tr("Client Side Authorization Flow") %>
 </div>
@@ -96,13 +96,13 @@
         <%=tr("If the user is already logged in, we validate the login cookie that we have stored on the user's browser and authenticate the user.") %><%=tr("If the user is not logged in, they are prompted to enter their credentials:") %>
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/login_web.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/login_web.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <p>
         <%=tr("Once we have successfully authenticated the user, we will prompt the user to authorize your application:") %>
     </p>
     <p style="text-align:center">
-        <%=image_tag("/platform/images/help/auth_web.png", :style=>"width:600px;", :class => "screenshot") %>
+        <%=image_tag("/platform/images/help/auth_web.png", style: "width:600px;", class: "screenshot") %>
     </p>
     <p>
         <%=tr("If the user presses Don't Allow, your app is not authorized.") %><%=tr("The user will be redirected (via HTTP 302) to the URL you passed in the redirect_uri parameter with the following error information:") %>
@@ -196,7 +196,7 @@
     </div>
     <h2><%=tr("Cross Domain API Calls")%></h2>
     <p>
-    	 <%=tr("{site_title} Platform supports cross-domain API calls using [link: JSONP] framework.", "", :site_title => Platform::Config.site_title, :link => ["http://en.wikipedia.org/wiki/JSONP"]) %> 
+    	 <%=tr("{site_title} Platform supports cross-domain API calls using [link: JSONP] framework.", "", site_title: Platform::Config.site_title, link: ["http://en.wikipedia.org/wiki/JSONP"]) %> 
        <%=tr("Below is a simple example for Geni JSONP API call.")%> 
 			 <%=tr("You must provide a valid access token in order to make an JSONP API call.")%> 
     </p>
@@ -255,9 +255,9 @@ if (Geni.access_token == "") {
 }
 
 </pre>
-    <h3><%=tr("{site_title} JavaScript Client SDK", "", :site_title => Platform::Config.site_title)%></h3>
+    <h3><%=tr("{site_title} JavaScript Client SDK", "", site_title: Platform::Config.site_title)%></h3>
     <p>
-    	<%=tr("{site_title} Platform comes with a [link: full featured JavaScript library] that allows you to build dynamic web applications in the browser with {site_title}'s data.", "", :site_title => Platform::Config.site_title, :link => ["/platform/developer/help/sdk_js"])%>
+    	<%=tr("{site_title} Platform comes with a [link: full featured JavaScript library] that allows you to build dynamic web applications in the browser with {site_title}'s data.", "", site_title: Platform::Config.site_title, link: ["/platform/developer/help/sdk_js"])%>
 			<%=tr("It supports authentication, autherization and API calls to get the site data.")%>
     </p>
 
@@ -273,8 +273,8 @@ if (Geni.access_token == "") {
         <%=tr("[bold: Your redirect_uri must match your registered Callback URL] on scheme, host, port and path. Extra query parameters are allowed.")%>
       </li>
       <li>
-        <%=tr("[bold: For new integrations, prefer the server side flow with PKCE.] See [link: the server side flow]. This page describes the implicit grant, which returns the token through a browser redirect and is removed in OAuth 2.1. An authorization code plus PKCE gives a browser application the same thing without putting a token in a URL.", "", :link => ["/platform/developer/help/oauth_server_side"])%>
+        <%=tr("[bold: For new integrations, prefer the server side flow with PKCE.] See [link: the server side flow]. This page describes the implicit grant, which returns the token through a browser redirect and is removed in OAuth 2.1. An authorization code plus PKCE gives a browser application the same thing without putting a token in a URL.", "", link: ["/platform/developer/help/oauth_server_side"])%>
       </li>
     </ul>
 </div>
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

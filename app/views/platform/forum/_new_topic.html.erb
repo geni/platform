@@ -10,7 +10,7 @@
           <%=tr("Topic:")%>
         </td>
         <td>
-          <%=text_field_tag(:topic, "", :style=>"width:99%")%>
+          <%=text_field_tag(:topic, "", style: "width:99%")%>
         </td>
       </tr>
       <tr>
@@ -18,17 +18,17 @@
           <%=tr("Message:") %>
         </td>
         <td style="padding-top:5px;">
-          <%=text_area_tag(:message, "", :style=>"width:99%; height:80px;")%>
+          <%=text_area_tag(:message, "", style: "width:99%; height:80px;")%>
         </td>
       </tr>
     </table>
     
     <div style="padding-top:20px; padding-bottom:10px;text-align:center">
-        <%=link_to_function(tr('Start a New Discussion', 'Client application action label'), "Platform.Effects.submit('forum_topic_form')", :class=>'button super blue medium') %>
+        <%=link_to_function(tr('Start a New Discussion', 'Client application action label'), "Platform.Effects.submit('forum_topic_form')", class: 'button super blue medium') %>
 
         <% if include_cancel_button %>
         <%=tr("or")%> 
-        <%=link_to(tr("Cancel"), :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions')%>
+        <%=link_to(tr("Cancel"), controller: '/platform/apps', action: :view, id: @app.id, sec: 'Discussions')%>
         <% end %>  
     </div>
   <% end %>

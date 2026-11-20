@@ -4,9 +4,9 @@ module Platform
       extend ActiveSupport::Concern
 
       included do
-        has_many :access_tokens,  :class_name => "Platform::Oauth::AccessToken",  :dependent => :destroy
-        has_many :request_tokens, :class_name => "Platform::Oauth::RequestToken", :dependent => :destroy
-        has_many :refresh_tokens, :class_name => "Platform::Oauth::RefreshToken", :dependent => :destroy
+        has_many :access_tokens,  class_name: "Platform::Oauth::AccessToken",  dependent: :destroy
+        has_many :request_tokens, class_name: "Platform::Oauth::RequestToken", dependent: :destroy
+        has_many :refresh_tokens, class_name: "Platform::Oauth::RefreshToken", dependent: :destroy
       end
 
       def authorized_oauth_access_tokens

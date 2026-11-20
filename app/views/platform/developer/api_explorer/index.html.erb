@@ -1,4 +1,4 @@
-<%= render :partial => "/platform/developer/common/header" %>
+<%= render partial: "/platform/developer/common/header" %>
 <%= javascript_include_tag("/platform/javascripts/api_explorer.js") %>
 <%= javascript_include_tag("/platform/javascripts/json_formatter.js") %>
 <%= stylesheet_link_tag("/platform/stylesheets/api_explorer.css") %>
@@ -39,9 +39,9 @@
 			<table style="width:100%">
 				<tr>
 					<td style="width:200px; vertical-align:middle">
-						<%=select_tag("app_id", options_for_select(platform_current_developer.app_options, params[:app_id]), :style=>"width:95%")%>
+						<%=select_tag("app_id", options_for_select(platform_current_developer.app_options, params[:app_id]), style: "width:95%")%>
 					</td>
-					<td><%=text_field_tag(:access_token, "", :style=>"width:95%;", :placeholder => "Paste an access token or click on the 'Get Access Token' button to generate one.")%> &nbsp;
+					<td><%=text_field_tag(:access_token, "", style: "width:95%;", placeholder: "Paste an access token or click on the 'Get Access Token' button to generate one.")%> &nbsp;
 					  <%=link_to_function("X", "clearAccessToken()")%>
             <%= javascript_tag do %>
               function clearAccessToken() {
@@ -50,7 +50,7 @@
             <% end %>
 					</td>
 					<td style="width:150px; text-align:right;">
-						<%= link_to_function(trl('Get Access Token', 'Client application action label'), "getAccessToken()", :class=>'button super blue medium') %>
+						<%= link_to_function(trl('Get Access Token', 'Client application action label'), "getAccessToken()", class: 'button super blue medium') %>
 					</td>
 				</tr>
 			</table>
@@ -61,18 +61,18 @@
   	<table>
   		<tr>
         <td style="width:50px;">
-          <%=select_tag("api_version", options_for_select(Platform::Config.api_supported_version_options, @api_version), :onChange=>"switchApiVersion()")%>
+          <%=select_tag("api_version", options_for_select(Platform::Config.api_supported_version_options, @api_version), onChange: "switchApiVersion()")%>
         </td>
   			<td style="width:80px;">
-				  <%=select_tag("request_method", options_for_select(['GET', 'POST', 'PUT', 'DELETE'], params[:method] || 'GET'), :onChange=>"switchRequestMethod()")%>
+				  <%=select_tag("request_method", options_for_select(['GET', 'POST', 'PUT', 'DELETE'], params[:method] || 'GET'), onChange: "switchRequestMethod()")%>
   			</td>
 				<td style="border:1px solid #ccc;padding:0px;margin:0px;font-size:12px;color:#888;vertical-align:middle; background-color:white;">
 				  <span style="float:right;padding-right:5px;"><%=link_to_function(image_tag("/platform/images/arrow_down.gif"), "toggleApiOptions(this)")%></span>
 				  <span style="padding-left:5px;vertical-align:middle;white-space:nowrap;">//<%=Platform::Config.api_base_url%></span>
-          <%=text_field_tag(:api_path, params[:path], :class=>"path")%>
+          <%=text_field_tag(:api_path, params[:path], class: "path")%>
 				</td>
 				<td style="padding-left:5px;text-align:right;">
-          <%= link_to_function(trl('Submit', 'Client application action label'), "clearHistoryAndSubmitRequest();", :class=>'button super blue medium') %>
+          <%= link_to_function(trl('Submit', 'Client application action label'), "clearHistoryAndSubmitRequest();", class: 'button super blue medium') %>
 				</td>
         <%= javascript_tag do %>
           function clearHistoryAndSubmitRequest() {
@@ -103,15 +103,15 @@
 
   <div style="font-size:12px; background-color:#eee;padding:3px;border:1px dotted #ccc;">
 	  <div style="float:right;">
-	    <%=link_to_function('<<', "makePreviousCall()", :class=>"button super gray small", :id => "history_previous") %>
-	    <%=link_to_function('>>', "makeNextCall()", :class=>"button super gray small", :id => "history_next") %>
-  	  <%=link_to_function(image_tag("/platform/images/arrow_down.gif", :style=>"vertical-align:middle"), "toggleApiHistory(this)", :class=>"button super gray small") %>
+	    <%=link_to_function('<<', "makePreviousCall()", class: "button super gray small", id: "history_previous") %>
+	    <%=link_to_function('>>', "makeNextCall()", class: "button super gray small", id: "history_next") %>
+  	  <%=link_to_function(image_tag("/platform/images/arrow_down.gif", style: "vertical-align:middle"), "toggleApiHistory(this)", class: "button super gray small") %>
 		</div>
 
-		<%=link_to_function(image_tag("/platform/images/clipboard_icon.gif", :style=>"height:14px;"), "copyToClipboard(this)", :class=>"button super gray small", :id => "") %>
-    <%=link_to_function(image_tag("/platform/images/world_link.png", :style=>"height:14px;"), "copyUrlToClipboard(this)", :class=>"button super gray small", :id => "") %>
-    <%=link_to_function(image_tag("/platform/images/minus_node.png", :style=>"height:14px;"), "collapseAllResponseObjects()", :class=>"button super gray small", :id => "") %>
-    <%=link_to_function(image_tag("/platform/images/plus_node.png", :style=>"height:14px;"), "expandAllResponseObjects()", :class=>"button super gray small", :id => "") %>
+		<%=link_to_function(image_tag("/platform/images/clipboard_icon.gif", style: "height:14px;"), "copyToClipboard(this)", class: "button super gray small", id: "") %>
+    <%=link_to_function(image_tag("/platform/images/world_link.png", style: "height:14px;"), "copyUrlToClipboard(this)", class: "button super gray small", id: "") %>
+    <%=link_to_function(image_tag("/platform/images/minus_node.png", style: "height:14px;"), "collapseAllResponseObjects()", class: "button super gray small", id: "") %>
+    <%=link_to_function(image_tag("/platform/images/plus_node.png", style: "height:14px;"), "expandAllResponseObjects()", class: "button super gray small", id: "") %>
   </div>
   <div class="section_box response_data" id="response_data" style="margin-top:5px;">
 
@@ -135,7 +135,7 @@
 
 <div id="api_clipboard" class="api_options" style="display:none;">
   <div id="api_clipboard_container" class="inner">
-  	<%=text_area_tag("api_clipboard_text", "", :style => "width:745px;height:300px;") %>
+  	<%=text_area_tag("api_clipboard_text", "", style: "width:745px;height:300px;") %>
 		<div style="padding-top:5px;color:#444;">
 		  <%=tr("Use ctrl+c to copy the contents of the text area to your clipboard.") %>
 		</div>
@@ -156,4 +156,4 @@
   });
 <% end %>
 
-<%= render :partial => "/platform/developer/common/footer" %>
+<%= render partial: "/platform/developer/common/footer" %>

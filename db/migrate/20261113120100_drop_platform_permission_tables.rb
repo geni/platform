@@ -22,16 +22,16 @@ class DropPlatformPermissionTables < ActiveRecord::Migration[4.2]
 
   def self.down
     create_table :platform_permissions do |t|
-      t.string    :keyword,     :null => false
-      t.text      :description, :null => false
+      t.string    :keyword,     null: false
+      t.text      :description, null: false
       t.timestamps
-      t.integer   :icon_id,     :limit => 8
+      t.integer   :icon_id,     limit: 8
       t.integer   :level
       t.integer   :position
       t.string    :headline
     end
 
-    add_index :platform_permissions, [:keyword], :name => 'index_platform_permissions_on_keyword'
+    add_index :platform_permissions, [:keyword], name: 'index_platform_permissions_on_keyword'
 
     create_table :platform_application_permissions do |t|
       t.integer   :application_id
@@ -40,6 +40,6 @@ class DropPlatformPermissionTables < ActiveRecord::Migration[4.2]
     end
 
     add_index :platform_application_permissions, [:application_id],
-              :name => 'index_platform_application_permissions_on_application_id'
+              name: 'index_platform_application_permissions_on_application_id'
   end
 end

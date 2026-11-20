@@ -6,7 +6,7 @@
         	Update Developer
     </div>
     <div class="bd">
-        <%= form_for(@dev, :as => :dev, :url => {:action => :update, :dev_id => @dev.id}, :html => {:id => 'tr8n_form', :method => :post, :class => "tr8n"}) do |f| %>
+        <%= form_for(@dev, as: :dev, url: {action: :update, dev_id: @dev.id}, html: {id: 'tr8n_form', method: :post, class: "tr8n"}) do |f| %>
 				<%=hidden_field_tag(:source_url, request.env['HTTP_REFERER'])%>
         <table class="admin_table">
           <tr>
@@ -14,7 +14,7 @@
                   Name:
               </th>
               <td>
-                	<%= f.text_field :name, :style=>"width:99%;" %>
+                	<%= f.text_field :name, style: "width:99%;" %>
               </td>
           </tr>
           <tr>
@@ -22,7 +22,7 @@
                   About:
               </th>
               <td>
-                	<%= f.text_area :about, :style=>"width:99%;height:100px;" %>
+                	<%= f.text_area :about, style: "width:99%;height:100px;" %>
               </td>
           </tr>
           <tr>
@@ -30,7 +30,7 @@
                   URL:
               </th>
               <td>
-                	<%= f.text_field :url, :style=>"width:99%;" %>
+                	<%= f.text_field :url, style: "width:99%;" %>
               </td>
           </tr>
           <tr>
@@ -38,7 +38,7 @@
                   Email:
               </th>
               <td>
-                	<%= f.text_field :email, :style=>"width:99%;" %>
+                	<%= f.text_field :email, style: "width:99%;" %>
               </td>
           </tr>
           <tr>
@@ -46,13 +46,13 @@
                   Phone:
               </th>
               <td>
-                	<%= f.text_field :phone, :style=>"width:99%;" %>
+                	<%= f.text_field :phone, style: "width:99%;" %>
               </td>
           </tr>
         </table>
         <% end %>
     </div>
     <div class="ft">
-        <%= render :partial => "/tr8n/admin/common/lightbox_buttons" %>
+        <%= render partial: "/tr8n/admin/common/lightbox_buttons" %>
     </div>
 </div>

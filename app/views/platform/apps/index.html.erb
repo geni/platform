@@ -1,4 +1,4 @@
-<%= render :partial => "/platform/common/header" %>
+<%= render partial: "/platform/common/header" %>
 
 <style>
   .apps_header {
@@ -68,9 +68,9 @@
       <span style="float:right; padding-top:10px; font-size:12px;">
 			   <%=tr("Have an idea for an app?")%>
 			   <% if platform_current_user_is_developer? %>
-				  <%=link_to(tr('Create a new application!', 'Client application action label'), {:controller => "/platform/developer/apps", :action=>:index}) %>
+				  <%=link_to(tr('Create a new application!', 'Client application action label'), {controller: "/platform/developer/apps", action: :index}) %>
 				 <% else %>
-           <%=link_to(tr('Become a developer!', 'Client application action label'), {:controller => "/platform/developer/apps", :action=>:index}) %>
+           <%=link_to(tr('Become a developer!', 'Client application action label'), {controller: "/platform/developer/apps", action: :index}) %>
 				 <% end %>
       </span>
 
@@ -87,7 +87,7 @@
 <%# `<%` throws away what form_tag's block captures, so the search box was built and discarded
     and the directory had no search field at all. %>
 					<%= form_tag({action: :index}, method: :get) do %>
-					 <%=text_field_tag(:search, params[:search], :style => "width:195px", :label => "Search Apps")%>
+					 <%=text_field_tag(:search, params[:search], style: "width:195px", label: "Search Apps")%>
 					<% end %>
 					<div style="border: 1px dotted #ccc; padding-top:10px; margin-top:10px; margin-bottom:15px; background: #f9f8f7; vertical-align:top; width:200px;">
 	          <% @categories.each do |cat| %>
@@ -96,7 +96,7 @@
 	            <% else %>
 	                <div class="cat_item">
 	            <% end %>
-	              <%=link_to(cat.name, {:cat_id=>cat.id}) %>
+	              <%=link_to(cat.name, {cat_id: cat.id}) %>
 	            </div>
 							<% if @category and (cat == @category or cat.children.include?(@category)) %>
 								<% cat.children.each do |sub_cat| %>
@@ -105,7 +105,7 @@
 		              <% else %>
 		                  <div class="sub_cat_item">
 		              <% end %>
-		                <%=link_to(sub_cat.name, {:cat_id=>sub_cat.id}) %>
+		                <%=link_to(sub_cat.name, {cat_id: sub_cat.id}) %>
 		              </div>
 								<% end %>
               <% end %>
@@ -121,16 +121,16 @@
 
             <% if Platform::Config.featured_apps_enabled?%>
 	            <div id="featured_apps">
-	              <%= render(:partial => 'featured_apps_module', :locals => {:apps => @featured_apps, :per_row => Platform::Config.featured_apps_per_row})%>
+	              <%= render(partial: 'featured_apps_module', locals: {apps: @featured_apps, per_row: Platform::Config.featured_apps_per_row})%>
 							</div>
 						<% end %>
 
             <div id="suggested_apps">
-  						<%= render(:partial => 'apps_module', :locals => {:apps => @apps, :per_row => Platform::Config.suggested_apps_per_row})%>
+  						<%= render(partial: 'apps_module', locals: {apps: @apps, per_row: Platform::Config.suggested_apps_per_row})%>
 						</div>
 
             <div id="searched_apps">
-              <%= render(:partial => 'search_apps_module', :locals => {:apps => @search_apps})%>
+              <%= render(partial: 'search_apps_module', locals: {apps: @search_apps})%>
 						</div>
 				</td>
 			</tr>
@@ -147,4 +147,4 @@
 		});
 	}
 <% end %>
-<%= render :partial => "/platform/common/footer" %>
+<%= render partial: "/platform/common/footer" %>

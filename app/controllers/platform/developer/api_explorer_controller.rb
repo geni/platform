@@ -45,15 +45,15 @@ module Platform
         @api_history = JSON.parse(request.cookies["api_history"]) unless request.cookies["api_history"].blank?
         @api_history_index = (params["api_history_index"] || -1).to_i
 
-        render(:layout => false)
+        render(layout: false)
       end
 
       def options
-        render(:layout => false)
+        render(layout: false)
       end
 
       def oauth_lander
-        render :layout => false
+        render layout: false
       end
 
     private

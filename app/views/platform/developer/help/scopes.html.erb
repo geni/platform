@@ -1,4 +1,4 @@
-<%= render :partial => "header" %>
+<%= render partial: "header" %>
 
 <style>
   table.documentation_table img { max-width:150px; }
@@ -32,7 +32,7 @@
 					<%=tr("Applications that use public API without providing an access token or cookie-based authentication.")%>
 				</td>
 				<td>
-					<%=tr("{num||request} per {count||second}", "Application rate limit", :num => 5, :count => 10)%>
+					<%=tr("{num||request} per {count||second}", "Application rate limit", num: 5, count: 10)%>
 				</td>
 			</tr>
 			<tr>
@@ -43,7 +43,7 @@
 					<%=tr("Applications that make calls to Geni API using application token, which were authorized on behalf of the applications using app key and secret.")%>
 				</td>
 				<td>
-					<%=tr("{num||request} per {count||second}", "Application rate limit", :num => 40, :count => 10)%>
+					<%=tr("{num||request} per {count||second}", "Application rate limit", num: 40, count: 10)%>
 				</td>
 			</tr>
 			<tr>
@@ -54,7 +54,7 @@
 					<%=tr("Applications that make calls to Geni API by providing application token, which was authorized on behalf of the applications using app key and secret.")%>
 				</td>
 				<td>
-					<%=tr("{num||request} per {count||second}", "Application rate limit", :num => 40, :count => 10)%>
+					<%=tr("{num||request} per {count||second}", "Application rate limit", num: 40, count: 10)%>
 				</td>
 			</tr>
   	</table>
@@ -70,4 +70,4 @@
 	
 </div>
 
-<%= render :partial => "footer" %>
+<%= render partial: "footer" %>

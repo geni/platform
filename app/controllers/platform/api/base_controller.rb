@@ -263,7 +263,7 @@ module Platform
               # is javascript, not json, and not text/plain either.
               render(plain: script, content_type: 'application/javascript')
             else
-              render(opts.merge(:json => json))
+              render(opts.merge(json: json))
             end
           end
 
@@ -341,7 +341,7 @@ module Platform
 
       def page_model_conditions(id_fields=nil)
         id_fields ||= self.class.id_fields
-        {:id => ids(id_fields)}
+        {id: ids(id_fields)}
       end
 
       # default id fields
@@ -433,7 +433,7 @@ module Platform
           end
         else
           # First request in time frame.
-          Platform::Cache.set(cache_key, '1', :expiry => request_window, :raw => true)
+          Platform::Cache.set(cache_key, '1', expiry: request_window, raw: true)
         end
       end
 
@@ -455,7 +455,7 @@ module Platform
 
       def request_count
         @request_count ||= begin
-          count = Platform::Cache.get(cache_key, :raw => true)
+          count = Platform::Cache.get(cache_key, raw: true)
           count && count.to_i
         end
       end
@@ -482,10 +482,10 @@ module Platform
 
       def navigation_params(page)
         {
-          :controller => "api/#{controller_name}",
-          :action     => action_name,
-          :page       => page,
-          :format     => 'json' == params[:format] ? nil : params[:format]
+          controller: "api/#{controller_name}",
+          action: action_name,
+          page: page,
+          format: 'json' == params[:format] ? nil : params[:format]
         }
       end
       ############################################################################
@@ -515,17 +515,17 @@ module Platform
 
         duration = response.headers['X-Runtime']
         Platform::ApplicationLog.create(
-              :application => client_app,
-              :user_id => Platform::Config.current_user.try(:id),
-              :event => "#{params[:controller]}-#{params[:action]}",
+              application: client_app,
+              user_id: Platform::Config.current_user.try(:id),
+              event: "#{params[:controller]}-#{params[:action]}",
               # to_unsafe_h, because the data column is YAML-serialized and Psych refuses to dump
               # an ActionController::Parameters -- so every log line raised Psych::DisallowedClass
               # from the after_action, after the response had already been rendered.
               data: params.to_unsafe_h,
-              :request_method => request.request_method,
-              :user_agent => request.user_agent,
-              :ip => request.remote_ip,
-              :duration => (duration =~ /[.0-9]/) ? duration.to_f / 1000 : nil
+              request_method: request.request_method,
+              user_agent: request.user_agent,
+              ip: request.remote_ip,
+              duration: (duration =~ /[.0-9]/) ? duration.to_f / 1000 : nil
         )
       end
 

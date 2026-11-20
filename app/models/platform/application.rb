@@ -73,34 +73,34 @@ module Platform
     # useful methods - should be public
     include Platform::SimpleStringPermissions
 
-    acts_as_tree :order => 'version'
+    acts_as_tree order: 'version'
 
-    belongs_to :developer, :class_name => 'Platform::Developer::Developer'
-    has_many :application_developers, :dependent => :destroy
-    has_many :application_metrics, :dependent => :destroy
-    has_many :application_users, :dependent => :destroy
-    has_many :application_logs, :dependent => :destroy
+    belongs_to :developer, class_name: 'Platform::Developer::Developer'
+    has_many :application_developers, dependent: :destroy
+    has_many :application_metrics, dependent: :destroy
+    has_many :application_users, dependent: :destroy
+    has_many :application_logs, dependent: :destroy
 
-    has_many :tokens,           :class_name => 'Platform::Oauth::OauthToken', :dependent => :destroy
-    has_many :access_tokens,    :class_name => 'Platform::Oauth::AccessToken', :dependent => :destroy
-    has_many :refresh_tokens,   :class_name => 'Platform::Oauth::RefreshToken', :dependent => :destroy
+    has_many :tokens,           class_name: 'Platform::Oauth::OauthToken', dependent: :destroy
+    has_many :access_tokens,    class_name: 'Platform::Oauth::AccessToken', dependent: :destroy
+    has_many :refresh_tokens,   class_name: 'Platform::Oauth::RefreshToken', dependent: :destroy
 
-    has_many :application_categories, :dependent => :destroy
-    has_many :categories, :through => :application_categories
+    has_many :application_categories, dependent: :destroy
+    has_many :categories, through: :application_categories
 
     # OAuth scopes granted to this application.  Capability flags are not here -- they are the
     # comma-separated #permissions column, read through Platform::SimpleStringPermissions.  The
     # two used to share platform_permissions, which is what made #granted_scope able to intersect
     # a requested OAuth scope against :allow_iframe.
-    has_many :application_scopes, :dependent => :destroy
-    has_many :scopes, :through => :application_scopes
+    has_many :application_scopes, dependent: :destroy
+    has_many :scopes, through: :application_scopes
 
-    belongs_to :icon, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
-    belongs_to :logo, :class_name => Platform::Config.site_media_class, :dependent => :destroy, :optional => true
+    belongs_to :icon, class_name: Platform::Config.site_media_class, dependent: :destroy, optional: true
+    belongs_to :logo, class_name: Platform::Config.site_media_class, dependent: :destroy, optional: true
 
     validates_presence_of :name, :key, :secret
     validates_uniqueness_of :key
-    before_validation :generate_keys, :on => :create
+    before_validation :generate_keys, on: :create
 
     # The client secret is never serialized.
     #
@@ -132,15 +132,15 @@ module Platform
     end
 
     URL_REGEX = /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i
-    validates_format_of :url,                   :with => URL_REGEX, :allow_blank=>true
-    validates_format_of :support_url,           :with => URL_REGEX, :allow_blank=>true
-    validates_format_of :privacy_policy_url,    :with => URL_REGEX, :allow_blank=>true
-    validates_format_of :terms_of_service_url,  :with => URL_REGEX, :allow_blank=>true
-    validates_format_of :canvas_url,            :with => URL_REGEX, :allow_blank=>true
+    validates_format_of :url,                   with: URL_REGEX, allow_blank: true
+    validates_format_of :support_url,           with: URL_REGEX, allow_blank: true
+    validates_format_of :privacy_policy_url,    with: URL_REGEX, allow_blank: true
+    validates_format_of :terms_of_service_url,  with: URL_REGEX, allow_blank: true
+    validates_format_of :canvas_url,            with: URL_REGEX, allow_blank: true
 
     attr_accessor :token_callback_url
 
-    acts_as_state_machine :initial => :new
+    acts_as_state_machine initial: :new
     state :new
     state :submitted
     state :approved
@@ -149,32 +149,32 @@ module Platform
     state :deprecated
 
     event :submit do
-      transitions :from => :new,        :to => :submitted
-      transitions :from => :rejected,   :to => :submitted
+      transitions from: :new,        to: :submitted
+      transitions from: :rejected,   to: :submitted
     end
 
     event :deprecate do
-      transitions :from => :approved,   :to => :deprecated
+      transitions from: :approved,   to: :deprecated
     end
 
     event :block do
-      transitions :from => :new,        :to => :blocked
-      transitions :from => :submitted,  :to => :blocked
-      transitions :from => :approved,   :to => :blocked
-      transitions :from => :rejected,   :to => :blocked
+      transitions from: :new,        to: :blocked
+      transitions from: :submitted,  to: :blocked
+      transitions from: :approved,   to: :blocked
+      transitions from: :rejected,   to: :blocked
     end
 
     event :unblock do
-      transitions :from => :blocked,    :to => :new
+      transitions from: :blocked,    to: :new
     end
 
     event :approve do
-      transitions :from => :new,        :to => :approved
-      transitions :from => :submitted,  :to => :approved
+      transitions from: :new,        to: :approved
+      transitions from: :submitted,  to: :approved
     end
 
     event :reject do
-      transitions :from => :submitted,  :to => :rejected
+      transitions from: :submitted,  to: :rejected
     end
 
     def self.for(client_id)
@@ -209,7 +209,7 @@ module Platform
       # different reason that its guard consulted a method hardcoded to return [].
       return if application_scopes.any? { |as| as.scope_id == scope.id }
 
-      application_scopes.create(:scope => scope)
+      application_scopes.create(scope: scope)
     end
 
     def scope_granted?(key)
@@ -655,10 +655,10 @@ module Platform
 
     def store_icon(file)
       if Platform::Config.site_media_enabled?
-        update(:icon => Platform::Config.create_media(file))
+        update(icon: Platform::Config.create_media(file))
       else
         self.icon = Platform::Media::Image.create
-        self.icon.write(file, :size => 16)
+        self.icon.write(file, size: 16)
         self.save
       end
     end
@@ -674,10 +674,10 @@ module Platform
 
     def store_logo(file)
       if Platform::Config.site_media_enabled?
-        update(:logo => Platform::Config.create_media(file))
+        update(logo: Platform::Config.create_media(file))
       else
         self.logo = Platform::Media::Image.create
-        self.logo.write(file, :size => 75)
+        self.logo.write(file, size: 75)
         self.save
       end
     end
@@ -720,7 +720,7 @@ module Platform
     end
 
     def reset_secret!
-      update(:secret => Platform::Helper.generate_key(40)[0,40])
+      update(secret: Platform::Helper.generate_key(40)[0,40])
     end
 
     def authorize_user(user = Platform::Config.current_user)

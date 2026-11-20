@@ -1,4 +1,4 @@
-<%= render :partial => "/platform/apps/app_header" %>
+<%= render partial: "/platform/apps/app_header" %>
 
 <div style="padding-left:10px;">
 	<% if params[:sec] == 'Info' %>
@@ -47,24 +47,24 @@
 					<% end %>
 		    </table>
 		  </div>
-	  <%= render :partial => "/platform/ratings/list" %>
+	  <%= render partial: "/platform/ratings/list" %>
 	<% end %>
 
 	<% if params[:sec] == 'Reviews' %>
-	  <%= render :partial => "/platform/ratings/list" %>
+	  <%= render partial: "/platform/ratings/list" %>
 	<% end %>
 
 	<% if params[:sec] == 'Discussions' %>
 	  <% if @topic %>
-	    <%= render :partial => "/platform/forum/topic" %>
+	    <%= render partial: "/platform/forum/topic" %>
 		<% else %>
 		  <% if params[:mode] == 'create' %>
-	      <%= render :partial => "/platform/forum/new_topic", :locals => {:include_cancel_button => true} %>
+	      <%= render partial: "/platform/forum/new_topic", locals: {include_cancel_button: true} %>
 			<% else %>
-	      <%= render :partial => "/platform/forum/topics" %>
+	      <%= render partial: "/platform/forum/topics" %>
 			<% end %>
 		<% end %>
 	<% end %>
 </div>
 
-<%= render :partial => "/platform/apps/app_footer" %>
+<%= render partial: "/platform/apps/app_footer" %>

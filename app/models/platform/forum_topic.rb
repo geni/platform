@@ -41,7 +41,7 @@
 module Platform
   class ForumTopic < ApplicationRecord
 
-    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    belongs_to :user, class_name: Platform::Config.user_class_name, foreign_key: :user_id
 
     # :optional, because a topic with no subject is the site-wide developer forum -- which is
     # exactly what Platform::Developer::ForumController#index lists ("subject_id is null") and

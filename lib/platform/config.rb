@@ -169,7 +169,7 @@ class Platform::Config
       icon_path = description.delete("icon_path")
       logo_path = description.delete("logo_path")
 
-      app = Platform::Application.create(description.merge(:developer => system_developer))
+      app = Platform::Application.create(description.merge(developer: system_developer))
       app.store_icon(File.new("#{root}/#{icon_path}", "r")) if icon_path
       app.store_logo(File.new("#{root}/#{logo_path}", "r")) if logo_path
 
@@ -185,7 +185,7 @@ class Platform::Config
 
   def self.init_categories(parent, categories)
     categories.each do |keyword, info|
-      cat = Platform::Category.create(:parent => parent, :keyword => keyword, :name => info[:name], :position => info[:position])
+      cat = Platform::Category.create(parent: parent, keyword: keyword, name: info[:name], position: info[:position])
       init_categories(cat, info[:categories]) if info[:categories]
     end
   end
@@ -214,7 +214,7 @@ class Platform::Config
     file = Rails.root.join(file_path)
     file = Platform::Engine.root.join(file_path) unless File.exist?(file)
 
-    yml = YAML.load_file(file, :aliases => true)
+    yml = YAML.load_file(file, aliases: true)
     yml = yml[for_env] unless for_env.nil?
     HashWithIndifferentAccess.new(yml)
   end

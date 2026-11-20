@@ -17,8 +17,8 @@ class AddPkceToPlatformOauthTokens < ActiveRecord::Migration[4.2]
   # revoked is just a client using a credential it no longer has.  Keying off invalidated_at
   # alone would turn every ordinary revocation into a reported replay.
   def self.up
-    add_column :platform_oauth_tokens, :code_challenge,        :string, :limit => 128
-    add_column :platform_oauth_tokens, :code_challenge_method, :string, :limit => 10
+    add_column :platform_oauth_tokens, :code_challenge,        :string, limit: 128
+    add_column :platform_oauth_tokens, :code_challenge_method, :string, limit: 10
     add_column :platform_oauth_tokens, :exchanged_at,          :timestamp
   end
 

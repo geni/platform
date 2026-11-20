@@ -26,7 +26,7 @@ module Platform
 
     def index
       unless Platform::Config.enable_app_directory?
-        return redirect_to(:controller=>"/platform/developer/apps", :action=>"index")
+        return redirect_to(controller: "/platform/developer/apps", action: "index")
       end
 
       @categories = Platform::Category.root.children
@@ -88,11 +88,11 @@ module Platform
       if params[:module] == 'featured_apps'
         category = Platform::Category.find(params[:cat_id])
         apps = Platform::Application.featured_for_category(category, page, Platform::Config.featured_apps_per_page)
-        render(:partial => 'featured_apps_module', :locals => {:apps => apps, :per_row => Platform::Config.featured_apps_per_row})
+        render(partial: 'featured_apps_module', locals: {apps: apps, per_row: Platform::Config.featured_apps_per_row})
       elsif params[:module] == 'suggested_apps'
         category = Platform::Category.find(params[:cat_id])
         apps = Platform::Application.regular_for_category(category, page, Platform::Config.suggested_apps_per_page)
-        render(:partial => 'apps_module', :locals => {:apps => apps, :per_row => Platform::Config.suggested_apps_per_row})
+        render(partial: 'apps_module', locals: {apps: apps, per_row: Platform::Config.suggested_apps_per_row})
       else
         render(partial: 'search_apps_module', locals: {apps: searched_apps})
       end

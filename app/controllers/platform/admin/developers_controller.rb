@@ -39,7 +39,7 @@ module Platform
 
       def lb_edit
         @dev = Platform::Developer::Developer.find_by_id(params[:dev_id])
-        render :layout => false
+        render layout: false
       end
 
       def update
@@ -48,7 +48,7 @@ module Platform
           dev.update(developer_params) if dev
         end
 
-        redirect_to_source(:action => :index)
+        redirect_to_source(action: :index)
       end
 
     private

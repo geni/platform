@@ -1,5 +1,5 @@
-<%= render :partial => "/platform/admin/common/header" %>
-<%= render :partial => "tabs", :locals => {:current_tab => 'Application Info'} %>
+<%= render partial: "/platform/admin/common/header" %>
+<%= render partial: "tabs", locals: {current_tab: 'Application Info'} %>
 
 <table class="admin_table">
     <tr>
@@ -76,16 +76,16 @@
 <%
               html = []
               if @app.new?
-                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to approve this application?")
+                 html << link_to("Approve", {action: :approve, app_id: @app.id}, method: :post, confirm: "Are you sure you want to approve this application?")
               elsif @app.submitted?
-                 html << link_to("Approve", {:action => :approve, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to approve this application?")
-                 html << link_to("Reject", {:action => :reject, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to reject this application?")
+                 html << link_to("Approve", {action: :approve, app_id: @app.id}, method: :post, confirm: "Are you sure you want to approve this application?")
+                 html << link_to("Reject", {action: :reject, app_id: @app.id}, method: :post, confirm: "Are you sure you want to reject this application?")
               end
 
               if @app.blocked?
-                 html << link_to("Unblock", {:action => :unblock, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to unblock this application?")
+                 html << link_to("Unblock", {action: :unblock, app_id: @app.id}, method: :post, confirm: "Are you sure you want to unblock this application?")
               else
-                 html << link_to("Block", {:action => :block, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to block this application?")
+                 html << link_to("Block", {action: :block, app_id: @app.id}, method: :post, confirm: "Are you sure you want to block this application?")
               end
 %>
            - <%= html.join(" | ") %>
@@ -151,7 +151,7 @@
         <th>Categories</th>
         <td>
 					<div id="app_categories_<%=@app.id%>">
-            <%=render(:partial => "categories", :locals => {:app => @app})%>
+            <%=render(partial: "categories", locals: {app: @app})%>
 					</div>
 				</td>
     </tr>
@@ -163,13 +163,13 @@
 
               html << link_to_function("Manage Categories", "assignCategories(#{@app.id})")
 
-              html << link_to("View Access Tokens", {:action => :tokens, :wf_model=>"Oauth2Token",:wf_c0=>:client_application_id, :wf_o0=>:is, :wf_v0_0=>@app.id})
+              html << link_to("View Access Tokens", {action: :tokens, wf_model: "Oauth2Token",wf_c0: :client_application_id, wf_o0: :is, wf_v0_0: @app.id})
 
               Platform::Application.permissions.each do |perm|
 	              if @app.has_permission?(perm)
-	                 html << link_to("Remove <strong>'#{perm}'</strong> permission", {:action => :remove_permission, :perm => perm, :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to remove #{perm} permission?")
+	                 html << link_to("Remove <strong>'#{perm}'</strong> permission", {action: :remove_permission, perm: perm, app_id: @app.id}, method: :post, confirm: "Are you sure you want to remove #{perm} permission?")
 	              else
-	                 html << link_to("Add <strong>'#{perm}'</strong> permission", {:action => :set_permission, :perm => perm,  :app_id => @app.id}, :method => :post, :confirm => "Are you sure you want to add #{perm} permission?")
+	                 html << link_to("Add <strong>'#{perm}'</strong> permission", {action: :set_permission, perm: perm,  app_id: @app.id}, method: :post, confirm: "Are you sure you want to add #{perm} permission?")
 	              end
               end
            %>
@@ -178,6 +178,6 @@
     </tr>
 </table>
 
-<%= render :partial => "categories_scripts" %>
+<%= render partial: "categories_scripts" %>
 
-<%= render :partial => "/platform/admin/common/footer" %>
+<%= render partial: "/platform/admin/common/footer" %>

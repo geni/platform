@@ -45,7 +45,7 @@ module Platform
 
     def self.find_or_create(app, interval)
       metric = where('application_id = ? and interval = ?', app.id, interval).first
-      metric || self.create(:application => app, :interval => interval, :type => self.name)
+      metric || self.create(application: app, interval: interval, type: self.name)
     end
 
     def self.interval_duration

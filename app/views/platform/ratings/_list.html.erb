@@ -1,7 +1,7 @@
   <div class="apps_header">
     <% if @ratings.any? and params['sec'] != 'Reviews' %>
     <span style="float:right; font-size:12px;">
-      <%=link_to("view all", :controller => "/platform/apps", :action => :view, :id => @app.id, :sec => 'Reviews')%>
+      <%=link_to("view all", controller: "/platform/apps", action: :view, id: @app.id, sec: 'Reviews')%>
     </span>
     <% end %>
     
@@ -9,14 +9,14 @@
   </div>
 
   <div class="apps_section">
-     <%= render(:partial => "/platform/ratings/new", :locals => {:app => @app} )%>   
+     <%= render(partial: "/platform/ratings/new", locals: {app: @app} )%>   
      
      <div style="margin-top:10px; border-top: 1px solid #ccc;">
        <% if @ratings.any? %>
           <table>
              <% @ratings.each do |rating| %>
              <tr>
-               <%= render(:partial => "/platform/ratings/rating", :locals => {:rating => rating} )%>   
+               <%= render(partial: "/platform/ratings/rating", locals: {rating: rating} )%>   
              </tr>  
              <% end %>
           </table>
