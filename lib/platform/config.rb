@@ -805,8 +805,14 @@ class Platform::Config
     @api_supported_version_options ||= api[:supported_versions].collect{|v| ["v #{v}", v]}
   end
 
+  # Which API version the documentation and the API Explorer show when the caller does not say.
+  #
+  # config.yml ships supported_versions but no default_version, so this was nil -- and nil is not
+  # one of the supported versions, so #api_reference(nil) answered nil and
+  # /platform/developer/help/api redirected every request away with "Unsupported API version".
+  # The newest supported version is the one a developer reading the documentation wants.
   def self.api_default_version
-    api[:default_version]
+    api[:default_version] || api_supported_versions.to_a.last
   end
 
   def self.api_explorer_app_id
@@ -836,8 +842,15 @@ class Platform::Config
     @api_reference[api_version]
   end
 
+  # How the API Explorer's object list is split into columns, per API version.  Host
+  # configuration: it names the keys of the host's own API reference files, so the gem's
+  # config.yml has no explorer_groups of its own.
+  #
+  # Which is why this needed a guard.  `api[:explorer_groups][api_version]` is NoMethodError on
+  # nil when the key is absent, so /platform/developer/api_explorer/options was a 500 under the
+  # shipped configuration -- and under a host's too, for any version it had not listed.
   def self.api_explorer_groups(api_version = api_default_version)
-    api[:explorer_groups][api_version]
+    (api[:explorer_groups] || {})[api_version] || []
   end
 
   #########################################################

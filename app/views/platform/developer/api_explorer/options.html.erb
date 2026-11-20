@@ -8,7 +8,9 @@
 <%
   ref = Platform::Config.api_reference(h(@api_version))
   columns = Platform::Config.api_explorer_groups(h(@api_version))
-  col_size = 100 / columns.size
+  # 100 / 0 is ZeroDivisionError, and an unconfigured version has no columns -- see
+  # Platform::Config.api_explorer_groups.
+  col_size = columns.any? ? 100 / columns.size : 100
 %>
 
 <table style="width:100%">
