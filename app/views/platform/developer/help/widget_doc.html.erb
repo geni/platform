@@ -11,7 +11,7 @@
 <p><%= tr("Drag the link below to your browser's toolbar or add it to your bookmark list:") %></p>
 
 <div class="code_snippet">
-<a href="javascript:(function(){z=open().document;z.location.href='http://<%=SITE%>/documents/post?bookmarklet=1&url='+escape(location.href);})()"><%= tr("Post to Geni") %></a>
+<a href="javascript:(function(){z=open().document;z.location.href='<%=Platform::Config.site_url%>/documents/post?bookmarklet=1&url='+escape(location.href);})()"><%= tr("Post to Geni") %></a>
 </div>
 
 <p><%= tr("When you're surfing the web and find something that you want to share, just click the \"Post to Geni\" button on your toolbar or choose it in your bookmark list.") %></p>

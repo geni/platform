@@ -86,8 +86,12 @@ defaults: &defaults
   # Site Integration Settings
   #############################################################################
   site_info:
-    title:                    "Geni"
-    contact_email:            "platform@geni.com"
+    title:                    "Example"
+    # The bare hostname of the site this gem is mounted in.  Read through
+    # Platform::Config.site_host / .site_url, which replaced the SITE and DEFAULT_SITE_LINK
+    # constants the gem used to interpolate without ever defining them.
+    host:                     "www.example.com"
+    contact_email:            "platform@example.com"
     default_url:              "/platform/home"
     login_url:                "/login"
     platform_layout:          "platform/platform"
@@ -114,7 +118,7 @@ defaults: &defaults
     enabled:                  true
     base_url:                 "localhost:3000/api/"
     logging_enabled:          true
-    admin_email:              "api@geni.com"
+    admin_email:              "api@example.com"
     allow_public:             true
     cookies_enabled:          true
     max_models:               50

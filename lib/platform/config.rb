@@ -438,6 +438,42 @@ class Platform::Config
     site_info[:title]
   end
 
+  # The bare hostname of the site this gem is mounted in -- "www.example.com".
+  #
+  # This replaces the bare SITE constant that Platform::Application#app_url and the widget_doc
+  # help page interpolated.  The gem never defined that constant: it came from the host
+  # application's own top-level namespace, so both call sites raised NameError on any host that
+  # did not happen to define one, which is why #app_url has never worked for a canvas
+  # application.
+  #
+  # Falls back to #site_base_url, which is already the value the developer help pages and
+  # Platform::OauthHardening's host check treat as this hostname.  The fallback is what keeps a
+  # host application that has not copied the new `host:` key into its own
+  # config/platform/config.yml working: #config reads the *host's* file rather than merging with
+  # the gem's, so an un-migrated host would otherwise get nil here.
+  def self.site_host
+    site_info[:host] || site_base_url
+  end
+
+  # http in development, https everywhere else.  Shared with Platform::Application#oauth_url,
+  # which had the same expression inline.
+  def self.default_protocol
+    env.to_s == 'development' ? 'http' : 'https'
+  end
+
+  # The scheme-and-host prefix for a link into the site -- "https://www.example.com".
+  #
+  # Replaces DEFAULT_SITE_LINK, which Platform::Application#admin_link interpolated and which,
+  # like SITE, the gem never defined either.  Note that #app_url gets https outside development
+  # through this, where it used to hardcode http.
+  def self.site_url(protocol = default_protocol)
+    "#{protocol}://#{site_host}"
+  end
+
+  # Careful: this is *shadowed*.  A second definition of #site_base_url further down this file
+  # returns api[:base_url], and being later it wins -- so this one never runs and
+  # site_info[:base_url] is dead configuration.  Left as found; #site_host above is what new
+  # code should use.
   def self.site_base_url
     site_info[:base_url]
   end
