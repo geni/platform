@@ -90,6 +90,30 @@ module Platform::Oauth
       assert !token.replayed?
     end
 
+
+    # The bug this pins: #claim_for_exchange! writes exchanged_at from raw SQL, and Rails 2.3's
+    # #quoted_date converts nothing.  Writing Time.now.utc into a column the app reads as :local
+    # stored a reading hours ahead, so #grace_period_retry? measured a negative age and answered
+    # true forever -- replay detection silently switched off.  It was the host application's suite
+    # that caught it, because both Geni applications configure :local and this gem's own test app
+    # does not, so the skew never appeared here.
+    #
+    # default_timezone is therefore forced for the duration, which is the only way this suite can
+    # stand in for the application it ships into.
+    test 'a claim records exchanged_at in the zone the column is read back in' do
+      with_database_timezone(:local) do
+        token       = app.create_refresh_token(user)
+        replacement = app.create_refresh_token(user)
+
+        assert token.claim_for_exchange!(replacement)
+
+        skew = Time.now - token.exchanged_at
+
+        assert skew >= 0,   "exchanged_at read back #{skew.to_i}s in the future -- the grace period would never expire"
+        assert skew < 300,  "exchanged_at read back #{skew.to_i}s in the past -- the grace period would never apply"
+      end
+    end
+
     ##########################################################################
     #### Claiming the exchange
     ##########################################################################
@@ -135,6 +159,14 @@ module Platform::Oauth
 
   private
 
+    def with_database_timezone(zone)
+      original = ActiveRecord::Base.default_timezone
+      ActiveRecord::Base.default_timezone = zone
+      yield
+    ensure
+      ActiveRecord::Base.default_timezone = original
+    end
+
     # There is no mocha in this suite, and Platform::Config.oauth answers the live configuration
     # hash, so the value is swapped in place and put back.
     def with_grace_period(seconds)
@@ -151,7 +183,8 @@ module Platform::Oauth
     # exchanged_at is set by #claim_for_exchange!'s own statement and a stale object would write it
     # back.
     def backdate(token, seconds)
-      when_exchanged = token.class.connection.quoted_date(token.exchanged_at - seconds)
+      when_exchanged = token.class.connection.quoted_date(
+                         Platform::Oauth::RefreshToken.now_in_database_timezone - seconds)
 
       token.class.connection.update(
         "UPDATE #{token.class.table_name} SET exchanged_at = '#{when_exchanged}' WHERE id = #{token.id.to_i}"
