@@ -3,7 +3,7 @@
 </div>
 
 <div class="section_box colored">
-  <% form_tag({:action => :topic}, {:method => :post, :id => "forum_topic_form"}) do %>
+  <%= form_tag({action: :topic}, {method: :post, id: "forum_topic_form"}) do %>
     <%=hidden_field_tag(:language_id, params[:language_id])%>
 
     <table style="width:99%">
@@ -37,7 +37,7 @@
   <% end %>
 </div>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
 	document.addEventListener("DOMContentLoaded", function() {
     var element = document.getElementById('submit-msg');
     if (element) {

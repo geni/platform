@@ -41,7 +41,7 @@
 					  <div id="daily_active_users_chart_<%=app.id%>">
 					  </div>
 
-            <% javascript_tag do %>
+            <%= javascript_tag do %>
 					    var data = new google.visualization.DataTable();
 					    data.addColumn('string', 'Date');
 					    data.addColumn('number', 'Active Users');
@@ -76,7 +76,7 @@
             <div id="daily_new_users_chart_<%=app.id%>">
             </div>
 
-            <% javascript_tag do %>
+            <%= javascript_tag do %>
               var data = new google.visualization.DataTable();
               data.addColumn('string', 'Date');
               data.addColumn('number', 'New Users');

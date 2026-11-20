@@ -43,7 +43,7 @@
 					</td>
 					<td><%=text_field_tag(:access_token, "", :style=>"width:95%;", :placeholder => "Paste an access token or click on the 'Get Access Token' button to generate one.")%> &nbsp;
 					  <%=link_to_function("X", "clearAccessToken()")%>
-            <% javascript_tag do %>
+            <%= javascript_tag do %>
               function clearAccessToken() {
                 Platform.element('access_token').value = '';
               }
@@ -74,7 +74,7 @@
 				<td style="padding-left:5px;text-align:right;">
           <%= link_to_function(trl('Submit', 'Client application action label'), "clearHistoryAndSubmitRequest();", :class=>'button super blue medium') %>
 				</td>
-        <% javascript_tag do %>
+        <%= javascript_tag do %>
           function clearHistoryAndSubmitRequest() {
             api_history_index = -1;
             submitRequest();
@@ -142,7 +142,7 @@
   </div>
 </div>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
   Platform.Utils.addEvent(window, 'load', function() {
     initApiExplorer('<%=Platform::Config.api_explorer_app_id%>', '<%=Platform::Config.site_base_url%>', '/api', '<%=@api_history%>');
     <% params.each do |key, value| %>

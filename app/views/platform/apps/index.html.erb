@@ -84,7 +84,9 @@
 		<table style="width:100%">
 			<tr>
 				<td style="width:220px;">
-					<% form_tag({:action => :index}, :method => :get) do %>
+<%# `<%` throws away what form_tag's block captures, so the search box was built and discarded
+    and the directory had no search field at all. %>
+					<%= form_tag({action: :index}, method: :get) do %>
 					 <%=text_field_tag(:search, params[:search], :style => "width:195px", :label => "Search Apps")%>
 					<% end %>
 					<div style="border: 1px dotted #ccc; padding-top:10px; margin-top:10px; margin-bottom:15px; background: #f9f8f7; vertical-align:top; width:200px;">
@@ -137,7 +139,7 @@
 </div>
 
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
 	function goPage(module, page) {
 		if (page == "") return;
 		Platform.Utils.update(module, "/platform/apps/paginate_module", {

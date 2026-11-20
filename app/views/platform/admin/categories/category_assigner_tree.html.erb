@@ -17,7 +17,7 @@
                 color: black;
             }
         </style>
-        <% javascript_tag do %>
+        <%= javascript_tag do %>
           function hide(elmId) {
             document.getElementById(elmId).style.display = "none";
           }
@@ -62,7 +62,7 @@
       </div>
       <div id="assignerTree" style="">
             <FORM name="ft" method="">
-                <% javascript_tag do %>
+                <%= javascript_tag do %>
                     initializeDocument();
                     checkAssignedCategories();
 

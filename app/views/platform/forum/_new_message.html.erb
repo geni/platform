@@ -4,7 +4,7 @@
 </div>
 
 <div class="section_box colored">
-  <% form_tag({:controller => '/platform/forum', :action => :new_message, :topic_id => @topic.id, :app_id => @app.id}, {:method => :post, :id => "forum_topic_form"}) do %>
+  <%= form_tag({controller: '/platform/forum', action: :new_message, topic_id: @topic.id, app_id: @app.id}, {method: :post, id: "forum_topic_form"}) do %>
     <table style="width:99%">
       <tr>
         <td style="width:80px; text-align:right; padding-right:10px; font-weight:bold;">

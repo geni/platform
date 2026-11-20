@@ -1,7 +1,7 @@
 <%= render :partial => "/platform/admin/common/header" %>
 <%= render :partial => "tabs" %>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
 
 var selectedCategoryId = '<%= @category.id %>';
 var selectedCategoryName = '<%= @category.name %>}';

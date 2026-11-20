@@ -1,6 +1,9 @@
 <div class="apps_header">
   <div style="float:right; padding-top:20px; font-size:12px; color: #ccc;">
-    <%=link_to(image_tag("/tr8n/images/reply.png") + " " + tr("Reply", "Reply button for forum topics"), params.merge(:anchor => :reply_message)) %>
+<%# params.to_unsafe_h, not params: #merge on ActionController::Parameters answers Parameters, and
+    url_for calls #to_h on what it is given, which raises UnfilteredParameters.  So the Reply link
+    was a 500 on every topic page. %>
+    <%=link_to(image_tag("/tr8n/images/reply.png") + " " + tr("Reply", "Reply button for forum topics"), params.to_unsafe_h.merge(anchor: :reply_message)) %>
     &nbsp; |  &nbsp;
     <%=link_to(image_tag("/tr8n/images/plus.png") + " " + tr("Start a new discussion topic"), :controller => '/platform/apps', :action => :view, :id => @app.id, :sec => 'Discussions', :mode => :create) %>
   </div>

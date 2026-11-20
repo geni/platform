@@ -1,5 +1,5 @@
  <div class="section_box colored">
-   <% form_tag({:controller => '/platform/ratings', :action => :submit_app_rating, :app_id => app.id}, {:id => :app_rating_form}) do %>
+   <%= form_tag({controller: '/platform/ratings', action: :submit_app_rating, app_id: app.id}, {id: :app_rating_form}) do %>
      <%=hidden_field_tag(:rating_value, '0')%>
      <table style="width:100%" cellpadding="5px">
        <tr>
@@ -28,7 +28,7 @@
    <% end %>
  </div>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
   var selectedRating = 0;
 
   function ratingMouseOver(index) {

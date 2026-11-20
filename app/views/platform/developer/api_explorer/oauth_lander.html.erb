@@ -16,7 +16,7 @@
 <div id="oauth_lander" style="display:none;"
      data-access-token="<%= h(params[:access_token]) %>"></div>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
   (function() {
     var el    = document.getElementById("oauth_lander");
     var token = el ? el.getAttribute("data-access-token") : null;
