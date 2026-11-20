@@ -119,7 +119,17 @@ defaults: &defaults
     base_url:                 "localhost:3000/api/"
     logging_enabled:          true
     admin_email:              "api@example.com"
-    allow_public:             true
+    # Anonymous API calls -- no access token, and no user picked up from the session either.
+    # Off means Platform::Api::BaseController#authenticate sends such a caller to
+    # Platform::Config.login_url instead of answering.
+    #
+    # The key used to be spelled allow_public here while Platform::Config.enable_public_api?
+    # read public_enabled -- both written in the same commit, so the setting has never had a
+    # reader and the predicate has always been nil.  Renamed to the spelling the code uses, and
+    # shipped off rather than on: nil was already off everywhere, and this switch decides whether
+    # every API controller in the host application answers callers it cannot identify.  Turning
+    # it on is a decision to make deliberately.
+    public_enabled:           false
     cookies_enabled:          true
     max_models:               50
     request_limit:            3
