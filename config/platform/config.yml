@@ -74,6 +74,20 @@ defaults: &defaults
     refresh_token_lifetime:     7776000   # 90 days -- was unlimited
     request_token_lifetime:     600       # 10 minutes
 
+    # How long after a refresh token is redeemed a second presentation of it is still answered with
+    # the replacement it was exchanged for, rather than revoking the whole family.
+    #
+    # RFC 9700 section 4.14.2 asks for family revocation when a refresh token is replayed, and
+    # leaves the detection window to the implementation; Okta's refresh token rotation ships the
+    # same allowance as its grace period.  Without one, a client that never received our reply -- a
+    # dropped connection, a killed process, a laptop asleep mid-request -- presents the only token
+    # it still holds and is answered by revoking every token it owns, which is a full
+    # re-authorization charged to an honest client for our lost response.  A client with several
+    # processes behind one credential file hits the same thing routinely.
+    #
+    # 0 disables the window and restores strict one-presentation detection.
+    refresh_token_grace_period: 60        # 1 minute
+
     # Device authorization grant, RFC 8628.  device_verification_uri is where the user is sent to
     # type the user_code; the host application decides the path and routes it at
     # Platform::OauthController#device, so it cannot be derived here.
