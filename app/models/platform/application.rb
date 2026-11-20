@@ -596,7 +596,7 @@ module Platform
     end
 
     def admin_link
-      "#{DEFAULT_SITE_LINK}/admin/applications/view/#{id}"
+      "#{Platform::Config.site_url}/admin/applications/view/#{id}"
     end
 
     # deprecated
@@ -660,7 +660,7 @@ module Platform
 
     def app_url
       return url if canvas_name.blank?
-      "http://#{SITE}/platform/apps/#{canvas_name}"
+      "#{Platform::Config.site_url}/platform/apps/#{canvas_name}"
     end
 
     def short_name
@@ -670,7 +670,7 @@ module Platform
 
     def update_rank!
       total_rank = (rating_count == 0) ? 0 : (rating_sum/rating_count)
-      update(:rank => total_rank)
+      update(rank: total_rank)
       total_rank
     end
 
@@ -678,12 +678,16 @@ module Platform
       self.developer == dev
     end
 
+    # #count and #sum take at most a column name.  Both of these passed the Rails 2 :conditions
+    # finder signature and so raised ArgumentError on every call -- which also made #update_rank!
+    # above unreachable, so the rank column was never written and platform_app_rank_tag has been
+    # rendering every application at rank 0.
     def rating_count
-      @rating_count ||= Platform::Rating.count(:id, :conditions => ["object_type = ? and object_id = ?", self.class.name, self.id])
+      @rating_count ||= Platform::Rating.where(object_type: self.class.name, object_id: id).count
     end
 
     def rating_sum
-      @rating_sum ||= Platform::Rating.sum(:value, :conditions => ["object_type = ? and object_id = ?", self.class.name, self.id])
+      @rating_sum ||= Platform::Rating.where(object_type: self.class.name, object_id: id).sum(:value)
     end
 
     def reset_secret!
@@ -762,19 +766,42 @@ module Platform
       end
     end
 
+    # The two finders behind the application directory's category pages.
+    #
+    # Both called #paginate with the Rails 2 :conditions / :joins / :order option hash.
+    # will_paginate has not accepted that since Rails 3 -- it raises ArgumentError on
+    # :conditions -- so neither finder had a working call path and no category could be listed.
+    #
+    # The return value is still a will_paginate relation rather than a plain one:
+    # app/views/platform/apps/_paginator.html.erb reads #current_page, #total_pages,
+    # #previous_page and #next_page off it.
     def self.featured_for_category(category, page = 1, per_page = 20)
       return [] if category.nil?
-      paginate(:conditions => ["platform_applications.state='approved' and platform_application_categories.category_id = ? and platform_application_categories.featured = ?", category.id, true],
-              :joins => "inner join platform_application_categories on platform_application_categories.application_id = platform_applications.id",
-              :order => "platform_application_categories.position asc", :page => page, :per_page => per_page)
+
+      approved_in_category(category)
+        .where(platform_application_categories: { featured: true })
+        .paginate(page: page, per_page: per_page)
     end
 
     def self.regular_for_category(category, page = 1, per_page = 20)
       return [] if category.nil?
-      paginate(:conditions => ["platform_applications.state='approved' and platform_application_categories.category_id = ? and (platform_application_categories.featured is null or platform_application_categories.featured = ?)", category.id, false],
-              :joins => "inner join platform_application_categories on platform_application_categories.application_id = platform_applications.id",
-              :order => "platform_application_categories.position asc", :page => page, :per_page => per_page)
+
+      # "Not featured" has to cover NULL as well as false: featured is a nullable boolean with no
+      # default, so a row created without the flag is NULL and `featured = false` would not match
+      # it.  Such a row would then appear in neither list.
+      approved_in_category(category)
+        .where('platform_application_categories.featured is null or platform_application_categories.featured = ?', false)
+        .paginate(page: page, per_page: per_page)
     end
+
+    # Approved applications in a category, in the order the category puts them in.
+    def self.approved_in_category(category)
+      joins(:application_categories)
+        .where(state: 'approved')
+        .where(platform_application_categories: { category_id: category.id })
+        .order('platform_application_categories.position asc')
+    end
+    private_class_method :approved_in_category
 
     def versioned_name
       @versioned_name ||= begin
@@ -782,8 +809,12 @@ module Platform
       end
     end
 
+    # The host here stays #site_base_url rather than moving to #site_host: this URL has to match
+    # the one the developer help pages document, and those are all built from #site_base_url.
+    # Only the protocol expression, which was a copy of what Platform::Config.default_protocol
+    # now holds, has changed.
     def oauth_url
-      protocol = Platform::Config.env == "development" ? 'http' : 'https'
+      protocol = Platform::Config.default_protocol
       "#{protocol}://#{Platform::Config.site_base_url}/platform/oauth/authorize?client_id=#{key}&response_type=token&display=web&redirect_url=#{CGI.escape(callback_url || '')}"
     end
 
