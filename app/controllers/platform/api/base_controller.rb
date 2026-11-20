@@ -143,8 +143,13 @@ module Platform
       end
 
       # should be overloaded by the extending class
+      #
+      # find_by_id, not find_by_user_id.  session[:user_id] holds the user's own id and the user
+      # class is the users table, which has no user_id column -- so the gem's default raised
+      # NoMethodError on every API request that carried a session cookie, whether or not the
+      # caller was relying on it.
       def authenticate_via_cookie
-        user = Platform::Config.user_class.find_by_user_id(session[:user_id])
+        user = Platform::Config.user_class.find_by_id(session[:user_id])
         Platform::Config.init(user) if user
       end
 
