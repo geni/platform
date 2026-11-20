@@ -53,4 +53,5 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.hosts << Socket.gethostname
+  config.hosts << "seinfeld.dev.geni.local:8080" if Socket.gethostname =~ /seinfeld/
 end
