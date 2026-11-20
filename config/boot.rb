@@ -1,15 +1,14 @@
 # Don't change this file!
 # Configure your app in config/environment.rb and config/environments/*.rb
 
-# For Rails 3.0+ with Bundler, skip the custom boot process
-# Rails 3.0+ loads through application.rb via Bundler
+# Rails 3.1 loads through config/application.rb via Bundler, so there is no boot process to run
+# here -- only the Ruby 2.7 compatibility patches below, which have to land before Rails is loaded.
 RAILS_ROOT = "#{File.dirname(__FILE__)}/.." unless defined?(RAILS_ROOT)
 
-# Check if we're running Rails 3.0+
 require 'rubygems'
 require 'bundler/setup' if File.exist?("#{RAILS_ROOT}/Gemfile")
 
-# Apply Ruby 2.7 compatibility patches for Rails 3.0-3.1 BEFORE loading Rails
+# Apply Ruby 2.7 compatibility patches for Rails 3.1 BEFORE loading Rails
 # Fix BigDecimal.yaml_as (removed in Ruby 2.7+)
 require 'bigdecimal'
 BigDecimal.singleton_class.class_eval do
@@ -20,9 +19,9 @@ BigDecimal.singleton_class.class_eval do
   end
 end
 
-# Fix TimeZone#parse circular argument reference in Rails 3.0-3.1
+# Fix TimeZone#parse circular argument reference in Rails 3.1
 if defined?(Gem)
-  gem_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'activesupport' && spec.version.to_s =~ /^3\.[01]\./ }
+  gem_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'activesupport' && spec.version.to_s =~ /^3\.1\./ }
   if gem_spec
     timezone_file = File.join(gem_spec.full_gem_path, 'lib/active_support/values/time_zone.rb')
     if File.exist?(timezone_file) && File.writable?(timezone_file)
@@ -30,23 +29,6 @@ if defined?(Gem)
       if content.include?('def parse(str, now=now)')
         content.gsub!(/def parse\(str, now=now\)/, "def parse(str, now=nil)\n      now ||= self.now")
         File.write(timezone_file, content)
-      end
-    end
-  end
-
-  # Fix asset_tag_helper nil relative_url_root issue in Rails 3.0
-  actionpack_spec = Gem.loaded_specs.values.find { |spec| spec.name == 'actionpack' && spec.version.to_s =~ /^3\.0\./ }
-  if actionpack_spec
-    asset_helper_file = File.join(actionpack_spec.full_gem_path, 'lib/action_view/helpers/asset_tag_helper.rb')
-    if File.exist?(asset_helper_file) && File.writable?(asset_helper_file)
-      content = File.read(asset_helper_file)
-      # Patch compute_public_path to handle nil relative_url_root
-      if content.include?('!source.start_with?(controller.config.relative_url_root)') && !content.include?('# PATCHED FOR NIL')
-        content.gsub!(
-          '!source.start_with?(controller.config.relative_url_root)',
-          '!source.start_with?(controller.config.relative_url_root || "") # PATCHED FOR NIL'
-        )
-        File.write(asset_helper_file, content)
       end
     end
   end
@@ -124,6 +106,7 @@ RUBY
   end
 end
 
-# Skip the rest of boot process for Rails 3.0+ - it's handled by application.rb
-return if defined?(Bundler)
+# Nothing follows: Rails 3.1 boots from config/application.rb, so the patches above are all this
+# file does.  (There used to be a `return if defined?(Bundler)` here guarding a Rails 2.3 boot
+# path that no longer exists on this branch.)
 
