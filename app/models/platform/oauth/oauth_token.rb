@@ -31,15 +31,20 @@ class Platform::Oauth::OauthToken < ActiveRecord::Base
   validates_presence_of   :application
   validates_presence_of   :token
 
+  # #nil?, not `!= nil`.  On activesupport 3.1 invalidated_at is an ActiveSupport::TimeWithZone,
+  # and `TimeWithZone != nil` routes through #<=> -> #compare_with_coercion -> nil.to_datetime and
+  # raises NoMethodError.  So asking whether an *invalidated* token is valid blew up rather than
+  # answering false -- latent until something called #valid_token? on a token that had been
+  # invalidated, which RefreshToken#live_replacement now does on every grace-period check.
   def valid_token?(requested_scope = nil)
-    return false if invalidated_at != nil
+    return false unless invalidated_at.nil?
     return false if valid_to and Time.now > valid_to
     return false if requested_scope and requested_scope != self.scope
     true
   end
 
   def invalidated?
-    invalidated_at != nil
+    !invalidated_at.nil?
   end
 
   def invalidate
