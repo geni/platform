@@ -401,6 +401,10 @@ class Platform::Config
     (oauth[:refresh_token_lifetime] || 90.days).to_i
   end
 
+  def self.oauth_refresh_token_grace_period
+    (oauth[:refresh_token_grace_period] || 60.seconds).to_i
+  end
+
   def self.oauth_request_token_lifetime
     (oauth[:request_token_lifetime] || 10.minutes).to_i
   end
