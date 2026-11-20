@@ -783,7 +783,10 @@ module Platform
 
       # for desktop apps - redirect to local urls
       if desktop?
-        if response_params[:error_description] or response_params[:status] == 'unauthorized'
+        # .to_s, because the callers pass :unauthorized as a symbol and HashWithIndifferentAccess
+        # only indifferences the keys -- so this compared a Symbol with a String, never matched,
+        # and a desktop user who pressed Deny landed on auth_success.
+        if response_params[:error_description] or response_params[:status].to_s == 'unauthorized'
           return redirect_to(:action => :auth_failed, :anchor => response_query)
         else
           return redirect_to(:action => :auth_success, :anchor => response_query)
