@@ -48,7 +48,15 @@
 module Platform
   class ApplicationLog < ApplicationRecord
 
-    belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
+    # Optional because the only writer of this table, Platform::Api::BaseController#log_api_call,
+    # passes `Platform::Config.current_user.try(:id)` -- nil for an anonymous call, and the API
+    # allows public calls.  Rails 5 made belongs_to required by default, which made those rows
+    # fail validation; log_api_call uses #create rather than #create!, so every API call without a
+    # logged-in user was silently dropped from the log.  Same fix as on
+    # Platform::Oauth::OauthToken#user.
+    belongs_to :user, class_name: Platform::Config.user_class_name,
+                      foreign_key: :user_id,
+                      optional:    true
     belongs_to :application
 
     serialize :data, :type => Object, :coder => YAML

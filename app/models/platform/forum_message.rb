@@ -40,8 +40,17 @@
 module Platform
   class ForumMessage < ApplicationRecord
 
-    belongs_to :user, :class_name => Platform::Config.user_class_name
-    belongs_to :topic
+    belongs_to :user, class_name: Platform::Config.user_class_name
+
+    # :class_name and :foreign_key are both required.  A bare `belongs_to :topic` has Rails look
+    # for Platform::Topic, which does not exist, and for a topic_id column, which does not either
+    # -- so validating a record raised NameError and no forum message could be saved at all.
+    #
+    # The association keeps the name :topic rather than being renamed to :forum_topic, because
+    # that is what the forum controllers and the host application already call.  Note that
+    # #topic here is a Platform::ForumTopic while Platform::ForumTopic#topic is the subject text.
+    belongs_to :topic, class_name:  'Platform::ForumTopic',
+                       foreign_key: :forum_topic_id
 
     def toHTML
       return '' unless message

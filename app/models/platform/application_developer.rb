@@ -39,7 +39,12 @@
 module Platform
   class ApplicationDeveloper < ApplicationRecord
 
-    belongs_to :developer
+    # :class_name is required.  Without it Rails resolves :developer to Platform::Developer, which
+    # is the *module* -- the model is Platform::Developer::Developer -- and saving the record
+    # raised "The Developer model class ... is not an ActiveRecord::Base subclass", so no row
+    # could be written through this model at all.  Platform::Application spells it the same way
+    # for its own owning developer.
+    belongs_to :developer, class_name: 'Platform::Developer::Developer'
     belongs_to :application
 
   end # class ApplicationDeveloper

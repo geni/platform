@@ -57,8 +57,11 @@ module Platform
       find_or_create(app, user).touch
     end
 
+    # Platform::Oauth::AccessToken, not Platform::AccessToken: the token models moved under the
+    # Oauth namespace and this reference was left behind, so every call raised NameError.  Compare
+    # Platform::Application#create_access_token, which names it correctly.
     def access_token
-      @access_token ||= Platform::AccessToken.where('application_id = ? and user_id = ?', application_id, user_id).order('created_at desc').first
+      @access_token ||= Platform::Oauth::AccessToken.where('application_id = ? and user_id = ?', application_id, user_id).order('created_at desc').first
     end
 
   end # ApplicationUser

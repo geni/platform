@@ -44,8 +44,10 @@ module Platform
     belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
     belongs_to :subject, :polymorphic => true
 
+    # #count takes at most a column name.  This passed the Rails 2 two-argument finder signature
+    # and so raised ArgumentError on every call, whatever the data.
     def post_count
-      @post_count ||= Platform::ForumMessage.count("forum_topic_id = ?", self.id)
+      @post_count ||= Platform::ForumMessage.where(forum_topic_id: id).count
     end
 
     def last_post
