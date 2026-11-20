@@ -50,6 +50,16 @@ module Platform
       end
 
       def write(file, opts = {})
+        # rmagick has been a declared dependency of this gem since the beginning (see
+        # platform.gemspec) but nothing ever required it, so Magick below was an undefined
+        # constant and this method raised NameError on every call.
+        #
+        # Required here rather than at boot because it loads a large native library, this is the
+        # only thing in the gem that touches it, and it runs only on the fallback image path -- a
+        # host application with its own site media class never reaches it, but it does autoload
+        # this class, since Platform::Media::Image is the default for Config.site_media_class.
+        require 'rmagick'
+
         self.content_type = 'image/png'
         self.file_location = self.class.generate_local_dir
         self.file_name = "#{Platform::RandomPasswordGenerator.random_password}.png"
