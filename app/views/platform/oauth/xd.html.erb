@@ -24,9 +24,18 @@
       file, so the wire format cannot change without breaking integrations we cannot update.
       The receiving half of the origin check lives in that same function.
     -%>
-    <% javascript_tag do %>
-      var PLATFORM_XD_PAYLOAD       = <%= @xd_payload_query.to_json %>;
-      var PLATFORM_XD_TARGET_ORIGIN = <%= @xd_post_target.to_json %>;
+    <%# `<%` throws away what javascript_tag's block captures, so this page answered an empty body
+        and the whole cross-domain flow delivered nothing: the popup opened, the response was
+        computed, and the opener waited for a postMessage that was never sent. %>
+    <%= javascript_tag do %>
+<%#   raw, because ERB escapes a plain String and a classic script element does not decode HTML
+      entities -- so the emitted javascript read `var x = &quot;*&quot;;`, which is a syntax
+      error, and the whole block stopped running.  Emitting these raw is safe: ActiveSupport's
+      JSON encoder escapes the three dangerous characters as <, > and &, so
+      neither value can close the script element or open a tag.
+-%>
+      var PLATFORM_XD_PAYLOAD       = <%= raw @xd_payload_query.to_json %>;
+      var PLATFORM_XD_TARGET_ORIGIN = <%= raw @xd_post_target.to_json %>;
 
       function sendFragment() {
         var target = (window.opener || window.parent || window.top);
