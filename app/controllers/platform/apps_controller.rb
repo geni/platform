@@ -42,34 +42,44 @@ module Platform
         @apps = Platform::Application.regular_for_category(@category, page, Platform::Config.suggested_apps_per_page)
       else
         @category = nil
-        conditions = ["name like ? or description like ?", "%#{params[:search]}%", "%#{params[:search]}%"]
-        @search_apps = Platform::Application.paginate(:conditions => conditions, :page => page, :per_page => Platform::Config.searched_apps_per_page, :order => "name asc")
+        @search_apps = searched_apps
       end
-    end
-
-    def apps_page
-      params[:section]
     end
 
     def view
       @app = Platform::Application.find(params[:id])
       @sections = ["Info", "Reviews", "Discussions"]
       @section = params[:sec] || "Info"
-      @ratings = Platform::Rating.paginate(:conditions => ["object_type = ? and object_id = ?", @app.class.name, @app.id],
-                                            :page => page, :per_page => per_page, :order => "updated_at desc")
+      # Every paginate call in this controller was will_paginate's Rails 2 signature -- :all plus
+      # :conditions and :order -- which it has raised ArgumentError on since version 3.  So the
+      # application directory, every application's page, and the reviews and discussions on it
+      # were all a 500.  The return values still have to be will_paginate collections: the
+      # paginator partials read #current_page, #total_pages, #previous_page and #next_page.
+      @ratings = Platform::Rating.where(object_type: @app.class.name, object_id: @app.id)
+                                 .order('updated_at desc')
+                                 .paginate(page: page, per_page: per_page)
 
       params[:sec] ||= 'Info'
       if params[:sec] == 'Discussions'
-        if params[:topic_id]
-          @topic = Platform::ForumTopic.find_by_id(params[:topic_id])
+        @topic = Platform::ForumTopic.find_by_id(params[:topic_id]) if params[:topic_id]
+
+        # Branch on the topic rather than on the parameter, because view.html.erb does: with no
+        # topic to show it renders the topic list, and a :topic_id naming nothing used to leave
+        # @topics unset for it -- after asking the missing topic for its #post_count and its #id.
+        if @topic
           if params[:last_page]
             params[:page] = (@topic.post_count / per_page.to_i)
             params[:page] += 1 unless (@topic.post_count % per_page.to_i == 0)
             params[:page] = 1 if params[:page] == 0
           end
-          @messages = Platform::ForumMessage.paginate(:all, :conditions => ["forum_topic_id = ?", @topic.id], :page => page, :per_page => per_page, :order => "created_at asc")
+
+          @messages = Platform::ForumMessage.where(forum_topic_id: @topic.id)
+                                            .order('created_at asc')
+                                            .paginate(page: page, per_page: per_page)
         else
-          @topics = Platform::ForumTopic.paginate(:all, :conditions => ["subject_type = ? and subject_id = ?", @app.class.name, @app.id], :page => page, :per_page => per_page, :order => "created_at desc")
+          @topics = Platform::ForumTopic.where(subject_type: @app.class.name, subject_id: @app.id)
+                                        .order('created_at desc')
+                                        .paginate(page: page, per_page: per_page)
         end
       end
     end
@@ -84,58 +94,43 @@ module Platform
         apps = Platform::Application.regular_for_category(category, page, Platform::Config.suggested_apps_per_page)
         render(:partial => 'apps_module', :locals => {:apps => apps, :per_row => Platform::Config.suggested_apps_per_row})
       else
-        conditions = ["name like ? or description like ?", "%#{params[:search]}%", "%#{params[:search]}%"]
-        apps = Platform::Application.paginate(:conditions => conditions, :page => page, :per_page => Platform::Config.searched_apps_per_page, :order => "name asc")
-        render(:partial => 'search_apps_module', :locals => {:apps => apps})
+        render(partial: 'search_apps_module', locals: {apps: searched_apps})
       end
     end
 
-    def featured_applications_module_content
-      @apps = Platform::Application.all
-      render :layout => false
-    end
+    # Four actions have been removed from here, all of them unreachable or useless:
+    #
+    #   #method_missing, the embedded canvas application page, and its canvas_app template.
+    #     Rails dispatches an unknown action to #action_missing, never to #method_missing -- and
+    #     no unknown action name reached this controller anyway: /platform/apps/<canvas_name>,
+    #     the URL Platform::Application#app_url advertises, matches
+    #     `get '/apps/:id' => 'apps#view'` and arrives as an :id.  The template had rotted to
+    #     match, calling URI.escape (removed in Ruby 3.0) and defining its resizeFrame callback
+    #     inside a javascript_tag block whose output was discarded.
+    #
+    #   #xd and its template, the other half of that resize handshake: it called
+    #     parent.parent.resizeFrame, which the canvas_app template was the only definition of.
+    #
+    #   #featured_applications_module_content, which had no template of that name and so could
+    #     only answer MissingTemplate.  #paginate_module above does the job it looks like it was
+    #     meant to do, and does it with the pagination _featured_apps_module needs.
+    #
+    #   #apps_page, which returned params[:section] -- a parameter nothing sends; #view reads
+    #     params[:sec] and the directory's javascript sends :module.
+    #
+    # platform_applications.canvas_name and .canvas_url, the canvas fields on the developer and
+    # admin forms, and #app_url are all left as they are: deciding what embedded applications
+    # should look like is separate work from removing code that has never run.
 
-    def xd
-      render :layout => false
-    end
+  private
 
-    def method_missing(method, *args)
-      @app = Platform::Application.find_by_canvas_name(method)
-      return render(:action => :canvas_app) unless @app
-
-      @page_title = Platform.escape_html(@app.name)
-
-      if @app.auto_signin?
-        app_user = Platform::ApplicationUser.for(@app)
-
-        unless app_user
-          @canvas_url = "//#{Platform::Config.site_base_url}/platform/oauth/authorize?response_type=token&client_id=#{@app.key}&display=iframe&redirect_url=#{CGI.escape(@app.canvas_url)}"
-          return render(:action => :canvas_app)
-        end
-
-        @access_token = @app.find_or_create_access_token(Platform::Config.current_user)
-      end
-
-      @canvas_url = @app.canvas_url
-      canvas_uri = URI.parse(@app.canvas_url)
-      [:controller, :action].each do |key|
-        params.delete(key)
-      end
-
-      # add all desired params here
-      params[:access_token] = @access_token.token if @access_token
-      params[:t] = Time.now.to_s
-
-      query_params = []
-      params.each do |key, val|
-        query_params << "#{key}=#{CGI.escape(val)}"
-      end
-
-      @canvas_url << "/" if canvas_uri.path.blank?
-      @canvas_url << (canvas_uri.query.blank? ? "?" : "&")
-      @canvas_url << query_params.join('&')
-
-      render :action => :canvas_app
+    # The applications matching params[:search], for #index and for the paginated reload of the
+    # same list in #paginate_module -- which had its own copy of the query.
+    def searched_apps
+      Platform::Application.where('name like :pattern or description like :pattern',
+                                  pattern: "%#{params[:search]}%")
+                           .order('name asc')
+                           .paginate(page: page, per_page: Platform::Config.searched_apps_per_page)
     end
 
   end # class AppsController
