@@ -7,11 +7,14 @@
   </p>
 <% end %>
 
-<%= will_filter(@scopes) %>
+<%# Both helpers take the result collection, not the filter: Platform::ApplicationHelper's
+    versions read #wf_filter off what they are given, and that is set by
+    WillFilter::Filter#results.  Handed the filter itself they read nil. %>
+<%= will_filter(@scopes.results) %>
 
 <%=link_to_function("+ Add scope", "tr8nLightbox.show('/platform/admin/apps/lb_scope', {\"height\":300})")%>
 
-<%= will_filter_table_tag(@scopes, :columns => [
+<%= will_filter_table_tag(@scopes.results, columns: [
 	[:icon,	lambda{|s|
 		image_tag(s.icon_url, :style => "width:16px;height:16px;")
 	}, 'width:20px'],

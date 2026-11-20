@@ -1,7 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <%=render :partial => "/layouts/html_head" %>
+<%# The gem's own layout partials live under layouts/platform, which is where
+    layouts/platform/platform.html.erb renders them from.  These three named "/layouts/..."
+    instead, and the gem has nothing there, so every admin screen was a MissingTemplate. %>
+        <%=render partial: "/layouts/platform/html_head" %>
         <style>
             .page_fixed {
                 width: 100%;
@@ -41,7 +44,7 @@
     </head>
     <body style="spacing:0px; padding:0px; margin:0px; background-color:#f5f5f5;">
         <div class="document">
-            <%=render :partial => "/layouts/header" %>
+            <%=render partial: "/layouts/platform/header" %>
             <div class="page_fixed">
                 <div class="page_body">
                     <div class="content_module">
@@ -89,7 +92,7 @@
                         </div>
                     </div>
                 </div>
-                <%=render :partial =>"/layouts/footer" %>
+                <%=render partial: "/layouts/platform/footer" %>
             </div>
         </div>
     </body>

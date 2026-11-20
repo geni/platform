@@ -1,12 +1,21 @@
 <%= render :partial => "/platform/admin/common/header" %>
 <%= render :partial => "tabs" %>
 
-<%= will_filter(@tokens) %>
-<%= will_filter_table_tag(@tokens, :columns => [
+<%# Both helpers take the result collection, not the filter: Platform::ApplicationHelper's
+    versions read #wf_filter off what they are given, and that is set by
+    WillFilter::Filter#results.  Handed the filter itself they read nil. %>
+<%= will_filter(@tokens.results) %>
+<%= will_filter_table_tag(@tokens.results, columns: [
       :id,
       :type,
       :token,
-      [:user_id, lambda{|token| link_to(token.user ? h(token.user.name) : token.user_id, :controller => "/admin/users", :action => :user, :user => token.user_id)}],
+      # Not a link any more.  It pointed at :controller => "/admin/users" -- a screen in the host
+      # application, not in this engine -- and Platform::Engine is namespace-isolated, so url_for
+      # resolves a controller against the engine's own routes and never finds it.  The whole
+      # access token list was UrlGenerationError as soon as it had a row in it.  The name is what
+      # the link was there to show; a host that wants it linked can pass its own :columns to
+      # will_filter_table_tag.
+      [:user_id, lambda{|token| token.user ? h(token.user.name) : token.user_id}],
       [:application_id, lambda{|token| link_to(token.application ? h(token.application.name) : token.application_id, {:action => :view, :app_id=>token.application_id})}],
       :created_at,
       :updated_at,

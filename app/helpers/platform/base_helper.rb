@@ -29,6 +29,18 @@ module Platform
       render(:partial => '/platform/common/user_login', :locals => {:opts => opts})
     end
 
+    # Where will_filter's javascript fetches its filter UI from.
+    #
+    # will_filter's own partials call will_filter_path, and every admin screen in this gem renders
+    # one of them -- but the helper does not exist in a Platform view, so all five admin lists
+    # were a NameError.  WillFilter::Engine is mounted inside Tr8n::Engine, which this engine
+    # mounts in turn, and Rails only publishes a mounted engine's helpers to the route set that
+    # did the mounting.  Going through the Tr8n proxy answers the same path without mounting the
+    # engine a second time, which would change what a host application exposes.
+    def will_filter_path(*args)
+      tr8n.will_filter_path(*args)
+    end
+
     def platform_toggler_tag(content_id, label = "", open = true, opts = {})
       style = opts[:style] || 'text-align:center;vertical-align:middle;'
       style = style + ';text-decoration:none;'

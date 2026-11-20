@@ -1,8 +1,11 @@
 <%= render :partial => "/platform/admin/common/header" %>
 <%= render :partial => "tabs" %>
 
-<%= will_filter(@apps) %>
-<%= will_filter_table_tag(@apps, :columns => [
+<%# Both helpers take the result collection, not the filter: Platform::ApplicationHelper's
+    versions read #wf_filter off what they are given, and that is set by
+    WillFilter::Filter#results.  Handed the filter itself they read nil. %>
+<%= will_filter(@apps.results) %>
+<%= will_filter_table_tag(@apps.results, columns: [
   [:icon, lambda{|app| link_to(image_tag(h(app.icon_url)), :action => :view, :app_id => app.id)}, "width:18px;"],
   [:id, lambda{|app| link_to(app.id, :action => :view, :app_id => app.id)}],
   [:developer_id, lambda{|app| link_to(h(app.developer.name), "") if app.developer}],

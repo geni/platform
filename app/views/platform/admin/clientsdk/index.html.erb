@@ -1,5 +1,8 @@
 <%= render :partial => "/platform/admin/common/header" %>
-<%= render :partial => "tabs" %>
+<%# No "tabs" partial here, and no tab group for this page to belong to: the other admin sections
+    have one each and all five are listed in Platform::Admin::BaseController#platform_admin_tabs,
+    which this page is not part of.  Rendering it was a MissingTemplate on the only action this
+    controller has. %>
 
 <%=javascript_include_tag("https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js")%>
 <%=javascript_include_tag("lib/geni-connect")%>
@@ -45,7 +48,7 @@ Geni.api('/profile',function(r) {
 <br><br>
 <div id="profile_data"></div>
 
-<% javascript_tag do %>
+<%= javascript_tag do %>
   document.getElementById('connect_btn').addEventListener('click', function(){
     Geni.Auth.connect();
   })
