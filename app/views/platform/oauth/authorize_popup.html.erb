@@ -2,7 +2,12 @@
 <body>
   <div class="page_hd hd pvm phl">
     <div style="float:right;padding-top:5px;font-weight:bold;">
-      <%=link_to(tr("Not {user}?", "", :user => [Platform::Config.current_user, :name]), :controller => "/login", :action => :out, :display => params[:display], :client_id => @client_application.id)%>
+<%# A literal path, as /platform/common/_user_login already uses for the same link.  The login
+    controller belongs to the host application, mounted under /platform/login -- the gem ships
+    views for it but no controller -- and Platform::Engine is namespace-isolated, so
+    url_for(:controller => "/login") resolves against the engine's own routes and never finds it:
+    rendering this consent form was UrlGenerationError. %>
+      <%=link_to(tr("Not {user}?", "", user: [Platform::Config.current_user, :name]), "/platform/login/out?#{{display: params[:display], client_id: @client_application.id}.to_query}")%>
     </div>
     <div href="/" class="i logo"></div>
   </div>
