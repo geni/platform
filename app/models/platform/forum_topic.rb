@@ -42,7 +42,15 @@ module Platform
   class ForumTopic < ApplicationRecord
 
     belongs_to :user, :class_name => Platform::Config.user_class_name, :foreign_key => :user_id
-    belongs_to :subject, :polymorphic => true
+
+    # :optional, because a topic with no subject is the site-wide developer forum -- which is
+    # exactly what Platform::Developer::ForumController#index lists ("subject_id is null") and
+    # what #topic creates.  subject_id and subject_type are both nullable for that reason.
+    #
+    # Rails 5 made belongs_to required by default, so this validated a subject onto every topic
+    # and no site-wide topic could be saved at all.  #topic uses the non-bang .create, so starting
+    # a discussion there failed silently and then handed the unsaved topic to ForumMessage.create.
+    belongs_to :subject, polymorphic: true, optional: true
 
     # #count takes at most a column name.  This passed the Rails 2 two-argument finder signature
     # and so raised ArgumentError on every call, whatever the data.

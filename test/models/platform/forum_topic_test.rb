@@ -11,6 +11,18 @@ module Platform
       assert_equal app, topic.subject
     end
 
+    # The site-wide developer forum is the topics with no subject, which is why subject_id and
+    # subject_type are nullable.  Rails 5 made belongs_to required by default, so this was
+    # "Subject must exist" and no site-wide topic could be saved -- see the :optional on the
+    # association.
+    test 'a topic does not need a subject' do
+      topic = Platform::ForumTopic.create!(user: user, topic: 'Site wide')
+
+      assert_nil topic.reload.subject
+      assert_nil topic.subject_id
+      assert_nil topic.subject_type
+    end
+
     test 'topic text is required' do
       assert_raise ActiveRecord::NotNullViolation do
         Platform::ForumTopic.create!(user: user, subject: app)
