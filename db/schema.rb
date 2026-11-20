@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20261113120100) do
+ActiveRecord::Schema.define(:version => 20261120110000) do
 
   create_table "platform_admins", :force => true do |t|
     t.integer  "user_id"
@@ -237,6 +237,7 @@ ActiveRecord::Schema.define(:version => 20261113120100) do
     t.string   "code_challenge",        :limit => 128
     t.string   "code_challenge_method", :limit => 10
     t.datetime "exchanged_at"
+    t.integer  "replaced_by_id",        :limit => 8
   end
 
   add_index "platform_oauth_tokens", ["token"], :name => "index_platform_oauth_tokens_on_token", :unique => true
