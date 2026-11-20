@@ -99,8 +99,11 @@ module Platform
         request.format = :json if params[:format].nil?
       end
 
+      # String#param_true? was a Rails 2-era monkey patch in the host application and does not
+      # exist here or in any dependency, so this raised NoMethodError for any subclass that asked
+      # whether ?all= was set.
       def all?
-        params[:all].to_s.param_true?
+        ActiveModel::Type::Boolean.new.cast(params[:all]).present?
       end
 
       def cookies_enabled?
@@ -313,12 +316,18 @@ module Platform
         raise Exception.new("must be implemented in the extanding class")
       end
 
+      # Both of these passed the Rails 2 finder option hash, which Rails 4 removed -- so every
+      # subclass that paginated or looked up a single model raised ArgumentError.
       def page_models
-        @page_models ||= model_class.all(:conditions => page_model_conditions, :limit => limit, :offset => offset, :order => 'id ASC')
+        @page_models ||= model_class.where(page_model_conditions)
+                                    .order('id ASC')
+                                    .limit(limit)
+                                    .offset(offset)
       end
 
       def page_model
-        @page_model ||= model_class.first(:conditions => page_model_conditions) || raise(ActiveRecord::RecordNotFound)
+        @page_model ||= model_class.where(page_model_conditions).first ||
+                        raise(ActiveRecord::RecordNotFound)
       end
 
       def page_model_conditions(id_fields=nil)
@@ -337,7 +346,9 @@ module Platform
         id_fields.each do |field|
           ids << params[field].split(',') if params[field]
         end
-        ids = ids.flatten.compact.uniq.apply(:to_i)
+        # Array#apply was a Rails 2-era monkey patch in the host application and does not exist
+        # here or in any dependency, so asking for models by id raised NoMethodError.
+        ids = ids.flatten.compact.uniq.map(&:to_i)
         ids = default_model_ids if ids.empty?
 
         ids
