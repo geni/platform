@@ -45,7 +45,11 @@ module Platform
           end
         else
           # automatically register the developer - if registration is disabled
-          Platform::Developer.find_or_create(Platform::Config.current_user)
+          #
+          # Platform::Developer::Developer, not Platform::Developer: the latter is the module the
+          # model lives in and has no .find_or_create, so with the agreement switched off every
+          # developer page raised NoMethodError instead of registering the viewer.
+          Platform::Developer::Developer.find_or_create(Platform::Config.current_user)
           Platform::Config.init(Platform::Config.current_user)
         end
       end

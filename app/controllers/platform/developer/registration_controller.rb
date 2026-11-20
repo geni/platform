@@ -33,11 +33,17 @@ module Platform
       def proceed
         if request.post? and verified_request?
           unless Platform::Config.current_user_is_developer?
-            Platform::Developer.find_or_create(Platform::Config.current_user)
+            # Platform::Developer::Developer, not Platform::Developer: the latter is the module
+            # the model lives in and has no .find_or_create, so accepting the developer agreement
+            # raised NoMethodError and nobody could register.
+            Platform::Developer::Developer.find_or_create(Platform::Config.current_user)
           end
         end
 
-        redirect_to(:controller => "/platform/developer/apps/new")
+        # :action, not a controller path with the action glued onto the end.  The old spelling
+        # asked for the :index of a controller called "platform/developer/apps/new", which does
+        # not exist -- so agreeing to the developer agreement answered UrlGenerationError.
+        redirect_to(controller: "/platform/developer/apps", action: :new)
       end
 
     end # class RegistrationController
