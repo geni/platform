@@ -509,7 +509,10 @@ module Platform
               :application => client_app,
               :user_id => Platform::Config.current_user.try(:id),
               :event => "#{params[:controller]}-#{params[:action]}",
-              :data => params,
+              # to_unsafe_h, because the data column is YAML-serialized and Psych refuses to dump
+              # an ActionController::Parameters -- so every log line raised Psych::DisallowedClass
+              # from the after_action, after the response had already been rendered.
+              data: params.to_unsafe_h,
               :request_method => request.request_method,
               :user_agent => request.user_agent,
               :ip => request.remote_ip,
