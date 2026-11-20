@@ -45,7 +45,7 @@ module Platform
           return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
         end
 
-        @selected_app_ids = params.keys - ['action', 'controller', 'section']
+        @selected_app_ids = checked_app_ids
         session[:platform_dashboard_apps] = @selected_app_ids
 
     #   persist in the database
@@ -56,6 +56,24 @@ module Platform
       end
 
     private
+
+      # The checkboxes on the apps_info form are named after application ids, so the selection is
+      # the ids among the posted parameter names.
+      #
+      # This used to be `params.keys - ['action', 'controller', 'section']`, which is to say
+      # "everything else the form sent" -- and form_tag sends authenticity_token, so the string
+      # "authenticity_token" went into the session as though it were an application id, on every
+      # save.  Taking the ids rather than discarding the names we happen to know about also means
+      # the session can only ever name applications this developer actually has.
+      def checked_app_ids
+        params.keys & selectable_app_ids
+      end
+
+      # #prepare_apps loads the developer's own top-level applications; the form lists each one's
+      # versions underneath it and those have their own checkboxes.
+      def selectable_app_ids
+        @apps.flat_map { |app| [app.id.to_s, *app.children.collect { |child| child.id.to_s }] }
+      end
 
       def prepare_apps
         @selected_app_ids = session[:platform_dashboard_apps] || []

@@ -1,12 +1,14 @@
 <%= render :partial => "/platform/developer/common/header" %>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<% javascript_tag do %>
+<%= javascript_tag do %>
     google.load("visualization", "1", {packages:["corechart"]});
 <% end %>
 
 <div class="section_title">
   <div style="float:right; font-size:12px; padding-top:5px;">
-     <%=link_to(tr("edit developer information", "Developer preferences link"), :controller => "/platform/developer", :action => :info)%>
+<%# "platform/developer" is the namespace, not a controller, so :action => :info named no route
+    and the whole dashboard answered UrlGenerationError.  The page meant Platform::Developer::InfoController. %>
+     <%=link_to(tr("edit developer information", "Developer preferences link"), controller: "/platform/developer/info", action: :index)%>
 		 |
      <%=link_to(tr("dashboard preferences", "Dashboard preferences link"), :controller => "/platform/developer/dashboard", :action => :settings)%>
   </div>
