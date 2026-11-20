@@ -41,5 +41,23 @@
 module Platform
   class DeveloperFilter < BaseFilter
 
+    # Every other filter in the gem can leave this to will_filter, which derives the filtered
+    # model from the filter's own class name: it strips "Filter" and constantizes the rest.  For
+    # this one that yields Platform::Developer -- the *module*; the model is
+    # Platform::Developer::Developer -- and WillFilter::Filter#initialize only checks that the
+    # name resolves to something, not that what it resolved to is a model.  So it quietly filtered
+    # against a module.
+    #
+    # Platform::Developer::Developer.filter passes the model itself (will_filter's #filter does
+    # `filter_class.new(self)`) and so never reaches the fallback below.  The fallback is what
+    # makes a bare DeveloperFilter.new correct on its own.
+    #
+    # Note the nil check rather than a default argument.  ActiveRecord::Base.new is declared
+    # `new(attributes = nil)` and passes that through, so #initialize is always called with one
+    # argument and a default on the parameter would never fire.
+    def initialize(model_class = nil)
+      super(model_class || Platform::Developer::Developer)
+    end
+
   end # class DeveloperFilter
 end # module Platform

@@ -41,9 +41,10 @@
 module Platform
   class RollupLogFilter < BaseFilter
 
-    def inner_joins
-      [['Platform::Application', :application_id]]
-    end
+    # No join.  This declared [['Platform::Application', :application_id]], copied from
+    # ApplicationMetricFilter, but platform_rollup_logs has no application_id column -- a rollup
+    # log records one rollup run over an interval, not one run per application -- so the join it
+    # built referenced a column that does not exist.
 
     def default_filter_if_empty
       'created_today'

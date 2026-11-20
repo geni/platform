@@ -37,8 +37,19 @@ module Platform
     #
     config.to_prepare do
       WillFilter.configure do |config|
-        config.table_name_prefix = 'wf' unless Rails.env.test?
+        # Set in every environment, test included.  It used to be skipped in test, which left
+        # WillFilter::Filter pointing at its own default table (will_filter_filters) while the
+        # dummy application's schema -- like production's -- has wf_filters.  The effect was that
+        # no filter could be instantiated under test at all, so none of them were testable.
+        config.table_name_prefix = 'wf'
       end
+
+      # will_filter's own engine includes this into ::ApplicationRecord -- the *host
+      # application's* base class, which Platform's models do not inherit from: they descend from
+      # Platform::ApplicationRecord, which is an ActiveRecord::Base of its own.  So Model.filter,
+      # which every admin screen in this gem calls, was never defined on any Platform model and
+      # raised NoMethodError.
+      Platform::ApplicationRecord.include(WillFilter::Concerns::WillFilterMethods)
     end
 
   end

@@ -26,7 +26,9 @@ module Platform
     class DevelopersController < Admin::BaseController
 
       def index
-        @developers = Platform::Developer.filter(:params => params, :filter => Platform::DeveloperFilter)
+        # Platform::Developer::Developer, not Platform::Developer: the latter is the module, which
+        # has no .filter, so this raised NoMethodError and the admin developer list never rendered.
+        @developers = Platform::Developer::Developer.filter(params: params, filter: Platform::DeveloperFilter)
       end
 
       def view

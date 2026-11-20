@@ -41,8 +41,11 @@
 module Platform
   class ApplicationFilter < BaseFilter
 
+    # Platform::Developer::Developer, not Platform::Developer: the latter is the module, and
+    # will_filter constantizes this name to build the join, so the admin application list could
+    # not be filtered at all.  Same mistake as Platform::ApplicationDeveloper's belongs_to had.
     def inner_joins
-      [["Platform::Developer", :developer_id]]
+      [['Platform::Developer::Developer', :developer_id]]
     end
 
   end # class ApplicationFilter
