@@ -41,20 +41,35 @@ module Platform
       tr8n.will_filter_path(*args)
     end
 
+    # The open/closed disclosure triangle in front of a collapsible section.  Renders both spans;
+    # Platform.Effects.toggle swaps which one is hidden.
+    #
+    # Three things were wrong, and the first two compounded rather than cancelling out:
+    #
+    #   * the method assembled a String and handed it back, so ERB escaped the whole thing and
+    #     every toggler on every page rendered its own markup as visible text;
+    #   * the arrows were passed to link_to_function as the link text, and that is link_to, which
+    #     escapes what it is given -- so "&#x25BC;" came out as "&amp;#x25BC;" and would still
+    #     have shown as the literal characters once the escaping above was fixed.  #toggler_arrow
+    #     marks the entity safe, which is what makes it render as an arrow;
+    #   * content_id and label were interpolated into markup unescaped.  That did not matter
+    #     while the result was being escaped wholesale, and does now: content_tag escapes the id
+    #     attribute, #toggler_arrow escapes the label, and the javascript the two links call is
+    #     built with escape_javascript.
     def platform_toggler_tag(content_id, label = "", open = true, opts = {})
       style = opts[:style] || 'text-align:center;vertical-align:middle;'
       style = style + ';text-decoration:none;'
 
-      html = "<span id='#{content_id}_open' "
-      html << "style='display:none'" unless open
-      html << ">"
-      html << link_to_function("&#x25BC; #{label}", "Platform.Effects.toggle('#{content_id}_open','#{content_id}_closed','#{content_id}')", :style => style)
-      html << "</span>"
-      html << "<span id='#{content_id}_closed' "
-      html << "style='display:none'" if open
-      html << ">"
-      html << link_to_function("&#x25BA; #{label}", "Platform.Effects.toggle('#{content_id}_open','#{content_id}_closed','#{content_id}')", :style => style)
-      html << "</span>"
+      toggle = "Platform.Effects.toggle('#{escape_javascript(content_id.to_s)}_open'," \
+               "'#{escape_javascript(content_id.to_s)}_closed'," \
+               "'#{escape_javascript(content_id.to_s)}')"
+
+      safe_join([
+        content_tag(:span, toggler_arrow('&#x25BC;', label, toggle, style),
+                    id: "#{content_id}_open", style: (open ? nil : 'display:none')),
+        content_tag(:span, toggler_arrow('&#x25BA;', label, toggle, style),
+                    id: "#{content_id}_closed", style: (open ? 'display:none' : nil)),
+      ])
     end
 
     def platform_documentation_tag(url_options = {})
@@ -161,6 +176,17 @@ module Platform
 
     def platform_help_icon_tag(path = "index", opts = {})
       link_to(image_tag("/platform/images/help.png", :style => "border:0px; vertical-align:middle;", :title => trl("Help")), opts.merge({:controller => "/platform/developer/help", :action => path}), :target => "_new")
+    end
+
+  private
+
+    # One arrow of a toggler.  The entity has to reach link_to already safe -- link_to escapes
+    # its text -- and the caller's label has to be escaped before it joins it, or marking the
+    # pair safe would carry the label's markup through.
+    def toggler_arrow(entity, label, toggle, style)
+      text = "#{entity} #{ERB::Util.html_escape(label)}".html_safe
+
+      link_to_function(text, toggle, style: style)
     end
 
   end # module BaseHelper
