@@ -102,6 +102,35 @@ module Platform
     validates_uniqueness_of :key
     before_validation :generate_keys, :on => :create
 
+    # The client secret is never serialized.
+    #
+    # Platform::Api::AppsController#index is `render_response(Platform::Application.all)`, so
+    # /api/apps hands every application's attributes to whoever asked -- and `secret` was among
+    # them, which means any API caller could read every registered application's OAuth client
+    # secret and then impersonate it on the token endpoint.
+    #
+    # Excluded here rather than in the controller so that it covers both response formats and any
+    # host subclass that serializes an application.  The developer and admin screens show the
+    # secret to the people entitled to see it by reading the attribute directly, which this does
+    # not affect.
+    #
+    # `key` stays: it is the public client_id, which RFC 6749 section 2.2 says is not secret.
+    #
+    # :only has to be filtered as well as :except, and not only for tidiness.  ActiveModel lets
+    # :only win -- it intersects the attribute list with it and never looks at :except -- and
+    # Platform::Api::BaseController#render_response builds its serializer options by merging the
+    # request's own params, so `?only=secret` would have walked straight past an :except-only
+    # guard and asked for exactly the one attribute being withheld.
+    UNSERIALIZED_ATTRIBUTES = %w[secret].freeze
+
+    def serializable_hash(options = nil)
+      options = (options || {}).dup
+      options[:except] = Array(options[:except]).map(&:to_s) | UNSERIALIZED_ATTRIBUTES
+      options[:only]   = Array(options[:only]).map(&:to_s) - UNSERIALIZED_ATTRIBUTES if options[:only].present?
+
+      super(options)
+    end
+
     URL_REGEX = /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i
     validates_format_of :url,                   :with => URL_REGEX, :allow_blank=>true
     validates_format_of :support_url,           :with => URL_REGEX, :allow_blank=>true

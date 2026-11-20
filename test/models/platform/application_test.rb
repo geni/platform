@@ -1102,5 +1102,51 @@ private
       Platform::Config.config[:enable_scopes] = original
     end
 
+
+    ##########################################################################
+    #### Serialization
+    ####
+    #### Platform::Api::AppsController#index serializes every application to whoever asked, so
+    #### what an application is willing to serialize is a security boundary rather than a
+    #### presentation detail.
+    ##########################################################################
+
+    test 'the client secret is never serialized' do
+      assert_not_includes app.serializable_hash.keys, 'secret'
+      assert_no_match app.secret, app.to_json
+      assert_no_match app.secret, app.to_xml
+    end
+
+    # The public client_id: a client sends it in the clear on every authorize request, so there is
+    # nothing to protect (RFC 6749 section 2.2).
+    test 'the client_id is serialized' do
+      assert_equal app.key, app.serializable_hash['key']
+    end
+
+    test 'an explicit :except still applies on top' do
+      hash = app.serializable_hash(except: [:name])
+
+      assert_not_includes hash.keys, 'name'
+      assert_not_includes hash.keys, 'secret'
+      assert_includes hash.keys, 'key'
+    end
+
+    # ActiveModel lets :only win over :except -- it intersects and never consults :except -- so
+    # filtering only :except would have left `only: [:secret]` asking for exactly the attribute
+    # being withheld.
+    test 'an explicit :only cannot ask for the secret' do
+      assert_not_includes app.serializable_hash(only: [:secret]).keys, 'secret'
+      assert_empty app.serializable_hash(only: [:secret])
+    end
+
+    test 'an explicit :only still narrows to what it may have' do
+      assert_equal %w[key name], app.serializable_hash(only: [:key, :name, :secret]).keys.sort
+    end
+
+    # The screens that are entitled to show it read the attribute, not the serialization.
+    test 'the secret is still readable as an attribute' do
+      assert_equal 40, app.secret.length
+    end
+
   end # class ApplicationTest
 end # module Platform
