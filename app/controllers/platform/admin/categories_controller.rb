@@ -58,13 +58,14 @@ module Platform
         if request.post? and verified_request?
           if params[:category] && params[:category][:id].present?
             @category = Platform::Category.find(params[:category][:id])
-            @category.update(params[:category])
+            @category.update(category_params)
           else
-            @category = Platform::Category.create(params[:category])
+            @category = Platform::Category.create(category_params)
           end
         end
 
-        redirect_to :action => :index, :category_id => @category.id
+        # @category is nil on anything that is not a verified POST, and this asked it for its #id.
+        redirect_to(action: :index, category_id: @category && @category.id)
       end
 
       def lb_update_application_category
@@ -76,7 +77,7 @@ module Platform
         app_cat = Platform::ApplicationCategory.find(params[:application_category][:id])
 
         if request.post? and verified_request?
-          app_cat.update(params[:application_category])
+          app_cat.update(application_category_params)
         end
 
         redirect_to :action => :index, :category_id => app_cat.category.id
@@ -135,9 +136,29 @@ module Platform
 
     private
 
+      # params[:category] and params[:application_category] are ActionController::Parameters, and
+      # handing those straight to #create / #update is ActiveModel::ForbiddenAttributesError -- so
+      # neither of the two category lightboxes has saved anything since strong parameters arrived.
+      # Both lists are the fields their forms render.
+      #
+      # :id is permitted on the category because lb_update_category posts it as part of the
+      # category hash to say which record is being edited, and #update_category reads it from
+      # there; assigning it back over the same record's id is a no-op.
+      def category_params
+        params.require(:category).permit(:id, :parent_id, :name, :keyword, :position,
+                                         :enable_on, :disable_on)
+      end
+
+      def application_category_params
+        params.require(:application_category).permit(:featured, :position)
+      end
+
       def recursive_category_delete(cat_id)
         cat = Platform::Category.find(cat_id)
-        Platform::ApplicationCategory.delete_all(["category_id=?", cat_id])
+
+        # Rails 6 removed #delete_all's conditions argument, so deleting a category raised
+        # ArgumentError before it had deleted anything.
+        Platform::ApplicationCategory.where(category_id: cat_id).delete_all
 
         cat.children.each do |sub_cat|
           recursive_category_delete(sub_cat.id)

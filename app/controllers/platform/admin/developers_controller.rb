@@ -31,22 +31,34 @@ module Platform
         @developers = Platform::Developer::Developer.filter(params: params, filter: Platform::DeveloperFilter)
       end
 
+      # The same mistake #index had, three more times: Platform::Developer is the module the model
+      # lives in and has no .find_by_id, so viewing or editing a developer raised NoMethodError.
       def view
-        @dev = Platform::Developer.find_by_id(params[:dev_id])
+        @dev = Platform::Developer::Developer.find_by_id(params[:dev_id])
       end
 
       def lb_edit
-        @dev = Platform::Developer.find_by_id(params[:dev_id])
+        @dev = Platform::Developer::Developer.find_by_id(params[:dev_id])
         render :layout => false
       end
 
       def update
         if request.post? and verified_request?
-          dev = Platform::Developer.find_by_id(params[:dev_id]) if params[:dev_id]
-          dev.update(params[:dev]) if dev
+          dev = Platform::Developer::Developer.find_by_id(params[:dev_id]) if params[:dev_id]
+          dev.update(developer_params) if dev
         end
 
         redirect_to_source(:action => :index)
+      end
+
+    private
+
+      # params[:dev] is ActionController::Parameters, and handing those straight to #update is
+      # ActiveModel::ForbiddenAttributesError.  The five fields are the ones lb_edit's form
+      # renders; user_id is not among them, because reassigning it would move the developer --
+      # and every application under it -- onto another account.
+      def developer_params
+        params.require(:dev).permit(:name, :about, :url, :email, :phone)
       end
 
     end # class DevelopersController

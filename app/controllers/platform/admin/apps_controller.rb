@@ -58,9 +58,9 @@ module Platform
 
         if request.post? and verified_request?
           if @scope.id.nil?
-            @scope = Platform::Scope.create(params[:scope])
+            @scope = Platform::Scope.create(scope_params)
           else
-            @scope.update(params[:scope])
+            @scope.update(scope_params)
           end
 
           @scope.store_icon(params[:new_icon]) unless params[:new_icon].blank?
@@ -163,13 +163,33 @@ module Platform
         if request.post? and verified_request?
           app = Platform::Application.find_by_id(params[:app_id]) if params[:app_id]
           if app
-            app.update(params[:app])
+            app.update(application_params)
             app.store_icon(params[:new_icon]) unless params[:new_icon].blank?
             app.store_logo(params[:new_logo]) unless params[:new_logo].blank?
           end
         end
 
         redirect_to_source(:action => :index)
+      end
+
+    private
+
+      # params[:app] and params[:scope] are ActionController::Parameters, and handing those
+      # straight to #create / #update is ActiveModel::ForbiddenAttributesError -- so neither the
+      # application edit lightbox nor the scope editor has saved anything since strong parameters
+      # arrived.  Both lists are the fields the lb_edit / lb_scope forms render.
+      #
+      # key and secret are deliberately absent from the application list: they are the
+      # application's OAuth credentials, generated on create and rotated through #reset_secret!,
+      # not something to set from a form.
+      def application_params
+        params.require(:app).permit(:name, :description, :url, :privacy_policy_url,
+                                    :terms_of_service_url, :consent_label, :canvas_name,
+                                    :canvas_url, :auto_signin)
+      end
+
+      def scope_params
+        params.require(:scope).permit(:keyword, :description, :headline, :position)
       end
 
     end # class AppsController

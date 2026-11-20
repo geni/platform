@@ -33,10 +33,23 @@ module Platform
           return render(:partial => params[:section], :locals => {:mode => params[:mode].to_sym})
         end
 
-        platform_current_developer.update(params[:developer])
+        platform_current_developer.update(developer_params)
 
         platform_current_developer.reload
         render(:partial => params[:section], :locals => {:mode => :view})
+      end
+
+    private
+
+      # params[:developer] is ActionController::Parameters, and handing those straight to #update
+      # is ActiveModel::ForbiddenAttributesError -- so saving this page has not worked since
+      # strong parameters arrived.
+      #
+      # The five fields are the ones the form in _basic_info renders.  user_id is deliberately not
+      # among them: it is the account the developer record belongs to, and mass-assigning it would
+      # move the record -- and every application under it -- onto somebody else's account.
+      def developer_params
+        params.require(:developer).permit(:name, :email, :url, :phone, :about)
       end
 
     end # class InfoController
