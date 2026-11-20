@@ -140,7 +140,21 @@ module Platform
       # a digest on the spot, so the table converts itself as clients call in and the switch can be
       # turned off once the longest token lifetime has elapsed.
       #
-      # Digests are 43 characters and generated tokens are 40, so the two lookups cannot collide.
+      # Digests are 43 characters and generated tokens are 40, so the two lookups cannot collide --
+      # but that has to be *checked*, not just true of the values.  It was not, and the cleartext
+      # arm would happily match a digest presented as though it were a token.  For a digested type
+      # that meant anyone who could read this table held usable credentials, which is the one thing
+      # hashing at rest exists to prevent; and because the match then ran
+      # #upgrade_stored_token_to_digest!, the row was rewritten as digest(digest) and the
+      # legitimate holder's token stopped working.  One request with a known digest revoked the
+      # token it named.
+      #
+      # Hence the guard below.  It is scoped to the digested types on purpose: for a type stored in
+      # the clear there is no digest in the column for a presented value to collide with, and
+      # refusing digest-width values there would reject a legacy token that happened to be 43
+      # characters.  Within the digested types that residual risk remains in theory -- a
+      # pre-hashing request or refresh token of exactly 43 characters can no longer be looked up --
+      # but those are the two short-lived types, and this gem has only ever minted them at 40.
       def self.find_by_presented_token(presented)
         presented = presented.to_s
         return nil if presented.empty?
@@ -151,6 +165,7 @@ module Platform
         end
 
         return nil unless Platform::Config.oauth_allow_cleartext_token_lookup?
+        return nil if store_digest? && Platform::Helper.token_digest_shaped?(presented)
 
         found = find_by_token(presented)
         return nil if found.nil?
