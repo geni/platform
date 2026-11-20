@@ -1,34 +1,20 @@
-def next?
-  File.basename(__FILE__) == "Gemfile.next"
-end
 source 'http://rubygems.org'
 
 gemspec
 
-gem "next_rails"
 gem "acts_as_state_machine", "~> 2.2.0"
 gem "acts_as_tree", "~> 0.1.1"
 
-# Rails LTS sources for free Community plan
-if next?
-  gem 'rails', '~>3.0.0'
-  gem 'tr8n', :git => 'https://github.com/geni/tr8n.git', :branch => 'rails-3.0.x'
-  gem 'will_filter', :git => 'https://github.com/geni/will_filter.git', :branch => 'rails-3.0.x'
-else
-  git 'https://github.com/makandra/rails.git', :branch => '2-3-lts' do
-
-    gem 'rails', '~>2.3.18'
-#  gem 'actionmailer',     :require => false
-    gem 'actionpack',       :require => false
-    gem 'activerecord',     :require => false
-#  gem 'activeresource',   :require => false
-    gem 'activesupport',    :require => false
-    gem 'railties',         :require => false
-  end
-
-  gem 'tr8n', :git => 'https://github.com/geni/tr8n.git', :branch => 'rails-2.3.x'
-  gem 'will_filter', :git => 'https://github.com/geni/will_filter.git', :branch => 'rails-2.3.x'
-end
+# This branch is Rails 3.0 and nothing else.  It used to carry a next_rails dual boot -- a `next?`
+# helper keyed on the Gemfile's own filename, a Gemfile.next symlink pointing back here, and an
+# `if next?` split with Rails 2.3 LTS from makandra on the other side.  That made the branch name a
+# statement about only half of what it built, and test_my_app.sh, which never sets BUNDLE_GEMFILE,
+# silently exercised the 2.3 half: five branches would have reported green having tested one Rails.
+#
+# Rails 3.0.20 requires `bundler (~> 1.0)`, so this Gemfile resolves only under bundler 1.x.
+gem 'rails', '~>3.0.0'
+gem 'tr8n', :git => 'https://github.com/geni/tr8n.git', :branch => 'rails-3.0.x'
+gem 'will_filter', :git => 'https://github.com/geni/will_filter.git', :branch => 'rails-3.0.x'
 
 group :test do
   gem 'method_source',    :require => false

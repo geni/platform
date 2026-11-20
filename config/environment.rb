@@ -1,62 +1,17 @@
 # Be sure to restart your server when you modify this file
 
-# Specifies gem version of Rails to use when vendor/rails is not present
-#RAILS_GEM_VERSION = '2.3.18.54' unless defined? RAILS_GEM_VERSION
-
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
+require File.expand_path('../application', __FILE__)
 
-# Rails 3.0+ needs application.rb and compatibility shim
-if ENV['BUNDLE_GEMFILE'] && ENV['BUNDLE_GEMFILE'].include?('.next')
-  require File.expand_path('../application', __FILE__)
+PlatformGem::Application.initialize!
 
-  # Define compatibility shim for Rails 2.3's Initializer.run syntax
-  require 'ostruct'
-  module Rails
-    module Initializer
-      def self.run
-        # No-op for Rails 3.0 - configuration is handled in application.rb
-        yield(OpenStruct.new) if block_given?
-      end
-    end
-  end
-
-  # Initialize the Rails application
-  PlatformGem::Application.initialize!
-end
-
-Rails::Initializer.run do |config|
-  # Settings in config/environments/* take precedence over those specified here.
-  # Application configuration should go into files in config/initializers
-  # -- all .rb files in that directory are automatically loaded.
-
-  # Add additional load paths for your own custom dirs
-  # config.autoload_paths += %W( #{RAILS_ROOT}/extras )
-
-  # Specify gems that this application depends on and have them installed with rake gems:install
-  # config.gem "bj"
-  # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
-  # config.gem "sqlite3-ruby", :lib => "sqlite3"
-  # config.gem "aws-s3", :lib => "aws/s3"
-
-  # Only load the plugins named here, in the order given (default is alphabetical).
-  # :all can be used as a placeholder for all plugins not explicitly named
-  # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
-
-  # Skip frameworks you're not going to use. To use Rails without a database,
-  # you must remove the Active Record framework.
-  # config.frameworks -= [ :active_record, :active_resource, :action_mailer ]
-
-  # Activate observers that should always be running
-  # config.active_record.observers = :cacher, :garbage_collector, :forum_observer
-
-  # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
-  # Run "rake -D time" for a list of tasks for finding time zone names.
-  config.time_zone = 'UTC'
-
-  # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
-  # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
-  # config.i18n.default_locale = :de
-
-  config.rails_lts_options = { :default => :compatible }
-end
+# This file used to end with a `Rails::Initializer.run do |config| ... end` block, and -- on the
+# Rails 3.0 side of the dual boot -- a shim that defined Rails::Initializer.run as a no-op taking a
+# block, so that the block could be parsed and then thrown away.  Both are gone.
+#
+# Nothing is lost by dropping them: the two settings that block carried, `config.time_zone = 'UTC'`
+# and `config.rails_lts_options`, were already being discarded by that no-op whenever this branch
+# ran as Rails 3.0.  config/application.rb already sets time_zone to UTC, and rails_lts_options was
+# only ever meaningful to the makandra Rails 2.3 LTS gem, which this branch no longer depends on.
+# Nothing else in the gem calls Rails::Initializer.
