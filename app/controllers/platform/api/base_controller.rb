@@ -28,6 +28,11 @@ module Platform
       before_action :ensure_api_enabled
       before_action :cors_preflight_check
       before_action :authenticate
+      # A browser only accepts a cross-origin response if the *response* carries the
+      # access-control headers; an approved preflight on its own is not enough.  Nothing called
+      # #cors_set_access_control_headers before this, so CORS could not have worked even with the
+      # preflight check firing.
+      after_action  :cors_set_access_control_headers
       after_action  :log_api_call
 
       class ApiError < StandardError
@@ -108,6 +113,10 @@ module Platform
 
       def cookies_enabled?
         Platform::Config.api_cookies_enabled?
+      end
+
+      def cors_enabled?
+        Platform::Config.api_cors_enabled?
       end
 
       ############################################################################
@@ -605,24 +614,44 @@ module Platform
         raise ResponseStructureError.new("Unsupported or undocumented fields for API version #{api_version}, path #{path}: #{undocumented_fields.join(', ')}") if undocumented_fields.any?
       end
 
-      # If this is a preflight OPTIONS request, then short-circuit the
-      # request, return only the necessary headers and return an empty
-      # text/plain.
+      # If this is a preflight OPTIONS request, then short-circuit the request and answer with
+      # the access-control headers and no body.
+      #
+      # Three things were wrong, and between them the method had never executed a line of its
+      # body:
+      #
+      #   * request.method answers the string "OPTIONS", so `== :options` was false for every
+      #     request there has ever been;
+      #   * `pp` left debug output in a request path;
+      #   * render's :text option went away in Rails 5.  head is what answers a preflight: it
+      #     has no body by definition.
+      #
+      # Rendering in a before_action halts the chain, which is what keeps a preflight -- a
+      # request that by design carries no credentials -- from reaching :authenticate.
+      #
+      # Authorization is in the allowed headers because that is how a bearer token arrives (RFC
+      # 6750 section 2.1); without it a browser refuses to send the one credential the API
+      # documents, which would leave this working only for anonymous calls.  The two Prototype-era
+      # headers are kept because the JSDK still sends X-Requested-With.
       def cors_preflight_check
-        if request.method == :options
-          pp "CORS request received"
+        return unless cors_enabled?
+        return unless request.request_method == 'OPTIONS'
 
-          headers['Access-Control-Allow-Origin'] = '*'
-          headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
-          headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version'
-          headers['Access-Control-Max-Age'] = '1728000'
+        headers['Access-Control-Allow-Origin'] = '*'
+        headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+        headers['Access-Control-Allow-Headers'] = 'Authorization, X-Requested-With, X-Prototype-Version'
+        headers['Access-Control-Max-Age'] = '1728000'
 
-          render :text => '', :content_type => 'text/plain'
-        end
+        head :ok
       end
 
       # Return the CORS access control headers.
+      #
+      # An after_action, because a browser checks these on the response that actually carries the
+      # data -- an approved preflight only buys the right to make the request.
       def cors_set_access_control_headers
+        return unless cors_enabled?
+
         headers['Access-Control-Allow-Origin'] = '*'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
         headers['Access-Control-Max-Age'] = "1728000"

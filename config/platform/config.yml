@@ -130,6 +130,16 @@ defaults: &defaults
     # every API controller in the host application answers callers it cannot identify.  Turning
     # it on is a decision to make deliberately.
     public_enabled:           false
+    # Cross-origin browser calls.  On means the API answers a CORS preflight and sends
+    # Access-Control-Allow-Origin: * with every response, so a page on any origin can call it
+    # with a token of its own.  A viewer's session cookie is *not* sent to a wildcard origin, so
+    # turning this on does not expose a signed-in viewer to a third-party page.
+    #
+    # Off, and shipped off, because it has never been on: #cors_preflight_check compared
+    # request.method with :options -- a String against a Symbol -- so the preflight never fired,
+    # and #cors_set_access_control_headers had no caller, so no response carried the headers
+    # either.  Both are fixed; whether to use them is the host's decision.
+    cors_enabled:             false
     cookies_enabled:          true
     max_models:               50
     request_limit:            3

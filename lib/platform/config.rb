@@ -775,6 +775,12 @@ class Platform::Config
     api[:cookies_enabled]
   end
 
+  # Cross-origin browser calls.  See the note on this key in config/platform/config.yml for why
+  # it ships off.
+  def self.api_cors_enabled?
+    api[:cors_enabled]
+  end
+
   def self.enable_public_api?
     api[:public_enabled]
   end
