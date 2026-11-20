@@ -35,11 +35,11 @@ module Platform
         login_as developer
 
         assert_difference 'Platform::Application.count' do
-          post :create, :params => {:application => {:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com'}, :authenticity_token => form_authenticity_token}
+          post :create, params: {application: {name: 'TestApp', url: 'http://localhost', callback_url: 'http://localhost', contact_email: 'dev@example.com'}, authenticity_token: form_authenticity_token}
         end
 
         app = Platform::Application.order('id desc').first
-        assert_redirected_to :action => :index, :id => app.id
+        assert_redirected_to action: :index, id: app.id
         assert_match 'registered', flash[:trfn]
         assert_nil flash[:trfe]
 
@@ -52,7 +52,7 @@ module Platform
         login_as developer
 
         assert_no_difference 'Platform::Application.count' do
-          post :create, :params => {:application => {:name => 'TestApp', :url => '\0'}, :authenticity_token => form_authenticity_token}
+          post :create, params: {application: {name: 'TestApp', url: '\0'}, authenticity_token: form_authenticity_token}
           assert_response :success
         end
 
@@ -68,8 +68,8 @@ module Platform
 
       test 'edit' do
         login_as developer
-        app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
-        get :edit, :params => {:id => app.id}
+        app = developer.applications.create!(name: 'TestApp', url: 'http://localhost', callback_url: 'http://localhost', contact_email: 'dev@example.com')
+        get :edit, params: {id: app.id}
         assert_response :success
       end
 
@@ -80,10 +80,10 @@ module Platform
 
       test 'update' do
         login_as developer
-        app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
+        app = developer.applications.create!(name: 'TestApp', url: 'http://localhost', callback_url: 'http://localhost', contact_email: 'dev@example.com')
 
-        put :update, :params => {:id => app.id, :application => {:name => 'Updated'}, :authenticity_token => form_authenticity_token}
-        assert_redirected_to :controller => 'platform/developer/apps', :action => :index, :id => app.id
+        put :update, params: {id: app.id, application: {name: 'Updated'}, authenticity_token: form_authenticity_token}
+        assert_redirected_to controller: 'platform/developer/apps', action: :index, id: app.id
 
         app.reload
         assert_equal 'Updated', app.name, 'Name should have changed'
@@ -96,11 +96,11 @@ module Platform
 
       test 'delete' do
         login_as developer
-        app = developer.applications.create!(:name => 'TestApp', :url => 'http://localhost', :callback_url => 'http://localhost', :contact_email => 'dev@geni.com')
+        app = developer.applications.create!(name: 'TestApp', url: 'http://localhost', callback_url: 'http://localhost', contact_email: 'dev@example.com')
 
         assert_difference 'Platform::Application.count', -1 do
-          delete :delete, :params => {:id => app.id, :authenticity_token => form_authenticity_token}
-          assert_redirected_to :controller => 'platform/developer/apps', :action => :index
+          delete :delete, params: {id: app.id, authenticity_token: form_authenticity_token}
+          assert_redirected_to controller: 'platform/developer/apps', action: :index
         end
       end
 

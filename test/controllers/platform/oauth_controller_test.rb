@@ -11,7 +11,7 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
   # Ticket 18822
   test 'authorize gracefully fails if no client app' do
     login_as user
-    get :authorize, :params => {:client_id => 'invalid', :redirect_uri => 'http://foo.com/callback'}
+    get :authorize, params: {client_id: 'invalid', redirect_uri: 'http://foo.com/callback'}
     assert_response :redirect
     assert_redirected_to 'http://foo.com/callback?error=unauthorized_application&error_description=invalid+client+application+id'
   end
@@ -20,7 +20,7 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
     login_as user
     app.create_request_token(user, callback_url)
 
-    get :authorize, :params => {:client_id => app.id}
+    get :authorize, params: {client_id: app.id}
     assert_response :success
 
     # from app/views/platform/oauth/authorize_web.html.erb
@@ -29,10 +29,10 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Ticket 19135
   test 'grant_type password allowed' do
-    user.update!(:name => 'foo', :password => 'bar')
+    user.update!(name: 'foo', password: 'bar')
     app.allow_grant_type_password!
 
-    get :request_token, :params => {:grant_type => 'password', :client_id => app.key, :client_secret => app.secret, :username => 'foo', :password => 'bar'}
+    get :request_token, params: {grant_type: 'password', client_id: app.key, client_secret: app.secret, username: 'foo', password: 'bar'}
     assert_response :success
 
     assert_match 'access_token', @response.body
@@ -40,11 +40,11 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Ticket 19193
   test 'grant_type password allowed iphone' do
-    user.update!(:name => 'foo', :password => 'bar')
+    user.update!(name: 'foo', password: 'bar')
     app.allow_grant_type_password!
 
     @request.user_agent = 'iPhone'
-    get :request_token, :params => {:grant_type => 'password', :client_id => app.key, :client_secret => app.secret, :username => 'foo', :password => 'bar'}
+    get :request_token, params: {grant_type: 'password', client_id: app.key, client_secret: app.secret, username: 'foo', password: 'bar'}
     assert_response :success
 
     # scope joined this list when the grant started reporting what it actually granted rather
@@ -57,21 +57,21 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Ticket 19135
   test 'grant_type password denied' do
-    get :request_token, :params => {:grant_type => 'password', :client_id => app.key}
+    get :request_token, params: {grant_type: 'password', client_id: app.key}
     assert_response :unauthorized
     assert_match 'not authorized', @response.body
   end
 
   # Ticket 19135
   test 'request_token with invalid client key' do
-    get :request_token, :params => {:grant_type => 'password', :client_id => 'invalid'}
+    get :request_token, params: {grant_type: 'password', client_id: 'invalid'}
     assert_response :unauthorized
     assert_match 'invalid client application id', @response.body
   end
 
   # Ticket 19177
   test 'validate_token invalid token' do
-    get :validate_token, :params => {:access_token => 'invalid'}
+    get :validate_token, params: {access_token: 'invalid'}
     assert_response :bad_request
 
     result = JSON.parse(@response.body)
@@ -81,8 +81,8 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Ticket 19177
   test 'validate_token valid token' do
-    access_token = Platform::Oauth::AccessToken.create!(:user => user, :application => app, :token => 'foo')
-    get :validate_token, :params => {:access_token => access_token.token}
+    access_token = Platform::Oauth::AccessToken.create!(user: user, application: app, token: 'foo')
+    get :validate_token, params: {access_token: access_token.token}
     assert_response :success
 
     assert_equal 'OK', JSON.parse(@response.body)['result']
@@ -90,8 +90,8 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Ticket 16124
   test 'invalidate_token' do
-    access_token = Platform::Oauth::AccessToken.create(:user => user, :application => app, :token => 'foo')
-    get :invalidate_token, :params => {:access_token => access_token.token}
+    access_token = Platform::Oauth::AccessToken.create(user: user, application: app, token: 'foo')
+    get :invalidate_token, params: {access_token: access_token.token}
     assert_response :success
     assert_equal 'OK', JSON.parse(@response.body)['result'] # Ticket 19267
   end

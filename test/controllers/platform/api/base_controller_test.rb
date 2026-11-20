@@ -139,7 +139,7 @@ class Platform::Api::BaseControllerTest < Platform::ControllerTestCase
   # raises ActionController::UnfilteredParameters -- so any paginated response carrying a page link
   # was a 500.  Asserting url_for is handed a real Hash is what pins the fix: Parameters is not one.
   test 'prev_page_url hands url_for a Hash rather than Parameters' do
-    @controller.stubs(:params).returns(ActionController::Parameters.new(:page => '3', :fields => 'name'))
+    @controller.stubs(:params).returns(ActionController::Parameters.new(page: '3', fields: 'name'))
     @controller.stubs(:page).returns(3)
 
     @controller.expects(:url_for).with do |given|
@@ -151,7 +151,7 @@ class Platform::Api::BaseControllerTest < Platform::ControllerTestCase
   end
 
   test 'next_page_url hands url_for a Hash rather than Parameters' do
-    @controller.stubs(:params).returns(ActionController::Parameters.new(:page => '3', :fields => 'name'))
+    @controller.stubs(:params).returns(ActionController::Parameters.new(page: '3', fields: 'name'))
     @controller.stubs(:page).returns(3)
 
     @controller.expects(:url_for).with do |given|
