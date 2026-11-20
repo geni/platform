@@ -833,6 +833,17 @@ module Platform
     end
 
     def render_action(action, opts={})
+      # _authorize_form echoes the request back to itself in hidden fields, and reads @scope,
+      # @response_type, @redirect_url and @display -- which are not assigned for the view but
+      # merely memoized as a side effect of the private readers below having been called.
+      # #authorize calls three of those four while validating; nothing on the consent path calls
+      # #scope, so @scope was nil, the hidden field went out empty, and the scope the client
+      # asked for was dropped on the POST -- every consented token came back 'basic'.
+      #
+      # Only reachable now that the form renders at all; it was written `<% form_tag do %>`,
+      # which discards what the block captures.
+      @scope = scope
+
       if display == 'web'
         render(opts.merge(:action => "#{action}_#{display}"))
       else
