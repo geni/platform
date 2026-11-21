@@ -52,7 +52,13 @@ module Platform
 
     test 'an expired code is not pending' do
       code = app.create_device_code
-      code.update_attributes(:valid_to => 1.minute.ago)
+
+      # #update_attribute, not #update_attributes: OauthToken declares attr_accessible on this
+      # branch and valid_to is not in the list, so mass assignment silently drops it and the code
+      # is left unexpired -- the assertion then fails on a record that never aged.  Only
+      # rails-3.2.x carries that attr_accessible, which is why this reads as a 3.2-only failure;
+      # #update_attribute bypasses the protection and behaves the same on every branch.
+      code.update_attribute(:valid_to, 1.minute.ago)
 
       assert_nil Platform::Oauth::DeviceCode.pending_for_user_code(code.user_code)
     end
