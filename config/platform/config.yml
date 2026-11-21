@@ -74,6 +74,14 @@ defaults: &defaults
     refresh_token_lifetime:     7776000   # 90 days -- was unlimited
     request_token_lifetime:     600       # 10 minutes
 
+    # Device authorization grant, RFC 8628.  device_verification_uri is where the user is sent to
+    # type the user_code; the host application decides the path and routes it at
+    # Platform::OauthController#device, so it cannot be derived here.
+    device_code_lifetime:       600       # 10 minutes
+    device_poll_interval:       5         # seconds between polls, section 3.5
+    device_code_attempts:       10        # user_code guesses per session before refusing
+    # device_verification_uri:  "https://www.example.com/device"
+
   #############################################################################
   # By default, Platform will use its own logger. If you set it to false,
   # it will use default Rails logger.

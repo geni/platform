@@ -398,6 +398,51 @@ class Platform::Config
     (oauth[:request_token_lifetime] || 10.minutes).to_i
   end
 
+  ##########################################################
+  #### Device authorization grant, RFC 8628
+  ##########################################################
+
+  # How long a device_code / user_code pair stays usable.  RFC 8628 section 3.2 has no required
+  # value; 10 minutes is what the user has to notice the prompt, pick up a phone and type eight
+  # characters, and it is short enough that a phished code is not worth much by the time it is
+  # used.
+  def self.oauth_device_code_lifetime
+    (oauth[:device_code_lifetime] || 10.minutes).to_i
+  end
+
+  # The minimum seconds between polls, handed to the client as "interval".  Section 3.5 lets the
+  # server answer slow_down to push it up; the client is required to honour that by adding five
+  # seconds, so this is a floor rather than a promise.
+  def self.oauth_device_poll_interval
+    (oauth[:device_poll_interval] || 5).to_i
+  end
+
+  # How many user_code guesses one session may make before the verification page stops answering.
+  #
+  # This is load-bearing rather than defensive.  A user_code is eight characters from a
+  # twenty-letter alphabet -- a little over 34 bits -- which RFC 8628 section 6.1 considers
+  # adequate only in combination with a limit like this one.  Without it the code is short enough
+  # to grind.
+  def self.oauth_device_code_attempts
+    (oauth[:device_code_attempts] || 10).to_i
+  end
+
+  # Where the user is told to go to enter the code.  Host applications mount this wherever reads
+  # best -- Geni routes /device at Platform::OauthController#device -- so it cannot be derived
+  # from the gem's own routes.
+  #
+  # Built with a scheme, because site_base_url has none: Geni's is "www.geni.com", and RFC 8628
+  # section 3.2 needs verification_uri to be something the user can open.  http in development
+  # and https elsewhere, matching Platform::Application#oauth_url, which makes the same choice for
+  # the same reason.  Set device_verification_uri explicitly to override the whole thing -- a host
+  # behind a path prefix or on a different hostname will need to.
+  def self.oauth_device_verification_uri
+    return oauth[:device_verification_uri] if oauth[:device_verification_uri].present?
+
+    scheme = (env == 'development' ? 'http' : 'https')
+    "#{scheme}://#{site_base_url}/device"
+  end
+
   #########################################################
 
   #########################################################

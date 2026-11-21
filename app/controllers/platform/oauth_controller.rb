@@ -86,7 +86,7 @@ module Platform
     end
 
     # http://tools.ietf.org/html/draft-ietf-oauth-v2-16#section-4.2
-    # supported grant_type = authorization_code, password, refresh_token, client_credentials
+    # supported grant_type = authorization_code, password, refresh_token, client_credentials, device_code
     def request_token
       # presented_client_id, not request_param(:client_id): RFC 6749 section 2.3.1 lets a client
       # send client_id and client_secret as HTTP Basic credentials instead of as parameters, and a
@@ -99,8 +99,8 @@ module Platform
         return render_response(error_description: "invalid client application id", error: :unauthorized_application)
       end
 
-      unless ["authorization_code", "password", "refresh_token", "client_credentials"].include?(grant_type)
-        return render_response(error_description: "only authorization_code, password and refresh_token grant types are currently supported", error: :unsupported_grant_type)
+      unless ["authorization_code", "password", "refresh_token", "client_credentials", "device_code"].include?(grant_type)
+        return render_response(error_description: "only authorization_code, password, refresh_token, client_credentials and device_code grant types are currently supported", error: :unsupported_grant_type)
       end
 
       # Not rejected, because this is how the flow is documented -- oauth_server_side shows the
@@ -206,6 +206,118 @@ module Platform
       end
 
       redirect_with_response(status: "unauthorized")
+    end
+
+    ##########################################################################
+    #### Device authorization grant, RFC 8628
+    ##########################################################################
+
+    # Step one: the client asks for a pair of codes.  RFC 8628 section 3.1.
+    #
+    # No redirect_uri, which is the whole point of this grant -- a client that cannot receive a
+    # redirect cannot use the authorization code flow, and our loopback alternative is unavailable
+    # because the edge WAF rejects any request whose redirect_uri mentions localhost or 127.0.0.1.
+    #
+    # Client authentication is not required.  A device-grant client is a CLI or a set-top box: it
+    # cannot keep a secret, so it registers as a public client and #authenticate_client! waves it
+    # through.  What stands in for the secret here is that the user has to approve the request in a
+    # browser, on a screen that names the application.
+    def device_authorization
+      if presented_client_id.blank?
+        return render_response(error_description:  "client_id must be provided", error:  :invalid_request)
+      end
+
+      unless client_application
+        return render_response(error_description:  "invalid client application id", error:  :unauthorized_application)
+      end
+
+      # POST only.  Section 3.1 requires it, and unlike the token endpoint there is no documented
+      # history of callers using GET here to be gentle with.
+      unless request.post?
+        return render_response(error_description:  "device authorization requires POST", error:  :invalid_request)
+      end
+
+      if (failure = authenticate_client!('device_code', :client_secret))
+        return render_response(failure)
+      end
+
+      code = client_application.create_device_code(scope)
+
+      Platform::Logger.info(
+        "OAUTH_DEVICE_AUTHORIZATION app=#{client_application.id} scope=#{code.scope.inspect} " \
+        "expires_in=#{Platform::Config.oauth_device_code_lifetime}"
+      )
+
+      # user_code goes back formatted, because it is going to be read aloud or typed: WDJB-MJHT
+      # rather than WDJBMJHT.  #normalize_user_code puts it back together on the way in.
+      #
+      # verification_uri_complete is deliberately absent.  Section 3.3.1 makes it optional, and it
+      # is the piece that turns device-code phishing into one tap: a link or QR code that carries
+      # the code means the victim never types it and never reads the page telling them what they
+      # are approving.  Omitting it costs convenience and removes the cheapest version of the
+      # attack.
+      render_response(device_code:        code.device_code,
+                      user_code:          code.user_code_for_display,
+                      verification_uri:   Platform::Config.oauth_device_verification_uri,
+                      expires_in:         (code.valid_to.to_i - Time.now.to_i),
+                      interval:           Platform::Config.oauth_device_poll_interval)
+    end
+
+    # The page the user is sent to.  GET shows the form, POST takes the code.
+    #
+    # Rate limited per session, not because a limiter is good hygiene but because a user_code is
+    # eight characters from a twenty-letter alphabet and RFC 8628 section 6.1 only calls that
+    # enough entropy *given* a limit here.  Without it the code is short enough to grind, and a
+    # guessed code is somebody else's account.
+    def device
+      @device_code_attempts_left = device_attempts_left
+
+      return render_device_page("device") unless request.post?
+
+      if @device_code_attempts_left <= 0
+        @error = "Too many attempts. Wait a few minutes and start again from the application."
+        Platform::Logger.error("OAUTH_DEVICE_CODE_THROTTLED session_attempts_exhausted")
+        return render_device_page("device")
+      end
+
+      if Platform::Config.current_user_is_guest?
+        save_oauth_login_redirect_params
+        return redirect_to(controller:  Platform::Config.login_url)
+      end
+
+      submitted = Platform::Oauth::DeviceCode.normalize_user_code(params[:user_code])
+      @device_code = Platform::Oauth::DeviceCode.pending_for_user_code(submitted)
+
+      if @device_code.nil?
+        count_device_attempt
+        @device_code_attempts_left = device_attempts_left
+        @error = "That code is not valid, or it has expired. Check it and try again."
+        Platform::Logger.info("OAUTH_DEVICE_CODE_REJECTED code=#{submitted.length}chars")
+        return render_device_page("device")
+      end
+
+      # A correct code clears the counter: the limit is there to stop grinding, not to punish
+      # somebody who mistyped twice before getting it right.
+      reset_device_attempts
+
+      return render_device_page("device_confirm") unless params[:authorize]
+
+      unless params[:authorize] == '1'
+        @device_code.invalidate!
+        Platform::Logger.info("OAUTH_DEVICE_CODE_DENIED app=#{@device_code.application_id}")
+        return render_device_page("device_denied")
+      end
+
+      @device_code.user = Platform::Config.current_user
+      @device_code.authorize!
+
+      Platform::ApplicationUser.touch(@device_code.application)
+      Platform::Logger.info(
+        "OAUTH_DEVICE_CODE_APPROVED app=#{@device_code.application_id} " \
+        "user=#{Platform::Config.current_user.id} scope=#{@device_code.scope.inspect}"
+      )
+
+      render_device_page("device_approved")
     end
 
   private
@@ -370,6 +482,35 @@ module Platform
       end
     end
 
+    def render_device_page(template)
+      render(action:  template)
+    end
+
+    ##########################################################################
+    #### Device verification rate limiting
+    ##########################################################################
+
+    # Per-session, which is the weakest of the useful options and the only one available here
+    # without new storage.  It stops the obvious grind -- one browser working through codes -- and
+    # it does not stop a distributed attempt across many sessions.  If this grant ever carries real
+    # volume, move the counter to something keyed on IP or on the code itself; the alternative
+    # RFC 8628 section 6.1 suggests is a code long enough not to need a limit, which costs the user
+    # every time they type it.
+    DEVICE_ATTEMPTS_KEY = :oauth_device_code_attempts
+
+    def device_attempts_left
+      used = session[DEVICE_ATTEMPTS_KEY].to_i
+      [Platform::Config.oauth_device_code_attempts - used, 0].max
+    end
+
+    def count_device_attempt
+      session[DEVICE_ATTEMPTS_KEY] = session[DEVICE_ATTEMPTS_KEY].to_i + 1
+    end
+
+    def reset_device_attempts
+      session[DEVICE_ATTEMPTS_KEY] = nil
+    end
+
     def grant_type
       @grant_type ||= request_param(:grant_type) || "authorization_code"
     end
@@ -520,6 +661,69 @@ module Platform
                       refresh_token: refresh_token.client_token,
                       scope: access_token.scope,
                       expires_in: (access_token.valid_to.to_i - Time.now.to_i))
+    end
+
+    def oauth2_request_token_device_code
+      presented = request_param(:device_code)
+
+      if presented.blank?
+        return render_response(error_description:  "device_code must be provided", error:  :invalid_request)
+      end
+
+      if (failure = authenticate_client!('device_code', :client_secret))
+        return render_response(failure)
+      end
+
+      code = Platform::Oauth::DeviceCode.find_by_presented_token(presented)
+
+      # Scoped to the client that asked for it: one application has no business collecting another's
+      # pending authorization, and a device_code is bearer-shaped.
+      if code.nil? || code.application_id != client_application.id
+        return render_response(error_description:  "unknown device_code", error:  :invalid_grant)
+      end
+
+      # Order matters here, because a consumed code is also an invalidated one -- the exchange below
+      # sets exchanged_at *and* invalidates the row -- and the two conditions mean opposite things to
+      # the client.  access_denied in section 3.5 means the user refused; answering that for a code
+      # that was in fact approved and used would tell a polling client the wrong story about what
+      # happened.  So the replay check comes first.
+      unless code.exchanged_at.nil?
+        Platform::Logger.error("OAUTH_DEVICE_CODE_REPLAY app=#{code.application_id} code_id=#{code.id}")
+        return render_response(error_description:  "this code has already been used",
+                               error:  :invalid_grant)
+      end
+
+      if code.invalidated?
+        return render_response(error_description:  "the user declined this request",
+                               error:  :access_denied)
+      end
+
+      unless code.valid_token?
+        return render_response(error_description:  "this code has expired - start again",
+                               error:  :expired_token)
+      end
+
+      unless code.authorized?
+        return render_response(error_description:  "the user has not approved this request yet",
+                               error:  :authorization_pending)
+      end
+
+      access_token  = client_application.find_or_create_access_token(code.user, code.scope)
+      refresh_token = client_application.create_refresh_token(code.user, access_token.scope)
+
+      code.exchanged_at = Time.now
+      code.invalidate
+      code.save!
+
+      Platform::Logger.info(
+        "OAUTH_DEVICE_CODE_EXCHANGED app=#{code.application_id} user=#{code.user_id} " \
+        "scope=#{access_token.scope.inspect}"
+      )
+
+      render_response(access_token:   access_token.client_token,
+                      refresh_token:  refresh_token.client_token,
+                      scope:          access_token.scope,
+                      expires_in:     (access_token.valid_to.to_i - Time.now.to_i))
     end
 
     # request token with grant_type = client_credentials

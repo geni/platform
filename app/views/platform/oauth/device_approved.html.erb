@@ -1,0 +1,13 @@
+<%#
+  Step three.  The client is polling and will pick the token up within its interval, so there is
+  nothing for the user to copy and nothing more to do here.
+-%>
+<div style="max-width:30em;margin:3em auto;font:14px/1.5 -apple-system,'Segoe UI',Helvetica,sans-serif;">
+  <h1 style="font-size:1.3em;"><%= tr('Connected', 'Device grant approved heading') %></h1>
+
+  <p>
+    <strong><%= h(@device_code.application.name) %></strong>
+    <%= tr('now has access. You can close this page and return to the application.',
+           'Device grant approved body') %>
+  </p>
+</div>
