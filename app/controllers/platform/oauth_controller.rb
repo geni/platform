@@ -785,22 +785,59 @@ module Platform
                                error: :invalid_grant)
       end
 
-      unless refresh_token.valid_token?
+      # A presentation inside the grace period is a retry: the client never received our reply, or a
+      # second process behind the same credential file is a rotation behind.  It is served rather
+      # than revoked.  See RefreshToken#grace_period_retry?.
+      #
+      # The pair is minted fresh rather than replayed, because the first reply cannot be reproduced:
+      # refresh tokens are digested at rest, so the value we handed out is not recoverable from the
+      # row -- OauthToken#client_token answers nil for a digested row read back from the database, by
+      # design.  So the retry gets a family of its own, and the one issued to the first caller is
+      # left alone rather than revoked.  That is the point: whichever reply a client actually
+      # received, it holds a working token, and nobody is logged out for our lost response.
+      retry_in_grace = refresh_token.grace_period_retry?
+
+      # #valid_token? is false for an exchanged token -- the exchange invalidates it -- so asking it
+      # about a retry would reject the very case the window exists to accept.  Expiry still applies:
+      # a token past valid_to is finished whether or not it was exchanged a moment ago.
+      if retry_in_grace ? (refresh_token.valid_to && Time.now > refresh_token.valid_to) : !refresh_token.valid_token?
         return render_response(error_description: "Refresh token expired", error: :invalid_request)
       end
 
-      if refresh_token.user
-        access_token = client_application.create_access_token(refresh_token.user, refresh_token.scope)
-      else
-        access_token = client_application.create_client_token(refresh_token.scope)
-      end
-      refresh_token.exchanged!
+      access_token = mint_refresh_grant_access_token(refresh_token)
+      new_refresh  = client_application.create_refresh_token(access_token.user, access_token.scope)
 
-      refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
+      # The replacement has to exist before the claim can record it.  Claiming is skipped for a
+      # retry: the token is already exchanged, and the row still points at the replacement whose
+      # liveness said this was a retry in the first place -- overwriting that would orphan the
+      # pointer and turn the first caller's next retry into a replay.
+      #
+      # Losing the claim means a concurrent request redeemed the same token between #replayed? above
+      # and here, which only happens with the window switched off, since otherwise both are inside
+      # it.  Withdraw ours and answer as a replay, which is what strict detection asks for.
+      if !retry_in_grace && !refresh_token.claim_for_exchange!(new_refresh)
+        new_refresh.destroy
+        access_token.destroy
+
+        refresh_token.replay!
+        return render_response(error_description: "Refresh token has already been used - all tokens for this application have been revoked, please re-authorize",
+                               error: :invalid_grant)
+      end
+
       render_response(access_token: access_token.client_token,
-                      refresh_token: refresh_token.client_token,
+                      refresh_token: new_refresh.client_token,
                       scope: access_token.scope,
                       expires_in: (access_token.valid_to.to_i - Time.now.to_i))
+    end
+
+    # A refresh grant issues a user token when the refresh token carries a user and a client token
+    # when it does not -- the client_credentials case, which has no resource owner.
+    def mint_refresh_grant_access_token(refresh_token)
+      if refresh_token.user
+        client_application.create_access_token(refresh_token.user, refresh_token.scope)
+      else
+        client_application.create_client_token(refresh_token.scope)
+      end
     end
 
     # authorize with response_type = code

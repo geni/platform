@@ -761,21 +761,79 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
 
   # Refresh tokens rotate, so a token presented twice has two holders and there is no way to tell
   # which one is the real client: the whole family goes.
+  # Outside the grace period.  A second presentation is only evidence of two holders once it can no
+  # longer be explained as a retry -- see the grace period tests below.
   test 'replaying a refresh token revokes every token the application holds' do
     refresh = app.create_refresh_token(user)
     access  = app.find_or_create_access_token(user)
+    presented = refresh.client_token
 
     post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
-                                  client_secret: app.secret, refresh_token: refresh.client_token}
+                                  client_secret: app.secret, refresh_token: presented}
     assert_response :success
 
+    age_out_the_exchange(refresh)
+
     post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
-                                  client_secret: app.secret, refresh_token: refresh.client_token}
+                                  client_secret: app.secret, refresh_token: presented}
     assert_response :bad_request
     assert_match 'already been used', @response.body
     assert_match 'invalid_grant',     @response.body
 
     assert_not_nil access.reload.invalidated_at, 'the access token should have been revoked too'
+  end
+
+  # Inside the window the same second presentation is a retry and is served, because a client that
+  # never received our reply holds only the token it started with.  RFC 9700 section 4.14.2 asks for
+  # family revocation on replay and leaves the window to the implementation; Okta's refresh token
+  # rotation ships the same allowance.  Registry/Platform::Config
+  # oauth_refresh_token_grace_period is the window, and 0 restores strict detection.
+  test 'a second refresh inside the grace period is served, not revoked' do
+    refresh   = app.create_refresh_token(user)
+    presented = refresh.client_token
+
+    post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
+                                  client_secret: app.secret, refresh_token: presented}
+    assert_response :success
+    first = JSON.parse(@response.body)
+
+    post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
+                                  client_secret: app.secret, refresh_token: presented}
+    assert_response :success
+    second = JSON.parse(@response.body)
+
+    assert_nil second['error'], 'a retry inside the window should not be refused'
+    assert second['refresh_token'].present?, 'the retry should get a usable refresh token'
+
+    # Not the same value: refresh tokens are digested at rest, so what the first caller was handed
+    # is not recoverable and cannot be replayed.  The retry gets its own.
+    assert_not_equal first['refresh_token'], second['refresh_token']
+
+    # Presentable, and the first caller's is still live rather than swept up by the retry.
+    assert_not_nil Platform::Oauth::RefreshToken.find_by_presented_token(second['refresh_token'])
+
+    survivor = Platform::Oauth::RefreshToken.find_by_presented_token(first['refresh_token'])
+    assert_not_nil survivor
+    assert survivor.valid_token?, "the first caller's token should not have been revoked"
+  end
+
+  test 'the grace period does not revive a refresh token whose grant was withdrawn' do
+    refresh   = app.create_refresh_token(user)
+    presented = refresh.client_token
+
+    post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
+                                  client_secret: app.secret, refresh_token: presented}
+    assert_response :success
+    first = JSON.parse(@response.body)
+
+    # As a deauthorize or an admin revoke would: the replacement goes, and its liveness is what the
+    # window reads to decide whether the grant still stands.
+    Platform::Oauth::RefreshToken.find_by_presented_token(first['refresh_token']).invalidate!
+
+    post :request_token, params: {grant_type: 'refresh_token', client_id: app.key,
+                                  client_secret: app.secret, refresh_token: presented}
+    assert_response :bad_request
+    assert_match 'invalid_grant', @response.body, 'a withdrawn grant should not get sixty seconds of grace'
   end
 
   test 'the refresh_token grant rejects a wrong client_secret once the check is on' do
@@ -1199,6 +1257,19 @@ private
 
   def challenge_for(verifier)
     Base64.urlsafe_encode64(OpenSSL::Digest::SHA256.digest(verifier)).delete('=')
+  end
+
+
+  # Pushes an exchange back past the grace period, so that presenting the token again is a replay
+  # rather than a retry.  Written as an UPDATE because exchanged_at is set by the exchange's own
+  # statement, and assigning it on a stale object would write that object's other columns back too.
+  def age_out_the_exchange(token)
+    klass = token.class
+    stale = klass.connection.quoted_date(
+              klass.now_in_database_timezone - Platform::Config.oauth_refresh_token_grace_period - 60)
+
+    klass.connection.update("UPDATE #{klass.table_name} SET exchanged_at = '#{stale}' WHERE id = #{token.id.to_i}")
+    token.reload
   end
 
 end
