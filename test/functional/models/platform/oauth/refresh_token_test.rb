@@ -167,16 +167,24 @@ module Platform::Oauth
       ActiveRecord::Base.default_timezone = original
     end
 
-    # There is no mocha in this suite, and Platform::Config.oauth answers the live configuration
-    # hash, so the value is swapped in place and put back.
+    # There is no mocha in this suite, so the accessor itself is swapped out and put back.
+    #
+    # Not by writing into the hash Platform::Config.oauth answers.  That does work on this branch --
+    # activesupport 2.3 hands back the stored object, so the write sticks and this test really did
+    # exercise the zero window.  It does not work on activesupport 3.2, where
+    # HashWithIndifferentAccess#[] returns a *converted copy* of a nested hash: the write lands on a
+    # throwaway, the configured sixty seconds never moves, and the test passes having run the retry
+    # path instead of the strict one.  Overriding the method does not depend on how a nested hash is
+    # handed out, so it means the same thing on every branch.
     def with_grace_period(seconds)
-      oauth    = Platform::Config.oauth
-      original = oauth[:refresh_token_grace_period]
+      singleton = Platform::Config.singleton_class
 
-      oauth[:refresh_token_grace_period] = seconds
+      singleton.send(:alias_method, :grace_period_before_stub, :oauth_refresh_token_grace_period)
+      singleton.send(:define_method, :oauth_refresh_token_grace_period) { seconds }
       yield
     ensure
-      oauth[:refresh_token_grace_period] = original
+      singleton.send(:alias_method, :oauth_refresh_token_grace_period, :grace_period_before_stub)
+      singleton.send(:remove_method, :grace_period_before_stub)
     end
 
     # Moves an exchange back in time.  Written with an UPDATE rather than by assigning, because

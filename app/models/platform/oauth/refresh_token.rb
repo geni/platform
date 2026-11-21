@@ -32,7 +32,16 @@ class Platform::Oauth::RefreshToken < Platform::Oauth::OauthToken
   # calls every second presentation a retry, forever.  Modern #quoted_date does convert, so passing
   # an already-correct Time is right on every branch this ships on.
   def self.now_in_database_timezone
-    ActiveRecord::Base.default_timezone == :utc ? Time.now.utc : Time.now.getlocal
+    # Rails 7.0 moved this off ActiveRecord::Base onto the ActiveRecord module and 7.1 removed the
+    # old reader, so ask whichever one this Rails has.  2.3 answers through Base; rails-8.0.x needs
+    # the module, and asking keeps this method identical on every branch.
+    zone = if ActiveRecord.respond_to?(:default_timezone)
+             ActiveRecord.default_timezone
+           else
+             ActiveRecord::Base.default_timezone
+           end
+
+    zone == :utc ? Time.now.utc : Time.now.getlocal
   end
 
   def exchange!(params={})
