@@ -122,7 +122,12 @@ class Platform::AppsController < Platform::BaseController
     end
 
     # add all desired params here
-    params[:access_token] = @access_token.token if @access_token
+    # #client_token, not #token.  #token is the stored column, which for a digested type is the
+    # digest -- and OauthToken.find_by_presented_token now refuses a digest presented as a token,
+    # so this would hand the canvas application a credential-shaped string that can never
+    # authenticate.  #client_token answers the cleartext while we still hold it, and nil once we do
+    # not, which is the honest answer.
+    params[:access_token] = @access_token.client_token if @access_token
     params[:t] = Time.now.to_s
 
     query_params = []
