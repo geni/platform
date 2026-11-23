@@ -112,7 +112,7 @@ class Platform::AppsController < Platform::BaseController
         return render(:action => :canvas_app)
       end
 
-      @access_token = @app.find_or_create_access_token(Platform::Config.current_user)
+      @access_token = @app.issue_access_token(Platform::Config.current_user)
     end
 
     @canvas_url = @app.canvas_url

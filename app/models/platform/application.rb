@@ -539,6 +539,67 @@ class Platform::Application < ActiveRecord::Base
     token
   end
 
+  # Mint a fresh access token for this member, which is what an OAuth grant should always do.
+  #
+  # #find_or_create_access_token hands back a *stored* token, and that is the only reason
+  # Platform::Oauth::AccessToken cannot be digested at rest: a digest cannot be turned back into the
+  # value a client needs.  No grant needs that reuse -- each one mints and returns immediately -- and
+  # the refresh grant has always called #create_access_token directly for exactly this reason.
+  #
+  # Two things have to come along from the method this replaces, or switching a grant over would be a
+  # silent regression rather than a refactor:
+  #
+  #   * Platform::ApplicationUser.touch, which creates the row recording that this member uses this
+  #     application.  It drives #active_user_count, the monthly-users module and the canvas flow's
+  #     own ApplicationUser.for check, so dropping it would quietly stop recording app usage.
+  #   * the pruning.  The #destroy inside #find_or_create_access_token is the only code in this gem
+  #     that ever deletes an access token row -- #invalidate_all_access_tokens only sets
+  #     invalidated_at, and there is no sweeper anywhere.  Without it platform_oauth_tokens would
+  #     grow with nothing to trim it.
+  def issue_access_token(user, scope = 'basic', interval = Platform::Config.api_token_lifetime)
+    token = create_access_token(user, scope, interval)
+    prune_dead_access_tokens(user)
+    Platform::ApplicationUser.touch(self, user)
+    token
+  end
+
+  # Destroy this member's access tokens for this application that are already expired or revoked.
+  #
+  # Only the dead ones, unlike #find_or_create_access_token, which also destroys a second *live*
+  # token so that exactly one survives per application and member.  That collapse is what made reuse
+  # possible, and it is also what stops two of a member's clients from each holding a token of their
+  # own; there is no reason to keep it once nothing reuses.
+  #
+  # Scope is deliberately not passed to #valid_token?, which answers false for a perfectly live token
+  # of a *different* scope.  Asking it here would destroy a working credential merely for being
+  # scoped differently -- which is what #find_or_create_access_token does today, and why one member
+  # cannot hold a match_counts token and a callback token for the same application at once.
+  # Limits how many of this member's rows one call will load.  The pruning is opportunistic
+  # housekeeping, not a guarantee, so there is no reason for it to ever load a large set: production
+  # holds 24.5k access tokens for one application where only 667 are live, and a member who calls
+  # often enough to accumulate gets another pass on their next call anyway.
+  PRUNE_BATCH_SIZE = 100
+
+  def prune_dead_access_tokens(user)
+    # The dead ones are selected in SQL rather than loaded and filtered in Ruby, so that the limit
+    # above is spent entirely on rows this is going to destroy.  Loading the member's rows and
+    # asking #valid_token? would spend it on whatever the database happened to return first --
+    # a member holding 290 live tokens and a handful of dead ones would load 100 live rows and
+    # destroy nothing.
+    #
+    # The two clauses mirror #valid_token? with no scope argument: invalidated, or expired.  Scope
+    # is deliberately not considered -- see the note above.
+    dead = Platform::Oauth::AccessToken.find(:all,
+             :conditions => ["application_id = ? AND user_id = ?" \
+                             " AND (invalidated_at IS NOT NULL" \
+                             "      OR (valid_to IS NOT NULL AND valid_to < ?))",
+                             self.id, user.id,
+                             Platform::Oauth::OauthToken.now_in_database_timezone],
+             :limit      => PRUNE_BATCH_SIZE)
+
+    dead.each { |token| token.destroy }
+  end
+
   def find_or_create_access_token(user, scope = 'basic', interval = Platform::Config.api_token_lifetime)
     tokens = Platform::Oauth::AccessToken.find(:all, :conditions => ["application_id = ? and user_id = ?", self.id, user.id])
     valid_token = nil
