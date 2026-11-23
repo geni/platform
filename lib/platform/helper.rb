@@ -55,6 +55,17 @@ module Platform::Helper
     Base64.urlsafe_encode64(OpenSSL::Digest::SHA256.digest(raw_token.to_s)).delete('=')
   end
 
+  # The width of every value #token_digest produces.  Named because
+  # Platform::Oauth::OauthToken.find_by_presented_token has to be able to recognise a digest
+  # presented as though it were a token, and a magic 43 in that check would not survive anyone
+  # changing the hash here.
+  TOKEN_DIGEST_LENGTH = token_digest('').length
+
+  # Is this value the width of a stored digest rather than of a token we would have issued?
+  def self.token_digest_shaped?(value)
+    value.to_s.length == TOKEN_DIGEST_LENGTH
+  end
+
   # Constant-time string comparison, for client secrets and other presented credentials.
   #
   # Hashing both sides first is what lets this run in constant time even when the two strings are
