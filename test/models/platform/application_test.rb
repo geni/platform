@@ -1148,5 +1148,76 @@ private
       assert_equal 40, app.secret.length
     end
 
+    ##########################################################################
+    #### Issuing an access token
+    ####
+    #### #issue_access_token is what every OAuth grant calls.  It exists because
+    #### #find_or_create_access_token hands back a *stored* token, which is the one thing standing
+    #### between Platform::Oauth::AccessToken and being digested at rest -- a digest cannot be
+    #### turned back into the value a client needs.
+    ##########################################################################
+
+    test 'issuing twice hands out two different tokens' do
+      first  = app.issue_access_token(user)
+      second = app.issue_access_token(user)
+
+      assert_not_equal first.id,           second.id, 'a grant should mint, not reuse'
+      assert_not_equal first.client_token, second.client_token
+    end
+
+    # The whole point: a freshly minted token still carries its cleartext, so the grant has
+    # something to render even when the stored column is a digest.
+    test 'an issued token carries a usable cleartext' do
+      token = app.issue_access_token(user)
+
+      assert_not_nil token.client_token
+      assert_not_empty token.client_token
+    end
+
+    # Not a refactor if this is dropped.  Platform::ApplicationUser.touch creates the row recording
+    # that this member uses this application, and #active_user_count and the monthly-users module
+    # both read it.
+    test 'issuing records that the member uses the application' do
+      assert_nil Platform::ApplicationUser.for(app, user), 'no usage recorded yet'
+
+      app.issue_access_token(user)
+
+      assert_not_nil Platform::ApplicationUser.for(app, user),
+                     'issuing a token has to record app usage, the way find_or_create did'
+    end
+
+    # The #destroy inside #find_or_create_access_token is the only code in this gem that deletes an
+    # access token row, so #issue_access_token has to keep pruning or the table grows unbounded.
+    test 'issuing prunes a revoked token' do
+      dead = app.create_access_token(user)
+      dead.invalidate!
+
+      app.issue_access_token(user)
+
+      assert_nil Platform::Oauth::AccessToken.find_by(id: dead.id), 'a revoked row should be pruned'
+    end
+
+    test 'issuing prunes an expired token' do
+      dead = app.create_access_token(user)
+      dead.expire_in!(-1.hour)
+
+      app.issue_access_token(user)
+
+      assert_nil Platform::Oauth::AccessToken.find_by(id: dead.id), 'an expired row should be pruned'
+    end
+
+    # The difference from #find_or_create_access_token, which destroys every token but the one it
+    # reuses -- including a live token of another scope, since #valid_token?(scope) answers false
+    # for a scope mismatch.  Nothing reuses any more, so there is no reason to collapse a member to
+    # one credential, and a second client of theirs gets to keep its own.
+    test 'issuing leaves a live token alone' do
+      live  = app.create_access_token(user, 'other_scope')
+      token = app.issue_access_token(user, 'basic')
+
+      assert_not_nil Platform::Oauth::AccessToken.find_by(id: live.id),
+                     "a live token of another scope is somebody else's working credential"
+      assert_not_equal live.id, token.id
+    end
+
   end # class ApplicationTest
 end # module Platform

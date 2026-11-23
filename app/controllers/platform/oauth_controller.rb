@@ -606,7 +606,7 @@ module Platform
         return render_response(failure)
       end
 
-      access_token  = client_application.find_or_create_access_token(request_token.user, request_token.scope)
+      access_token  = client_application.issue_access_token(request_token.user, request_token.scope)
       refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
       request_token.destroy
 
@@ -655,7 +655,7 @@ module Platform
       end
 
       granted       = client_application.granted_scope(scope)
-      access_token  = client_application.find_or_create_access_token(user, granted)
+      access_token  = client_application.issue_access_token(user, granted)
       refresh_token = client_application.create_refresh_token(access_token.user, access_token.scope)
       render_response(access_token: access_token.client_token,
                       refresh_token: refresh_token.client_token,
@@ -708,7 +708,7 @@ module Platform
                                error:  :authorization_pending)
       end
 
-      access_token  = client_application.find_or_create_access_token(code.user, code.scope)
+      access_token  = client_application.issue_access_token(code.user, code.scope)
       refresh_token = client_application.create_refresh_token(code.user, access_token.scope)
 
       code.exchanged_at = Time.now
@@ -882,7 +882,7 @@ module Platform
 
         if params[:authorize] == '1' or client_application.trusted?
           Platform::ApplicationUser.touch(client_application)
-          access_token = client_application.find_or_create_access_token(Platform::Config.current_user, authorized_scope)
+          access_token = client_application.issue_access_token(Platform::Config.current_user, authorized_scope)
           response_params = {access_token: access_token.client_token,
                              scope: access_token.scope,
                              expires_in: (access_token.valid_to.to_i - Time.now.to_i)}
