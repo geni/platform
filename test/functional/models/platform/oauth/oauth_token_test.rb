@@ -162,7 +162,7 @@ module Platform::Oauth
     # them is the whole point of the sweep.
     test 'live_tokens_for answers with a token that has no expiry' do
       forever = app.create_access_token(user)
-      forever.update_attribute(:valid_to, nil)
+      clear_expiry(forever)
 
       ids = OauthToken.live_tokens_for(app.id, user.id).map { |t| t.id }
 
@@ -220,6 +220,20 @@ private
     # There is no mocha in this suite, so the accessor itself is swapped out and put back -- the
     # same reason RefreshTokenTest#with_grace_period does it this way rather than writing into the
     # hash Platform::Config.oauth answers.
+    # Makes a row look like one written before this gem set valid_to at all, which is what the
+    # millions of rows in production are and what .live_tokens_for has to keep answering with.
+    #
+    # An UPDATE rather than #update_attribute(:valid_to, nil).  Dirty tracking on activesupport 3.1
+    # compares the stored ActiveSupport::TimeWithZone to the new nil with <=>, which calls
+    # #to_datetime on nil and raises NoMethodError -- so the assignment form passes on 2.3 and 3.0
+    # and blows up from 3.1 on.  Writing the column directly means the same thing on every branch,
+    # and is closer to how those rows came to exist in the first place.
+    def clear_expiry(token)
+      token.class.connection.update(
+        "UPDATE #{token.class.table_name} SET valid_to = NULL WHERE id = #{token.id.to_i}")
+      token.reload
+    end
+
     def with_cleartext_lookup(value)
       singleton = Platform::Config.singleton_class
 
