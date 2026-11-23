@@ -130,6 +130,93 @@ module Platform::Oauth
       end
     end
 
+    ##########################################################################
+    #### live_tokens_for and revoke_all_for
+    ####
+    #### Refresh tokens were permanent credentials until this gem started setting valid_to, so
+    #### production holds millions of unexpiring rows: 4.3M on one application and member, 205k on
+    #### the next.  .live_tokens_for answered with every one of them, and .revoke_all_for built an
+    #### ActiveRecord object for each -- inside a request, reached from RefreshToken#replay!.  One
+    #### refresh token presented twice was an out-of-memory kill.
+    ##########################################################################
+
+    test 'live_tokens_for does not answer with an expired token' do
+      live    = app.create_access_token(user)
+      expired = app.create_access_token(user)
+      expired.expire_in!(-1.hour)
+
+      ids = OauthToken.live_tokens_for(app.id, user.id).map { |t| t.id }
+
+      assert        ids.include?(live.id)
+      assert_equal false, ids.include?(expired.id), 'an expired token is not live'
+    end
+
+    test 'live_tokens_for does not answer with an invalidated token' do
+      revoked = app.create_access_token(user)
+      revoked.invalidate!
+
+      ids = OauthToken.live_tokens_for(app.id, user.id).map { |t| t.id }
+
+      assert_equal false, ids.include?(revoked.id)
+    end
+
+    # A token with no expiry is still live -- that is what the pre-valid_to rows are, and revoking
+    # them is the whole point of the sweep.
+    test 'live_tokens_for answers with a token that has no expiry' do
+      forever = app.create_access_token(user)
+      forever.update_attribute(:valid_to, nil)
+
+      ids = OauthToken.live_tokens_for(app.id, user.id).map { |t| t.id }
+
+      assert ids.include?(forever.id)
+    end
+
+    test 'live_tokens_for honours a limit' do
+      3.times { app.create_access_token(user) }
+
+      assert_equal 2, OauthToken.live_tokens_for(app.id, user.id, 2).size
+    end
+
+    # The user_id IS NULL arm, which is the client_credentials path -- and the second worst pair in
+    # production, at 205k rows.
+    test 'live_tokens_for separates the no-user tokens from a user of their own' do
+      client_token = app.create_client_token('basic')
+      user_token   = app.create_access_token(user)
+
+      without_user = OauthToken.live_tokens_for(app.id, nil).map { |t| t.id }
+      with_user    = OauthToken.live_tokens_for(app.id, user.id).map { |t| t.id }
+
+      assert        without_user.include?(client_token.id)
+      assert_equal false, without_user.include?(user_token.id)
+      assert        with_user.include?(user_token.id)
+      assert_equal false, with_user.include?(client_token.id)
+    end
+
+    # More rows than one batch holds, so the loop has to run more than once to drain them.
+    test 'revoke_all_for drains more tokens than fit in a single batch' do
+      total = OauthToken::REVOKE_BATCH_SIZE + 5
+      total.times { app.create_refresh_token(user) }
+
+      revoked = OauthToken.revoke_all_for(app.id, user.id)
+
+      assert_equal total, revoked, 'every live token should have been revoked, batch size aside'
+      assert_equal [], OauthToken.live_tokens_for(app.id, user.id),
+                   'nothing live should be left behind'
+    end
+
+    test 'revoke_all_for leaves an expired token alone rather than loading it' do
+      expired = app.create_refresh_token(user)
+      expired.expire_in!(-1.hour)
+
+      assert_equal 0, OauthToken.revoke_all_for(app.id, user.id),
+                   'an expired token is already unusable and must not be loaded to revoke it'
+      assert_nil expired.reload.invalidated_at
+    end
+
+    test 'revoke_all_for counts nothing when there is nothing live' do
+      assert_equal 0, OauthToken.revoke_all_for(app.id, user.id)
+    end
+
 private
 
     # There is no mocha in this suite, so the accessor itself is swapped out and put back -- the
