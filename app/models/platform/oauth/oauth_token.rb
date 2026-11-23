@@ -118,6 +118,25 @@ class Platform::Oauth::OauthToken < ActiveRecord::Base
 
     return nil unless Platform::Config.oauth_allow_cleartext_token_lookup?
 
+    # Refuse to resolve a digest that was presented as though it were a token.
+    #
+    # The cleartext lookup below matches the `token` column verbatim, and for a digested type that
+    # column *holds a digest* -- so without this guard, presenting the stored digest authenticates
+    # as its owner.  That turns read access to platform_oauth_tokens (a replica, a backup, a
+    # slow-query log) into the ability to act as any member, which is the one thing digesting the
+    # column was supposed to prevent.  It compounds too: #upgrade_stored_token_to_digest! below
+    # would then rewrite the row as a digest of the digest, so the real token stops working.
+    #
+    # Reaching that state needs a digest to escape to a caller, which is a bug rather than a
+    # designed path -- but it is a bug this gem has shipped more than once, every time something
+    # read #token where it meant #client_token.  So the lookup refuses the shape rather than
+    # trusting every caller to be correct.
+    #
+    # Only for a digested type: a type stored in the clear has no digest in its column for this to
+    # protect, and gating it this way keeps a cleartext token that happens to be the width of a
+    # digest resolvable.
+    return nil if store_digest? && Platform::Helper.token_digest_shaped?(presented)
+
     found = find_by_token(presented)
     return nil if found.nil?
 
