@@ -86,7 +86,25 @@ module Platform
     end
 
     # http://tools.ietf.org/html/draft-ietf-oauth-v2-16#section-4.2
-    # supported grant_type = authorization_code, password, refresh_token, client_credentials, device_code
+    #
+    # grant_type -> the method that handles it.
+    #
+    # This was `send("oauth2_request_token_#{grant_type}")` against an allowlist checked just
+    # above.  The allowlist made that safe, but it cannot express the device grant: RFC 8628
+    # section 3.4 names it "urn:ietf:params:oauth:grant-type:device_code", and a URN with colons
+    # in it is not a legal method suffix.  So the allowlist carried the bare name `device_code`
+    # instead, which no conformant client ever sends -- the grant was reachable only by a caller
+    # that guessed a spelling the RFC does not define.  An explicit map takes the interpolation
+    # out of the dispatch and lets the error message list what is actually supported rather than
+    # repeating a hardcoded sentence.
+    GRANT_HANDLERS = {
+      'authorization_code'                           => :oauth2_request_token_authorization_code,
+      'password'                                     => :oauth2_request_token_password,
+      'refresh_token'                                => :oauth2_request_token_refresh_token,
+      'client_credentials'                           => :oauth2_request_token_client_credentials,
+      'urn:ietf:params:oauth:grant-type:device_code' => :oauth2_request_token_device_code,
+    }.freeze
+
     def request_token
       # presented_client_id, not request_param(:client_id): RFC 6749 section 2.3.1 lets a client
       # send client_id and client_secret as HTTP Basic credentials instead of as parameters, and a
@@ -99,8 +117,12 @@ module Platform
         return render_response(error_description: "invalid client application id", error: :unauthorized_application)
       end
 
-      unless ["authorization_code", "password", "refresh_token", "client_credentials", "device_code"].include?(grant_type)
-        return render_response(error_description: "only authorization_code, password, refresh_token, client_credentials and device_code grant types are currently supported", error: :unsupported_grant_type)
+      handler = GRANT_HANDLERS[grant_type]
+
+      unless handler
+        return render_response(error_description: "unsupported grant_type - this endpoint supports " +
+                                                  GRANT_HANDLERS.keys.sort.join(', '),
+                               error: :unsupported_grant_type)
       end
 
       # Not rejected, because this is how the flow is documented -- oauth_server_side shows the
@@ -114,7 +136,7 @@ module Platform
         )
       end
 
-      send("oauth2_request_token_#{grant_type}")
+      send(handler)
     end
     alias :token :request_token
 

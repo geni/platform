@@ -905,6 +905,36 @@ class Platform::OauthControllerTest < Platform::ControllerTestCase
     assert_match 'unsupported_grant_type', @response.body
   end
 
+  # The device grant is the one grant_type whose name is not a legal method suffix, so it is the
+  # one that cannot be dispatched by interpolation.  RFC 8628 section 3.4 defines this spelling
+  # and no other, so a conformant client sends exactly this -- and nothing else here would notice
+  # if the endpoint only answered a bare 'device_code', which is a name the RFC never mentions.
+  test 'request_token dispatches the RFC 8628 device grant URN' do
+    code = app.create_device_code
+
+    post :request_token, params: {grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+                                  client_id: app.key, device_code: code.device_code}
+
+    # authorization_pending, not unsupported_grant_type: the handler ran and found the code
+    # unapproved, which is the whole point -- the request reached oauth2_request_token_device_code.
+    assert_match 'authorization_pending', @response.body
+    assert_no_match(/unsupported_grant_type/, @response.body)
+  end
+
+  test 'request_token refuses the bare device_code spelling the RFC does not define' do
+    post :request_token, params: {grant_type: 'device_code', client_id: app.key}
+    assert_response :bad_request
+    assert_match 'unsupported_grant_type', @response.body
+  end
+
+  test 'the unsupported_grant_type error names the grants that are actually wired up' do
+    post :request_token, params: {grant_type: 'telepathy', client_id: app.key}
+
+    Platform::OauthController::GRANT_HANDLERS.each_key do |grant|
+      assert_match grant, @response.body, "the error should name #{grant}"
+    end
+  end
+
   test 'request_token defaults to the authorization_code grant' do
     post :request_token, params: {client_id: app.key, client_secret: app.secret}
     assert_response :bad_request
